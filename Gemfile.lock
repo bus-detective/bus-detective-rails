@@ -50,6 +50,7 @@ GEM
     dotenv-rails (2.0.0)
       dotenv (= 2.0.0)
     erubis (2.7.0)
+    execjs (2.4.0)
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.5.0)
@@ -79,6 +80,7 @@ GEM
     puma (2.11.1)
       rack (>= 1.1, < 2.0)
     rack (1.6.0)
+    rack-cors (0.3.1)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.0)
@@ -146,6 +148,9 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    uglifier (2.7.1)
+      execjs (>= 0.3.0)
+      json (>= 1.8.0)
     web-console (2.1.2)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -163,10 +168,12 @@ DEPENDENCIES
   http
   pg
   puma
+  rack-cors
   rails (= 4.2.0)
   rails_12factor
   rspec-rails
   ruby-protocol-buffers
   spring
   spring-commands-rspec
+  uglifier
   web-console (~> 2.0)

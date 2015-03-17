@@ -18,3 +18,4 @@
 
 vendor/ruby
 .env
+database.yml

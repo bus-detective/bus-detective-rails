@@ -6,9 +6,10 @@ gem 'rails', '4.2.0'
 gem 'pg'
 gem 'puma'
 gem 'http'
-gem 'ruby-protocol-buffers'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
+gem 'ruby-protocol-buffers'
+gem 'gtfs'
 
 group :development, :test do
   gem 'byebug'

@@ -11,24 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150317180959) do
+ActiveRecord::Schema.define(version: 20150317183048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "routes", force: :cascade do |t|
+    t.integer  "route_id"
+    t.string   "agency_id"
+    t.string   "short_name"
+    t.string   "long_name"
+    t.string   "description"
+    t.string   "route_type"
+    t.string   "url"
+    t.string   "color"
+    t.string   "text_color"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "stops", force: :cascade do |t|
-    t.string  "stop_id"
-    t.integer "code"
-    t.string  "name"
-    t.string  "description"
-    t.float   "lat"
-    t.float   "lon"
-    t.integer "zone_id"
-    t.string  "url"
-    t.integer "location_type"
-    t.string  "parent_station"
-    t.string  "timezone"
-    t.integer "wheelchair_boarding"
+    t.string   "stop_id"
+    t.integer  "code"
+    t.string   "name"
+    t.string   "description"
+    t.float    "lat"
+    t.float    "lon"
+    t.integer  "zone_id"
+    t.string   "url"
+    t.integer  "location_type"
+    t.string   "parent_station"
+    t.string   "timezone"
+    t.integer  "wheelchair_boarding"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
   end
 
 end

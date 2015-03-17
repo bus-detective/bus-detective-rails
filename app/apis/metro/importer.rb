@@ -8,6 +8,7 @@ class Metro::Importer
 
   def import!
     import_stops!
+    import_routes!
   end
 
   def import_stops!
@@ -25,6 +26,22 @@ class Metro::Importer
         parent_station: s.parent_station,
         timezone: s.timezone,
         wheelchair_boarding: s.wheelchair_boarding
+      })
+    end
+  end
+
+  def import_routes!
+    source.routes.each do |r|
+      Route.create!({
+        route_id: r.id,
+        agency_id: r.agency_id,
+        short_name: r.short_name,
+        long_name: r.long_name,
+        description: r.desc,
+        route_type: r.type,
+        url: r.url,
+        color: r.color,
+        text_color: r.text_color
       })
     end
   end

@@ -13,6 +13,8 @@ class CreateStops < ActiveRecord::Migration
       t.string :parent_station
       t.string :timezone
       t.integer :wheelchair_boarding
+
+      t.timestamps null: false
     end
   end
 end

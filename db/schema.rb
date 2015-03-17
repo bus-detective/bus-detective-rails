@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150317183048) do
+ActiveRecord::Schema.define(version: 20150317184449) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,21 @@ ActiveRecord::Schema.define(version: 20150317183048) do
     t.integer  "wheelchair_boarding"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+  end
+
+  create_table "trips", force: :cascade do |t|
+    t.integer  "trip_id"
+    t.integer  "route_id"
+    t.integer  "service_id"
+    t.string   "headsign"
+    t.string   "short_name"
+    t.integer  "direction_id"
+    t.integer  "block_id"
+    t.integer  "shape_id"
+    t.integer  "wheelchair_accessible"
+    t.integer  "bikes_allowed"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
 end

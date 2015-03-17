@@ -17,4 +17,11 @@ RSpec.describe Metro::Importer do
       expect(Route.count).to eq(46)
     end
   end
+
+  describe "#import_trips!" do
+    it "imports all the trips" do
+      importer.import_trips!
+      expect(Trip.count).to eq(4495)
+    end
+  end
 end

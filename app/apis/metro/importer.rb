@@ -9,6 +9,7 @@ class Metro::Importer
   def import!
     import_stops!
     import_routes!
+    import_trips!
   end
 
   def import_stops!
@@ -42,6 +43,23 @@ class Metro::Importer
         url: r.url,
         color: r.color,
         text_color: r.text_color
+      })
+    end
+  end
+
+  def import_trips!
+    source.trips.each do |t|
+      Trip.create!({
+        trip_id: t.id,
+        route_id: t.route_id,
+        service_id: t.service_id,
+        headsign: t.headsign,
+        short_name: t.short_name,
+        direction_id: t.direction_id,
+        block_id: t.block_id,
+        shape_id: t.shape_id,
+        wheelchair_accessible: t.wheelchair_accessible,
+        bikes_allowed: t.instance_variable_get("@bikes_allowed")
       })
     end
   end

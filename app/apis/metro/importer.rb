@@ -7,9 +7,12 @@ class Metro::Importer
   end
 
   def import!
-    import_stops!
-    import_routes!
-    import_trips!
+    ActiveRecord::Base.transaction do
+      import_stops!
+      import_routes!
+      import_trips!
+      import_stop_times!
+    end
   end
 
   def import_stops!

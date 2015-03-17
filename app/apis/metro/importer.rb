@@ -64,6 +64,22 @@ class Metro::Importer
     end
   end
 
+  def import_stop_times!
+    source.stop_times.each do |s|
+      StopTime.create!({
+        trip_id: s.trip_id,
+        arrival_time: s.arrival_time,
+        departure_time: s.departure_time,
+        stop_id: s.stop_id,
+        stop_sequence: s.stop_sequence,
+        stop_headsign: s.stop_headsign,
+        pickup_type: s.pickup_type,
+        drop_off_type: s.drop_off_type,
+        shape_dist_traveled: s.shape_dist_traveled
+      })
+    end
+  end
+
   def source
     @source ||= GTFS::Source.build(@endpoint)
   end

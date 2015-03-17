@@ -113,6 +113,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
+    redis (3.2.1)
     rspec-core (3.2.2)
       rspec-support (~> 3.2.0)
     rspec-expectations (3.2.0)
@@ -171,6 +172,7 @@ DEPENDENCIES
   rack-cors
   rails (= 4.2.0)
   rails_12factor
+  redis
   rspec-rails
   ruby-protocol-buffers
   spring

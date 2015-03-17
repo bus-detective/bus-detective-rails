@@ -3,4 +3,6 @@ Rails.application.routes.draw do
     resources :arrivals
     resources :stops
   end
+
+  root to: "index#show"
 end

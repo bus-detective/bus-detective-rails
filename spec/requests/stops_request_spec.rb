@@ -4,9 +4,13 @@ RSpec.describe "stops api" do
   let(:json) { JSON.parse(response.body) }
 
   describe "api/stops?name=" do
+    let!(:matching_stop) { create(:stop, name: "8th and Walnut") }
+    let!(:non_matching_stop) { create(:stop, name: "Somewhere else") }
+
     it "returns stops with the given street name" do
       get '/api/stops?name=8th'
-      expect(json["stops"].first["stop_id"]).to eq("8THWALi")
+      stop_ids = json["stops"].map { |s| s["id"] }
+      expect(stop_ids).to eq([matching_stop.id])
     end
   end
 end

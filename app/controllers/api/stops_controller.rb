@@ -1,5 +1,5 @@
 class Api::StopsController < ApplicationController
   def index
-    render json: { stops: Metro::Stops.search(params[:name]) }
+    render json: { stops: Stop.where("name ILIKE ?", "%#{params[:name]}%") }
   end
 end

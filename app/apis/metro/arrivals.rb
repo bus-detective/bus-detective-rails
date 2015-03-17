@@ -1,4 +1,4 @@
-require 'vendor/gtfs-realtime.pb.rb'
+require 'gtfs-realtime.pb.rb'
 require 'time'
 
 module Metro

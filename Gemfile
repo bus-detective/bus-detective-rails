@@ -5,6 +5,8 @@ ruby '2.2.0'
 gem 'rails', '4.2.0'
 gem 'pg'
 gem 'puma'
+gem 'http'
+gem 'ruby-protocol-buffers'
 
 group :development, :test do
   gem 'byebug'

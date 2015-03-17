@@ -1,18 +1,18 @@
-require 'faraday'
-
 module Metro
   class Connection
-    ENDPOINT = 'http://developer.go-metro.com'
-
-    def arrivals
-      response = connection.get("/TMGTFSRealTimeWebService/TripUpdate/")
-      Arrivals.new(response.body)
+    def self.arrivals
+      response_body = get("/TMGTFSRealTimeWebService/TripUpdate/")
+      Arrivals.new(response_body)
     end
 
     private
 
-    def connection
-      connection ||= Faraday.new(url: ENDPOINT)
+    def self.host
+      'http://developer.go-metro.com'
+    end
+
+    def self.get(endpoint)
+      HTTP.get(host + endpoint).to_s
     end
   end
 end

@@ -1,0 +1,47 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+1,SORTA,1,Museum Center- Mt. Adams-Eden Park,,3,,800080,FFFFFF
+11,SORTA,11,Madison Road-Hyde Park-Erie,,3,,4428C4,FFFFFF
+12,SORTA,12x,Madisonville Express,,3,,D82758,FFFFFF
+14,SORTA,14x,Forest Park Express,,3,,800080,FFFFFF
+15,SORTA,15x,Mt Healthy Express,,3,,DF20BE,FFFFFF
+16,SORTA,16,Mt Healthy - Spring Grove Ave,,3,,FF0000,FFFFFF
+17,SORTA,17,Hamilton Avenue,,3,,000080,FFFFFF
+19,SORTA,19,Colerain-Northgate,,3,,FF7B1A,FFFFFF
+2,SORTA,2x,Madeira-Kenwood Express,,3,,CF0730,FFFFFF
+20,SORTA,20,Winton Rd-Tri-County,,3,,7E4301,FFFFFF
+21,SORTA,21,Westwood-Harrison Avenue,,3,,9C4E3A,FFFFFF
+23,SORTA,23x,Tri-County-Forest Park Express,,3,,B800F4,FFFFFF
+24,SORTA,24,Mt Washington-Uptown,,3,,2E72A9,FFFFFF
+25,SORTA,25x,Mt Lookout-Hyde Park Express,,3,,CB1438,FFFFFF
+27,SORTA,27,South Cumminsville-Linn Street,,3,,FF8040,FFFFFF
+28,SORTA,28,East End-Fairfax-Milford,,3,,E19D37,FFFFFF
+29,SORTA,29x,Milford Express,,3,,D9115C,FFFFFF
+3,SORTA,3x,Montgomery Express-Job Connection,,3,,FF0000,FFFFFF
+30,SORTA,30x,Beechmont - 8 Mile Express,,3,,F04D69,FFFFFF
+31,SORTA,31,Crosstown-Queensgate-Evanston,,3,,F48F20,FFFFFF
+32,SORTA,32,Price Hill-Delhi-Covedale,,3,,E17600,FFFFFF
+33,SORTA,33,Glenway Avenue,,3,,FF8040,FFFFFF
+38,SORTA,38x,Glenway Crossing-Uptown,,3,,DA4925,FFFFFF
+4,SORTA,4,Kenwood-Blue Ash-Ridge Rd,,3,,2702FD,FFFFFF
+40,SORTA,40x,Montana Avenue Express,,3,,FF0000,FFFFFF
+41,SORTA,41,Crosstown: Westwood - Oakley,,3,,873D38,FFFFFF
+42,SORTA,42x,West Chester Express,,3,,FE4929,FFFFFF
+43,SORTA,43,Reading Rd-Winton Hills-Bond Hill,,3,,0E70E7,FFFFFF
+46,SORTA,46,Avondale - Corryville - Zoo,,3,,3E5195,FFFFFF
+49,SORTA,49,Queensgate - Fairmount,,3,,88513E,FFFFFF
+50,SORTA,50,River Road-Saylor Park,,3,,DE9430,FFFFFF
+51,SORTA,51,Glenway Crossing-Hyde Park-Oakley,,3,,63C7DC,FFFFFF
+52,SORTA,52x,Harrison Express,,3,,FF4FFF,FFFFFF
+6,SORTA,6,Queen City - Westwood,,3,,EC7A35,FFFFFF
+64,SORTA,64,Glenway Crossing-Westwood-McMicken,,3,,B16934,FFFFFF
+67,SORTA,67,Sharonville-Blue Ash Job Connection,,3,,F34180,FFFFFF
+68,SORTA,68,Sharonville Connection,,3,,0000FF,FFFFFF
+71,SORTA,71x,Warren County Express-Kings Island,,3,,F23C60,FFFFFF
+74,SORTA,74x,Colerain Express,,3,,FA123A,FFFFFF
+75,SORTA,75x,Anderson Express,,3,,D7004B,FFFFFF
+77,SORTA,77x,Delhi Express-Glenway Crossing,,3,,FF2BC5,FFFFFF
+78,SORTA,78,Tri-County-Lincoln Heights,,3,,2998DA,FFFFFF
+81,SORTA,81x,Mt. Washington Express,,3,,CA0FA5,FFFFFF
+82,SORTA,82x,Eastgate Express,,3,,CE093A,FFFFFF
+85,SORTA,85,Riverfront Parking Shuttle,,3,,A644A8,FFFFFF
+90,SORTA,M+,MetroPlus - Kenwood,,3,,00D700,FFFFFF

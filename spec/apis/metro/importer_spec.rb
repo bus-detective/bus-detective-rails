@@ -7,7 +7,7 @@ RSpec.describe Metro::Importer do
   describe "#import_stops!" do
     it "imports all the stops" do
       importer.import_stops!
-      expect(Stop.count).to eq(4466)
+      expect(Stop.count).to eq(12)
     end
   end
 
@@ -21,7 +21,7 @@ RSpec.describe Metro::Importer do
   describe "#import_trips!" do
     it "imports all the trips" do
       importer.import_trips!
-      expect(Trip.count).to eq(4495)
+      expect(Trip.count).to eq(22)
     end
   end
 end

@@ -2,7 +2,7 @@ require 'gtfs-realtime.pb.rb'
 require 'time'
 
 module Metro
-  class Arrivals
+  class RealtimeArrivals
     def initialize(buffer)
       @feed = TransitRealtime::FeedMessage.parse(buffer)
     end
@@ -23,7 +23,7 @@ module Metro
 
     class TripUpdate
       def initialize(options)
-        @route_id = options.trip.route_id
+        @trip = options.trip
         @stop_time_updates = options.stop_time_update
       end
 
@@ -31,7 +31,8 @@ module Metro
         @arrivals ||= @stop_time_updates.map { |stu|
           {
             stop_id: stu.stop_id,
-            route_id: @route_id,
+            trip_id: @trip.trip_id,
+            route_id: @trip.route_id,
             stop_sequence: stu.stop_sequence,
             time: available_time(stu),
             delay: stu.departure.delay,

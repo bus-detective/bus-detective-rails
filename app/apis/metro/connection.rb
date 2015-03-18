@@ -1,8 +1,8 @@
 module Metro
   class Connection
-    def self.arrivals
+    def self.realtime_arrivals
       response_body = get("/TMGTFSRealTimeWebService/TripUpdate/")
-      Arrivals.new(response_body)
+      RealtimeArrivals.new(response_body)
     end
 
     private

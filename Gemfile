@@ -10,6 +10,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
 gem 'ruby-protocol-buffers'
 gem 'gtfs'
+gem 'active_model_serializers', '~> 0.8.3'
 
 group :development, :test do
   gem 'byebug'

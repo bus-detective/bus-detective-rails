@@ -1,7 +1,6 @@
 # Bus Detective
 
-Ruby Version: 2.2.0
-Rails Version: 4.2.0
+Ruby: 2.2.0 - Rails: 4.2.0
 
 ### Setup
 

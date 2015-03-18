@@ -4,6 +4,6 @@ class Api::ArrivalsController < ApplicationController
   end
 
   def show
-    render json: { arrivals: Metro::Connection.arrivals.for_stop(params[:id]) }
+    render json: { arrivals: ScheduledArrivals.for_stop(params[:id]) }
   end
 end

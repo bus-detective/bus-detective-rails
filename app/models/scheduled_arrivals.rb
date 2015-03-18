@@ -8,10 +8,7 @@ class ScheduledArrivals
   end
 
   def all
-    realtime_arrivals.map { |ra|
-      ra[:trip] = Trip.find_by(trip_id: ra[:trip_id])
-      ra
-    }
+    realtime_arrivals.map { |ra| Arrival.new(ra) }
   end
 
   private

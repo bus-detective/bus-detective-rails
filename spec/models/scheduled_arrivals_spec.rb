@@ -12,7 +12,7 @@ RSpec.describe ScheduledArrivals do
   describe "#for_stop" do
     it "returns scheduled arrivals for a given stop_id" do
       scheduled_arrivals = ScheduledArrivals.for_stop("8THWALi")
-      expect(scheduled_arrivals.first[:trip]).to eq(trip)
+      expect(scheduled_arrivals.first.trip).to eq(trip)
     end
   end
 end

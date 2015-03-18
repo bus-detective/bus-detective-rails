@@ -5,8 +5,8 @@ RSpec.describe ScheduledArrivals do
   let!(:trip) { create(:trip, trip_id: 939599) }
 
   before do
-    fake_arrivals = Metro::Arrivals.new(File.read("spec/fixtures/arrivals.buf"))
-    allow(Metro::Connection).to receive(:arrivals).and_return(fake_arrivals)
+    fake_arrivals = Metro::RealtimeArrivals.new(File.read("spec/fixtures/arrivals.buf"))
+    allow(Metro::Connection).to receive(:realtime_arrivals).and_return(fake_arrivals)
   end
 
   describe "#for_stop" do

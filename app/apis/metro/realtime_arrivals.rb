@@ -2,7 +2,7 @@ require 'gtfs-realtime.pb.rb'
 require 'time'
 
 module Metro
-  class Arrivals
+  class RealtimeArrivals
     def initialize(buffer)
       @feed = TransitRealtime::FeedMessage.parse(buffer)
     end

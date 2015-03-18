@@ -14,6 +14,6 @@ class ScheduledArrivals
   private
 
   def realtime_arrivals
-    @realtime_arrivals ||= Metro::Connection.arrivals.for_stop(@stop_id)
+    @realtime_arrivals ||= Metro::Connection.realtime_arrivals.for_stop(@stop_id)
   end
 end

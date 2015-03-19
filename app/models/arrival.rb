@@ -10,15 +10,15 @@ class Arrival
   delegate :route_id, to: :route
 
   def trip
-    @trip ||= Trip.find(@realtime_arrival[:trip_id])
+    @trip ||= Trip.find_or_initialize_by(trip_id: @realtime_arrival[:trip_id])
   end
 
   def stop
-    @stop ||= Stop.find(@realtime_arrival[:stop_id])
+    @stop ||= Stop.find_or_initialize_by(stop_id: @realtime_arrival[:stop_id])
   end
 
   def route
-    @route ||= Route.find(@realtime_arrival[:route_id])
+    @route ||= Route.find_or_initialize_by(route_id: @realtime_arrival[:route_id])
   end
 
   def time

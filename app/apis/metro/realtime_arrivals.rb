@@ -31,8 +31,8 @@ module Metro
         @arrivals ||= @stop_time_updates.map { |stu|
           {
             stop_id: stu.stop_id,
-            trip_id: @trip.trip_id,
-            route_id: @trip.route_id,
+            trip_id: @trip.trip_id.to_i,
+            route_id: @trip.route_id.to_i,
             stop_sequence: stu.stop_sequence,
             time: available_time(stu),
             delay: stu.departure.delay,

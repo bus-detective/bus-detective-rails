@@ -8,7 +8,7 @@ class ScheduledArrivals
   end
 
   def all
-    realtime_arrivals.map { |ra| Arrival.new(ra) }
+    realtime_arrivals.reject { |ra| ra[:route_id] >= 100 }.map { |ra| Arrival.new(ra) }
   end
 
   private

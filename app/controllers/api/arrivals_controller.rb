@@ -1,5 +1,6 @@
 class Api::ArrivalsController < ApplicationController
   def show
-    render json: ScheduledArrivals.for_stop(params[:id])
+    arrivals = ScheduledArrivals.for_stop(params[:id]).sort_by { |a| a.time }
+    render json: arrivals
   end
 end

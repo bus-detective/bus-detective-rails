@@ -14,8 +14,12 @@ class StopSearcher
 
     if @params[:name]
       scope = scope.where("name ILIKE ?", "%#{@params[:name]}%")
-    elsif @params[:longitude] && params[:latitude]
-      ""
     end
+
+    if @params[:longitude] && @params[:latitude]
+      scope = scope.by_distance(origin: [@params[:latitude], @params[:longitude]])
+    end
+
+    scope.limit(100)
   end
 end

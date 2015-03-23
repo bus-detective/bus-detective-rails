@@ -1,5 +1,5 @@
 class Api::StopsController < ApplicationController
   def index
-    render json: Stop.where("name ILIKE ?", "%#{params[:name]}%")
+    render json: StopSearcher.new(params).stops
   end
 end

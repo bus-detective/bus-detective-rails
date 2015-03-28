@@ -6,7 +6,7 @@ class IndexController < ApplicationController
   private
 
   def index_key
-    redis.get('realtime-metro-web-client:current')
+    redis.get(params[:revision] || 'bus-detective:current')
   end
 
   def redis

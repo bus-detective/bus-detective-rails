@@ -1,12 +1,12 @@
 class IndexController < ApplicationController
   def show
-    render text: redis.get(index_key)
+    render text: redis.get(params[:revision] || current_index_key)
   end
 
   private
 
-  def index_key
-    redis.get(params[:revision] || 'bus-detective:current')
+  def current_index_key
+    redis.get('bus-detective:current')
   end
 
   def redis

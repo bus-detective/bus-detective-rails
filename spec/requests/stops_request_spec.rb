@@ -8,12 +8,18 @@ RSpec.describe "stops api" do
     let!(:matching_stop) { create(:stop, name: "8th and Walnut") }
     let!(:non_matching_stop) { create(:stop, name: "Somewhere else") }
 
-    it "returns stops with the given street name" do
-      get '/api/stops?query=8th'
-      expect(stop_ids).to eq([matching_stop.id])
+    context "with a query parameter" do
+      it "returns stops with the given street name" do
+        get '/api/stops?query=8th'
+        expect(stop_ids).to eq([matching_stop.id])
+      end
     end
 
-      expect(stop_ids).to eq([matching_stop.id])
+    context "invalid parameters" do
+      it "returns a 400" do
+        get '/api/stops?foo=8th'
+        expect(response.status).to eq(400)
+      end
     end
   end
 end

@@ -7,6 +7,13 @@ class StopSearcher
     @stops ||= filtered_stops
   end
 
+  def valid?
+    [
+      @params[:query],
+      @params[:latitude] && @params[:longitude],
+    ].any?
+  end
+
   private
 
   def filtered_stops

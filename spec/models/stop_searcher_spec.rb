@@ -3,6 +3,17 @@ require 'rails_helper'
 describe StopSearcher do
   subject(:stop_searcher) { StopSearcher.new(params) }
 
+  describe "#valid?" do
+    context "with invalid parameters" do
+      let(:params) { { foo: "bar" } }
+      specify { expect(stop_searcher.valid?).to eq(false) }
+    end
+    context "with valid parameters" do
+      let(:params) { { query: "foo" } }
+      specify { expect(stop_searcher.valid?).to eq(true) }
+    end
+  end
+
   describe "#stops" do
     context "with a name" do
       let!(:matching_stop) { create(:stop, name: "8th and Walnut") }

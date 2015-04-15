@@ -1,5 +1,10 @@
 class Api::StopsController < ApplicationController
   def index
-    render json: StopSearcher.new(params).stops
+    searcher =  StopSearcher.new(params)
+    if searcher.valid?
+      render json: searcher.stops
+    else
+      render json: { errors: "Invalid parameters" }, status: :bad_request
+    end
   end
 end

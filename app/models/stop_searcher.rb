@@ -9,8 +9,8 @@ class StopSearcher
 
   def valid?
     [
-      @params[:query],
-      @params[:latitude] && @params[:longitude],
+      @params[:query].present?,
+      @params[:latitude].present? && @params[:longitude].present?,
     ].any?
   end
 

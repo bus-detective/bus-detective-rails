@@ -12,8 +12,8 @@ class StopSearcher
   def filtered_stops
     scope = Stop
 
-    if @params[:name]
-      scope = scope.where("name ILIKE ?", "%#{@params[:name]}%")
+    if @params[:query]
+      scope = scope.where("name ILIKE ?", "%#{@params[:query]}%")
     end
 
     if @params[:longitude] && @params[:latitude]

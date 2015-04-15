@@ -3,8 +3,8 @@ class StopSearcher
     @params = params
   end
 
-  def stops
-    @stops ||= filtered_stops
+  def results
+    @results ||= filtered_stops
   end
 
   def valid?

@@ -1,4 +1,5 @@
 FactoryGirl.define do
-  factory :stop_time do
+  factory :route do
+    sequence(:route_id)
   end
 end

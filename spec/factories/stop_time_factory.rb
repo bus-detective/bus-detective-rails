@@ -1,4 +1,4 @@
 FactoryGirl.define do
-  factory :route do
+  factory :stop_time do
   end
 end

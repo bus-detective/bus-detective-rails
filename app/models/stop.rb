@@ -12,6 +12,10 @@ class Stop < ActiveRecord::Base
     "w" => "westbound",
   }
 
+  def routes
+    Route.joins(trips: :stop_times).where(stop_times: { stop_id: self.id }).uniq.order(:id)
+  end
+
   def direction
     DIRECTION_LABELS[id.split(//).last()]
   end

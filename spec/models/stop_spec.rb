@@ -1,6 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe Stop do
+  describe "#routes" do
+    let(:stop) { create(:stop) }
+    let(:route) { create(:route) }
+
+    let!(:trip) { create(:trip, route: route)}
+    let!(:stop_time) { create(:stop_time, stop: stop, trip: trip) }
+
+    it "associates routes to each stop" do
+      expect(stop.routes).to eq([route])
+    end
+  end
+
   describe "#direction" do
     let(:stop) { build(:stop, id: stop_id) }
     context "inbound" do

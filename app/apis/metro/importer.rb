@@ -1,16 +1,21 @@
 class Metro::Importer
   DEFAULT_ENDPOINT = "http://www.go-metro.com/uploads/GTFS/google_transit_info.zip"
 
-
-  def initialize(endpoint = DEFAULT_ENDPOINT)
-    @endpoint = endpoint
+  def initialize(options)
+    @endpoint = options.fetch(:endpoint, DEFAULT_ENDPOINT)
+    @logger = options.fetch(:logger, Rails.logger)
+    @logger.info("fetching #{@endpoint}")
   end
 
   def import!
     ActiveRecord::Base.transaction do
-      import_stops!
+      @logger.info("step 1/4: importing routes (#{source.routes.size})")
       import_routes!
+      @logger.info("step 2/4: importing stops (#{source.stops.size})")
+      import_stops!
+      @logger.info("step 3/4: importing trips (#{source.trips.size})")
       import_trips!
+      @logger.info("step 4/4: importing stop times (#{source.stop_times.size})")
       import_stop_times!
     end
   end

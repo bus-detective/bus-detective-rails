@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Metro::Importer do
   let(:fixture) { Rails.root.join("spec/fixtures/google_transit_info.zip") }
-  let(:importer) { Metro::Importer.new(fixture) }
+  let(:importer) { Metro::Importer.new(endpoint: fixture) }
+
 
   describe "#import_stops!" do
     it "imports all the stops" do

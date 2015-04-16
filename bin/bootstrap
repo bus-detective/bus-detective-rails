@@ -34,7 +34,8 @@ cp .env.example .env
 #
 # Set up the database
 #
-cp config/database.example.yml config/database.yml
+echo "  + Setting up the database"
+cp config/database.yml.example config/database.yml
 bundle exec rake db:create
 bundle exec rake db:migrate
 

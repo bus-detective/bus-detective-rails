@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe ScheduledArrivals do
-  let!(:stop) { create(:stop, stop_id: "8THWALi") }
-  let!(:trip) { create(:trip, trip_id: 939599) }
+  let!(:stop) { create(:stop, remote_id: "8THWALi") }
+  let!(:trip) { create(:trip, remote_id: 939599) }
 
   before do
     fake_arrivals = Metro::RealtimeArrivals.new(File.read("spec/fixtures/arrivals.buf"))
@@ -11,7 +11,7 @@ RSpec.describe ScheduledArrivals do
 
   describe "#for_stop" do
     it "returns scheduled arrivals for a given stop_id" do
-      scheduled_arrivals = ScheduledArrivals.for_stop("8THWALi")
+      scheduled_arrivals = ScheduledArrivals.for_stop(stop)
       expect(scheduled_arrivals.first.trip).to eq(trip)
     end
   end

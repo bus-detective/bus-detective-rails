@@ -35,6 +35,12 @@ RSpec.describe Metro::Importer do
       importer.import_routes!
       expect(Route.count).to eq(46)
     end
+
+    it "is atomic" do
+      importer.import_routes!
+      importer.import_routes!
+      expect(Route.count).to eq(46)
+    end
   end
 
   describe "#import_trips!" do

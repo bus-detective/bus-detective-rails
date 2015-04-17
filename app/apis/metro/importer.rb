@@ -57,9 +57,8 @@ class Metro::Importer
 
   def import_routes!
     source.routes.each do |r|
-      Route.create!({
-        route_id: r.id,
-        agency_id: r.agency_id,
+      route = Route.find_or_create_by(remote_id: r.id, agency: agency)
+      route.update!({
         short_name: r.short_name,
         long_name: r.long_name,
         description: r.desc,

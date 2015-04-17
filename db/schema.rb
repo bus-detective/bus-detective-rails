@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150417035819) do
+ActiveRecord::Schema.define(version: 20150417040242) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 20150417035819) do
     t.string "language"
     t.string "phone"
   end
+
+  add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree
 
   create_table "routes", force: :cascade do |t|
     t.integer  "remote_id"
@@ -41,6 +43,7 @@ ActiveRecord::Schema.define(version: 20150417035819) do
   end
 
   add_index "routes", ["agency_id"], name: "index_routes_on_agency_id", using: :btree
+  add_index "routes", ["remote_id", "agency_id"], name: "index_routes_on_remote_id_and_agency_id", using: :btree
 
   create_table "stop_times", force: :cascade do |t|
     t.time     "arrival_time"
@@ -80,6 +83,7 @@ ActiveRecord::Schema.define(version: 20150417035819) do
   end
 
   add_index "stops", ["agency_id"], name: "index_stops_on_agency_id", using: :btree
+  add_index "stops", ["remote_id", "agency_id"], name: "index_stops_on_remote_id_and_agency_id", using: :btree
 
   create_table "trips", force: :cascade do |t|
     t.integer  "remote_id"
@@ -98,6 +102,7 @@ ActiveRecord::Schema.define(version: 20150417035819) do
   end
 
   add_index "trips", ["agency_id"], name: "index_trips_on_agency_id", using: :btree
+  add_index "trips", ["remote_id", "agency_id"], name: "index_trips_on_remote_id_and_agency_id", using: :btree
   add_index "trips", ["route_id"], name: "index_trips_on_route_id", using: :btree
 
 end

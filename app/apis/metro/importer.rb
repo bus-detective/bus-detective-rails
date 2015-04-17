@@ -8,19 +8,17 @@ class Metro::Importer
   end
 
   def import!
-    ActiveRecord::Base.transaction do
-      @logger.info("step 1/5: importing agency #{agency.name}")
-      import_agency!
-      @logger.info("step 2/5: importing routes (#{source.routes.size})")
-      import_routes!
-      @logger.info("step 3/5: importing stops (#{source.stops.size})")
-      import_stops!
-      @logger.info("step 4/5: importing trips (#{source.trips.size})")
-      import_trips!
-      @logger.info("step 5/5: importing stop times (#{source.stop_times.size})")
-      import_stop_times!
-      true
-    end
+    @logger.info("step 1/5: importing agency #{agency.name}")
+    import_agency!
+    @logger.info("step 2/5: importing routes (#{source.routes.size})")
+    import_routes!
+    @logger.info("step 3/5: importing stops (#{source.stops.size})")
+    import_stops!
+    @logger.info("step 4/5: importing trips (#{source.trips.size})")
+    import_trips!
+    @logger.info("step 5/5: importing stop times (#{source.stop_times.size})")
+    import_stop_times!
+    true
   end
 
   def import_agency!
@@ -37,7 +35,7 @@ class Metro::Importer
   end
 
   def import_stops!
-    source.stops.each do |s|
+    source.each_stop do |s|
       stop = Stop.find_or_create_by(remote_id: s.id, agency: agency)
       stop.update!({
         code: s.code,
@@ -56,7 +54,7 @@ class Metro::Importer
   end
 
   def import_routes!
-    source.routes.each do |r|
+    source.each_route do |r|
       route = Route.find_or_create_by(remote_id: r.id, agency: agency)
       route.update!({
         short_name: r.short_name,
@@ -71,9 +69,9 @@ class Metro::Importer
   end
 
   def import_trips!
-    source.trips.each do |t|
+    source.each_trip do |t|
+      route = Route.find_or_create_by(remote_id: t.route_id, agency: agency)
       trip = Trip.find_or_create_by(remote_id: t.id, agency: agency)
-      route = Route.find_by(remote_id: t.route_id, agency: agency)
       trip.update!({
         route: route,
         service_id: t.service_id,
@@ -89,7 +87,7 @@ class Metro::Importer
   end
 
   def import_stop_times!
-    source.stop_times.each do |s|
+    source.each_stop_time do |s|
       stop = Stop.find_or_create_by(remote_id: s.stop_id, agency: agency)
       trip = Trip.find_or_create_by(remote_id: s.trip_id, agency: agency)
       stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: agency)

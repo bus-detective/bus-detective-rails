@@ -106,7 +106,7 @@ class Metro::Importer
 
   def agency
     # assumes only one agency per import
-    if source.agencies.count > 1
+    if source.agencies.size > 1
       raise InvalidDataError.new("Only one agency is allowed per import")
     end
     @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id)

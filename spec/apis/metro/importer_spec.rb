@@ -4,6 +4,18 @@ RSpec.describe Metro::Importer do
   let(:fixture) { Rails.root.join("spec/fixtures/google_transit_info.zip") }
   let(:importer) { Metro::Importer.new(endpoint: fixture) }
 
+  describe "#import_agency!" do
+    it "imports the first agency in the source" do
+      importer.import_agency!
+      expect(Agency.count).to eq(1)
+    end
+
+    it "is atomic" do
+      importer.import_agency!
+      importer.import_agency!
+      expect(Agency.count).to eq(1)
+    end
+  end
 
   describe "#import_stops!" do
     it "imports all the stops" do
@@ -30,6 +42,12 @@ RSpec.describe Metro::Importer do
     it "imports all the trips" do
       importer.import_stop_times!
       expect(StopTime.count).to eq(149)
+    end
+  end
+
+  describe "#import" do
+    it "imports everything" do
+      expect(importer.import!).to eq(true)
     end
   end
 end

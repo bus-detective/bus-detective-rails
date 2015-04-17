@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150323125151) do
+ActiveRecord::Schema.define(version: 20150417004014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "agencies", force: :cascade do |t|
+    t.string "remote_id"
+    t.string "name"
+    t.string "url"
+    t.string "fare_url"
+    t.string "timezone"
+    t.string "language"
+    t.string "phone"
+  end
 
   create_table "routes", force: :cascade do |t|
     t.integer  "route_id"

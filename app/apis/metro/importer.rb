@@ -9,15 +9,31 @@ class Metro::Importer
 
   def import!
     ActiveRecord::Base.transaction do
-      @logger.info("step 1/4: importing routes (#{source.routes.size})")
+      @logger.info("step 1/5: importing agency #{agency.name}")
+      import_agency!
+      @logger.info("step 2/5: importing routes (#{source.routes.size})")
       import_routes!
-      @logger.info("step 2/4: importing stops (#{source.stops.size})")
+      @logger.info("step 3/5: importing stops (#{source.stops.size})")
       import_stops!
-      @logger.info("step 3/4: importing trips (#{source.trips.size})")
+      @logger.info("step 4/5: importing trips (#{source.trips.size})")
       import_trips!
-      @logger.info("step 4/4: importing stop times (#{source.stop_times.size})")
+      @logger.info("step 5/5: importing stop times (#{source.stop_times.size})")
       import_stop_times!
+      true
     end
+  end
+
+  def import_agency!
+    # assumes only one agency per import
+    a = source.agencies.first
+    agency.update!({
+      name: a.name,
+      url: a.url,
+      fare_url: a.fare_url,
+      timezone: a.timezone,
+      language: a.lang,
+      phone: a.phone
+    })
   end
 
   def import_stops!
@@ -88,7 +104,28 @@ class Metro::Importer
     end
   end
 
+  def agency
+    # assumes only one agency per import
+    if source.agencies.count > 1
+      raise InvalidDataError.new("Only one agency is allowed per import")
+    end
+    @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id)
+  end
+
+  private
+
   def source
     @source ||= GTFS::Source.build(@endpoint)
   end
+
+  class Error < StandardError
+    attr_reader :original_exception
+
+    def initialize(exception = nil)
+      @original_exception = exception
+      super
+    end
+  end
+
+  InvalidDataError = Class.new(Error)
 end

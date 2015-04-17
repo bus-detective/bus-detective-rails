@@ -90,11 +90,12 @@ class Metro::Importer
 
   def import_stop_times!
     source.stop_times.each do |s|
-      StopTime.create!({
-        trip_id: s.trip_id,
+      stop = Stop.find_or_create_by(remote_id: s.stop_id, agency: agency)
+      trip = Trip.find_or_create_by(remote_id: s.trip_id, agency: agency)
+      stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: agency)
+      stop_time.update!({
         arrival_time: s.arrival_time,
         departure_time: s.departure_time,
-        stop_id: s.stop_id,
         stop_sequence: s.stop_sequence,
         stop_headsign: s.stop_headsign,
         pickup_type: s.pickup_type,

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150417034339) do
+ActiveRecord::Schema.define(version: 20150417035819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,10 +43,8 @@ ActiveRecord::Schema.define(version: 20150417034339) do
   add_index "routes", ["agency_id"], name: "index_routes_on_agency_id", using: :btree
 
   create_table "stop_times", force: :cascade do |t|
-    t.integer  "trip_id"
     t.time     "arrival_time"
     t.time     "departure_time"
-    t.string   "stop_id"
     t.string   "stop_sequence"
     t.string   "stop_headsign"
     t.integer  "pickup_type"
@@ -54,7 +52,14 @@ ActiveRecord::Schema.define(version: 20150417034339) do
     t.float    "shape_dist_traveled"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.integer  "agency_id"
+    t.integer  "stop_id"
+    t.integer  "trip_id"
   end
+
+  add_index "stop_times", ["agency_id"], name: "index_stop_times_on_agency_id", using: :btree
+  add_index "stop_times", ["stop_id"], name: "index_stop_times_on_stop_id", using: :btree
+  add_index "stop_times", ["trip_id"], name: "index_stop_times_on_trip_id", using: :btree
 
   create_table "stops", force: :cascade do |t|
     t.string   "remote_id"

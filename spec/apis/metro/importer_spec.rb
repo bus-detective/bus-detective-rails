@@ -61,6 +61,12 @@ RSpec.describe Metro::Importer do
       importer.import_stop_times!
       expect(StopTime.count).to eq(149)
     end
+
+    it "is atomic" do
+      importer.import_stop_times!
+      importer.import_stop_times!
+      expect(StopTime.count).to eq(149)
+    end
   end
 
   describe "#import" do

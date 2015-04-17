@@ -38,8 +38,8 @@ class Metro::Importer
 
   def import_stops!
     source.stops.each do |s|
-      Stop.create!({
-        stop_id: s.id,
+      stop = Stop.find_or_create_by(remote_id: s.id, agency: agency)
+      stop.update!({
         code: s.code,
         name: s.name,
         description: s.desc,

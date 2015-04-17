@@ -55,7 +55,7 @@ ActiveRecord::Schema.define(version: 20150417004014) do
   end
 
   create_table "stops", force: :cascade do |t|
-    t.string   "stop_id"
+    t.string   "remote_id"
     t.integer  "code"
     t.string   "name"
     t.string   "description"
@@ -69,7 +69,10 @@ ActiveRecord::Schema.define(version: 20150417004014) do
     t.integer  "wheelchair_boarding"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.integer  "agency_id"
   end
+
+  add_index "stops", ["agency_id"], name: "index_stops_on_agency_id", using: :btree
 
   create_table "trips", force: :cascade do |t|
     t.integer  "trip_id"

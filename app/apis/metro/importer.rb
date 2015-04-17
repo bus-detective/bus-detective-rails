@@ -72,9 +72,10 @@ class Metro::Importer
 
   def import_trips!
     source.trips.each do |t|
-      Trip.create!({
-        trip_id: t.id,
-        route_id: t.route_id,
+      trip = Trip.find_or_create_by(remote_id: t.id, agency: agency)
+      route = Route.find_by(remote_id: t.route_id, agency: agency)
+      trip.update!({
+        route: route,
         service_id: t.service_id,
         headsign: t.headsign,
         short_name: t.short_name,

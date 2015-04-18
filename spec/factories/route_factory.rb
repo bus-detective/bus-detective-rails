@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :route do
-    sequence(:route_id)
+    sequence(:remote_id)
   end
 end

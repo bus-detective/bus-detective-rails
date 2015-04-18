@@ -17,6 +17,6 @@ class Stop < ActiveRecord::Base
   end
 
   def direction
-    DIRECTION_LABELS[id.split(//).last()]
+    DIRECTION_LABELS[remote_id.split(//).last()]
   end
 end

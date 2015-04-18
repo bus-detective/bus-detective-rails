@@ -4,15 +4,18 @@ RSpec.describe Metro::Importer do
   let(:fixture) { Rails.root.join("spec/fixtures/google_transit_info.zip") }
   let(:importer) { Metro::Importer.new(endpoint: fixture) }
 
-  describe "#import_agency!" do
-    it "imports the first agency in the source" do
-      importer.import_agency!
-      expect(Agency.count).to eq(1)
+  describe "#agency" do
+    it "is persisted" do
+      expect(importer.agency).to be_persisted
+    end
+
+    it "sets the name" do
+      expect(importer.agency.name).to eq("Southwest Ohio Regional Transit Authority")
     end
 
     it "is atomic" do
-      importer.import_agency!
-      importer.import_agency!
+      importer.agency
+      importer.agency
       expect(Agency.count).to eq(1)
     end
   end

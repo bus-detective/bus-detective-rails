@@ -8,30 +8,16 @@ class Metro::Importer
   end
 
   def import!
-    @logger.info("Step 1/5: Importing agency #{agency.name}")
-    import_agency!
-    @logger.info("Step 2/5: Importing routes (#{source.routes.size})")
+    @logger.info("Importing agency #{agency.name}")
+    @logger.info("Step 1/4: Importing routes (#{source.routes.size})")
     import_routes!
-    @logger.info("Step 3/5: Importing stops (#{source.stops.size})")
+    @logger.info("Step 2/4: Importing stops (#{source.stops.size})")
     import_stops!
-    @logger.info("Step 4/5: Importing trips (#{source.trips.size})")
+    @logger.info("Step 3/4: Importing trips (#{source.trips.size})")
     import_trips!
-    @logger.info("Step 5/5: Importing stop times (#{source.stop_times.size})")
+    @logger.info("Step 4/4: Importing stop times (#{source.stop_times.size})")
     import_stop_times!
     true
-  end
-
-  def import_agency!
-    # assumes only one agency per import
-    a = source.agencies.first
-    agency.update!({
-      name: a.name,
-      url: a.url,
-      fare_url: a.fare_url,
-      timezone: a.timezone,
-      language: a.lang,
-      phone: a.phone
-    })
   end
 
   def import_stops!
@@ -112,7 +98,17 @@ class Metro::Importer
     if source.agencies.size > 1
       raise InvalidDataError.new("Only one agency is allowed per import")
     end
-    @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id)
+    a = source.agencies.first
+    @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id) do |record|
+      record.attributes = {
+        name: a.name,
+        url: a.url,
+        fare_url: a.fare_url,
+        timezone: a.timezone,
+        language: a.lang,
+        phone: a.phone
+      }
+    end
   end
 
   private

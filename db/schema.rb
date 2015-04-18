@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150417040242) do
+ActiveRecord::Schema.define(version: 20150418141347) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(version: 20150417040242) do
     t.integer  "trip_id"
   end
 
+  add_index "stop_times", ["agency_id", "stop_id", "trip_id"], name: "index_stop_times_on_agency_id_and_stop_id_and_trip_id", using: :btree
   add_index "stop_times", ["agency_id"], name: "index_stop_times_on_agency_id", using: :btree
   add_index "stop_times", ["stop_id"], name: "index_stop_times_on_stop_id", using: :btree
   add_index "stop_times", ["trip_id"], name: "index_stop_times_on_trip_id", using: :btree

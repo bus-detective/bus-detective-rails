@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "stops api" do
   let(:json) { JSON.parse(response.body) }
-  let(:stop_ids) {  json["stops"].map { |s| s["id"] } }
+  let(:stop_ids) {  json["data"]["results"].map { |s| s["id"] } }
 
   describe "api/stops?name=" do
     let!(:matching_stop) { create(:stop, name: "8th and Walnut") }

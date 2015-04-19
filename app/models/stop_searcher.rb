@@ -1,10 +1,33 @@
 class StopSearcher
+  include ActiveModel::SerializerSupport
+  DEFAULT_PER_PAGE = 20
+
   def initialize(params)
     @params = params
   end
 
   def results
-    @results ||= filtered_stops
+    @results ||= paginated_results
+  end
+
+  def per_page
+    @params[:per_page] || DEFAULT_PER_PAGE
+  end
+
+  def total_results
+    filtered_results.count
+  end
+
+  def total_pages
+    total_results / per_page
+  end
+
+  def page
+    @params[:page] || 1
+  end
+
+  def offset
+    per_page * (page - 1)
   end
 
   def valid?
@@ -16,7 +39,11 @@ class StopSearcher
 
   private
 
-  def filtered_stops
+  def paginated_results
+    @paginated_results ||= filtered_results.offset(offset).limit(per_page)
+  end
+
+  def filtered_results
     scope = Stop.includes(:routes)
 
     if @params[:query]

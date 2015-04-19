@@ -35,4 +35,27 @@ describe StopSearcher do
       end
     end
   end
+
+  describe "pagination" do
+    let!(:stops) { create_list(:stop, 9, name: "walnut") }
+    let!(:last_stop) { create(:stop, name: "walnut last") }
+    let(:params) { { per_page: 5, page: 2 } }
+
+    it "paginates the results" do
+      expect(stop_searcher.results.size).to eq(5)
+      expect(stop_searcher.results).to include(last_stop)
+    end
+    it "sets per_page" do
+      expect(stop_searcher.per_page).to eq(5)
+    end
+    it "has total_pages" do
+      expect(stop_searcher.total_pages).to eq(2)
+    end
+    it "has a page" do
+      expect(stop_searcher.page).to eq(2)
+    end
+    it "has total_results" do
+      expect(stop_searcher.total_results).to eq(10)
+    end
+  end
 end

@@ -12,9 +12,18 @@ RSpec.describe "arrivals api" do
   end
 
   describe "api/arrivals/:id" do
-    it "returns arrivals for a given stop id" do
-      get '/api/arrivals/HAMBELi'
-      expect(json["arrivals"].first["route_id"]).to eq(17)
+    context "with a rails id" do
+      it "returns arrivals for a given stop" do
+        get "/api/arrivals/#{stop.id}"
+        expect(json["arrivals"].first["route_id"]).to eq(17)
+      end
+    end
+
+    context "with a legacy remote_id" do
+      it "returns arrivals for given remote_id" do
+        get "/api/arrivals/HAMBELi"
+        expect(json["arrivals"].first["route_id"]).to eq(17)
+      end
     end
   end
 end

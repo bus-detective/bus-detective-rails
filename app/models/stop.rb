@@ -1,7 +1,9 @@
 class Stop < ActiveRecord::Base
   acts_as_mappable(lat_column_name: :latitude, lng_column_name: :longitude)
-  self.primary_key = 'stop_id'
   has_many :stop_times
+  has_many :trips, through: :stop_times
+  has_many :routes, -> { uniq }, through: :trips
+  belongs_to :agency
 
   DIRECTION_LABELS = {
     "i" => "inbound",
@@ -12,11 +14,7 @@ class Stop < ActiveRecord::Base
     "w" => "westbound",
   }
 
-  def routes
-    Route.joins(trips: :stop_times).where(stop_times: { stop_id: self.id }).uniq.order(:id)
-  end
-
   def direction
-    DIRECTION_LABELS[id.split(//).last()]
+    DIRECTION_LABELS[remote_id.split(//).last()]
   end
 end

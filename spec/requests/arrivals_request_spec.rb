@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe "arrivals api" do
-  let!(:stop) { create(:stop, stop_id: "HAMBELi") }
-  let!(:trip) { create(:trip, trip_id: 940135) }
-  let!(:route) { create(:route, route_id: 17) }
+  let!(:stop) { create(:stop, remote_id: "HAMBELi") }
+  let!(:trip) { create(:trip, remote_id: 940135) }
+  let!(:route) { create(:route, remote_id: 17) }
   let(:json) { JSON.parse(response.body) }
 
   before do
@@ -12,9 +12,18 @@ RSpec.describe "arrivals api" do
   end
 
   describe "api/arrivals/:id" do
-    it "returns arrivals for a given stop id" do
-      get '/api/arrivals/HAMBELi'
-      expect(json["arrivals"].first["route_id"]).to eq(17)
+    context "with a rails id" do
+      it "returns arrivals for a given stop" do
+        get "/api/arrivals/#{stop.id}"
+        expect(json["arrivals"].first["route_id"]).to eq(17)
+      end
+    end
+
+    context "with a legacy remote_id" do
+      it "returns arrivals for given remote_id" do
+        get "/api/arrivals/HAMBELi"
+        expect(json["arrivals"].first["route_id"]).to eq(17)
+      end
     end
   end
 end

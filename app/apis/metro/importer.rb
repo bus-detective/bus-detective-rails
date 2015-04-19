@@ -4,91 +4,127 @@ class Metro::Importer
   def initialize(options)
     @endpoint = options.fetch(:endpoint, DEFAULT_ENDPOINT)
     @logger = options.fetch(:logger, Rails.logger)
-    @logger.info("fetching #{@endpoint}")
+    @logger.info("Fetching #{@endpoint}")
   end
 
   def import!
-    ActiveRecord::Base.transaction do
-      @logger.info("step 1/4: importing routes (#{source.routes.size})")
-      import_routes!
-      @logger.info("step 2/4: importing stops (#{source.stops.size})")
-      import_stops!
-      @logger.info("step 3/4: importing trips (#{source.trips.size})")
-      import_trips!
-      @logger.info("step 4/4: importing stop times (#{source.stop_times.size})")
-      import_stop_times!
-    end
+    @logger.info("Importing agency #{agency.name}")
+    @logger.info("Step 1/4: Importing routes (#{source.routes.size})")
+    import_routes!
+    @logger.info("Step 2/4: Importing stops (#{source.stops.size})")
+    import_stops!
+    @logger.info("Step 3/4: Importing trips (#{source.trips.size})")
+    import_trips!
+    @logger.info("Step 4/4: Importing stop times (#{source.stop_times.size})")
+    import_stop_times!
+    true
   end
 
   def import_stops!
-    source.stops.each do |s|
-      Stop.create!({
-        stop_id: s.id,
-        code: s.code,
-        name: s.name,
-        description: s.desc,
-        latitude: s.lat,
-        longitude: s.lon,
-        zone_id: s.zone_id,
-        url: s.url,
-        location_type: s.location_type,
-        parent_station: s.parent_station,
-        timezone: s.timezone,
-        wheelchair_boarding: s.wheelchair_boarding
-      })
+    source.each_stop do |s|
+      Stop.find_or_create_by!(remote_id: s.id, agency: agency) do |record|
+        record.attributes = {
+          code: s.code,
+          name: s.name,
+          description: s.desc,
+          latitude: s.lat,
+          longitude: s.lon,
+          zone_id: s.zone_id,
+          url: s.url,
+          location_type: s.location_type,
+          parent_station: s.parent_station,
+          timezone: s.timezone,
+          wheelchair_boarding: s.wheelchair_boarding
+        }
+      end
     end
   end
 
   def import_routes!
-    source.routes.each do |r|
-      Route.create!({
-        route_id: r.id,
-        agency_id: r.agency_id,
-        short_name: r.short_name,
-        long_name: r.long_name,
-        description: r.desc,
-        route_type: r.type,
-        url: r.url,
-        color: r.color,
-        text_color: r.text_color
-      })
+    source.each_route do |r|
+      Route.find_or_create_by!(remote_id: r.id, agency: agency) do |record|
+        record.attributes = {
+          short_name: r.short_name,
+          long_name: r.long_name,
+          description: r.desc,
+          route_type: r.type,
+          url: r.url,
+          color: r.color,
+          text_color: r.text_color
+        }
+      end
     end
   end
 
   def import_trips!
-    source.trips.each do |t|
-      Trip.create!({
-        trip_id: t.id,
-        route_id: t.route_id,
-        service_id: t.service_id,
-        headsign: t.headsign,
-        short_name: t.short_name,
-        direction_id: t.direction_id,
-        block_id: t.block_id,
-        shape_id: t.shape_id,
-        wheelchair_accessible: t.wheelchair_accessible,
-        bikes_allowed: t.instance_variable_get("@bikes_allowed")
-      })
+    source.each_trip do |t|
+      route = Route.find_or_create_by!(remote_id: t.route_id, agency: agency)
+      Trip.find_or_create_by!(remote_id: t.id, agency: agency) do |record|
+        record.attributes = {
+          route: route,
+          service_id: t.service_id,
+          headsign: t.headsign,
+          short_name: t.short_name,
+          direction_id: t.direction_id,
+          block_id: t.block_id,
+          shape_id: t.shape_id,
+          wheelchair_accessible: t.wheelchair_accessible,
+          bikes_allowed: t.instance_variable_get("@bikes_allowed")
+        }
+      end
     end
   end
 
   def import_stop_times!
-    source.stop_times.each do |s|
-      StopTime.create!({
-        trip_id: s.trip_id,
-        arrival_time: s.arrival_time,
-        departure_time: s.departure_time,
-        stop_id: s.stop_id,
-        stop_sequence: s.stop_sequence,
-        stop_headsign: s.stop_headsign,
-        pickup_type: s.pickup_type,
-        drop_off_type: s.drop_off_type,
-        shape_dist_traveled: s.shape_dist_traveled
-      })
+    source.each_stop_time do |st|
+      stop = Stop.find_or_create_by!(remote_id: st.stop_id, agency: agency)
+      trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: agency)
+      StopTime.find_or_create_by!(stop: stop, trip: trip, agency: agency) do |record|
+        record.attributes = {
+          arrival_time: st.arrival_time,
+          departure_time: st.departure_time,
+          stop_sequence: st.stop_sequence,
+          stop_headsign: st.stop_headsign,
+          pickup_type: st.pickup_type,
+          drop_off_type: st.drop_off_type,
+          shape_dist_traveled: st.shape_dist_traveled
+        }
+      end
     end
   end
+
+  def agency
+    # assumes only one agency per import
+    if source.agencies.size > 1
+      raise InvalidDataError.new("Only one agency is allowed per import")
+    end
+    a = source.agencies.first
+    @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id) do |record|
+      record.attributes = {
+        name: a.name,
+        url: a.url,
+        fare_url: a.fare_url,
+        timezone: a.timezone,
+        language: a.lang,
+        phone: a.phone
+      }
+    end
+  end
+
+  private
 
   def source
     @source ||= GTFS::Source.build(@endpoint)
   end
+
+  class Error < StandardError
+    attr_reader :original_exception
+
+    def initialize(exception = nil)
+      @original_exception = exception
+      super
+    end
+  end
+
+  InvalidDataError = Class.new(Error)
 end

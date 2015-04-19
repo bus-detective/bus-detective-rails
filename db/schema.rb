@@ -11,14 +11,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150323125151) do
+ActiveRecord::Schema.define(version: 20150418141347) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "agencies", force: :cascade do |t|
+    t.string "remote_id"
+    t.string "name"
+    t.string "url"
+    t.string "fare_url"
+    t.string "timezone"
+    t.string "language"
+    t.string "phone"
+  end
+
+  add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree
+
   create_table "routes", force: :cascade do |t|
-    t.integer  "route_id"
-    t.string   "agency_id"
+    t.integer  "remote_id"
     t.string   "short_name"
     t.string   "long_name"
     t.string   "description"
@@ -28,13 +39,15 @@ ActiveRecord::Schema.define(version: 20150323125151) do
     t.string   "text_color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "agency_id"
   end
 
+  add_index "routes", ["agency_id"], name: "index_routes_on_agency_id", using: :btree
+  add_index "routes", ["remote_id", "agency_id"], name: "index_routes_on_remote_id_and_agency_id", using: :btree
+
   create_table "stop_times", force: :cascade do |t|
-    t.integer  "trip_id"
     t.time     "arrival_time"
     t.time     "departure_time"
-    t.string   "stop_id"
     t.string   "stop_sequence"
     t.string   "stop_headsign"
     t.integer  "pickup_type"
@@ -42,10 +55,18 @@ ActiveRecord::Schema.define(version: 20150323125151) do
     t.float    "shape_dist_traveled"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.integer  "agency_id"
+    t.integer  "stop_id"
+    t.integer  "trip_id"
   end
 
+  add_index "stop_times", ["agency_id", "stop_id", "trip_id"], name: "index_stop_times_on_agency_id_and_stop_id_and_trip_id", using: :btree
+  add_index "stop_times", ["agency_id"], name: "index_stop_times_on_agency_id", using: :btree
+  add_index "stop_times", ["stop_id"], name: "index_stop_times_on_stop_id", using: :btree
+  add_index "stop_times", ["trip_id"], name: "index_stop_times_on_trip_id", using: :btree
+
   create_table "stops", force: :cascade do |t|
-    t.string   "stop_id"
+    t.string   "remote_id"
     t.integer  "code"
     t.string   "name"
     t.string   "description"
@@ -59,11 +80,14 @@ ActiveRecord::Schema.define(version: 20150323125151) do
     t.integer  "wheelchair_boarding"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.integer  "agency_id"
   end
 
+  add_index "stops", ["agency_id"], name: "index_stops_on_agency_id", using: :btree
+  add_index "stops", ["remote_id", "agency_id"], name: "index_stops_on_remote_id_and_agency_id", using: :btree
+
   create_table "trips", force: :cascade do |t|
-    t.integer  "trip_id"
-    t.integer  "route_id"
+    t.integer  "remote_id"
     t.integer  "service_id"
     t.string   "headsign"
     t.string   "short_name"
@@ -74,6 +98,12 @@ ActiveRecord::Schema.define(version: 20150323125151) do
     t.integer  "bikes_allowed"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.integer  "agency_id"
+    t.integer  "route_id"
   end
+
+  add_index "trips", ["agency_id"], name: "index_trips_on_agency_id", using: :btree
+  add_index "trips", ["remote_id", "agency_id"], name: "index_trips_on_remote_id_and_agency_id", using: :btree
+  add_index "trips", ["route_id"], name: "index_trips_on_route_id", using: :btree
 
 end

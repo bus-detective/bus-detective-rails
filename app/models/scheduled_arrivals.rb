@@ -3,8 +3,8 @@ class ScheduledArrivals
     new(stop_id).all
   end
 
-  def initialize(stop_id)
-    @stop_id = stop_id
+  def initialize(stop)
+    @stop = stop
   end
 
   def all
@@ -14,6 +14,6 @@ class ScheduledArrivals
   private
 
   def realtime_arrivals
-    @realtime_arrivals ||= Metro::Connection.realtime_arrivals.for_stop(@stop_id)
+    @realtime_arrivals ||= Metro::Connection.realtime_arrivals.for_stop(@stop.remote_id)
   end
 end

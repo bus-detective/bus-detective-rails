@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Arrival do
-  let!(:stop) { create(:stop, stop_id: "WAL8THi") }
-  let!(:trip) { create(:trip, trip_id: 956729) }
-  let!(:route) { create(:route, route_id: 17) }
+  let!(:stop) { create(:stop, remote_id: "WAL8THi") }
+  let!(:trip) { create(:trip, remote_id: 956729) }
+  let!(:route) { create(:route, remote_id: 17) }
   let(:realtime_arrival) { {
     stop_id: "WAL8THi",
     trip_id: "956729",

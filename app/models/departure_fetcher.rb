@@ -2,7 +2,7 @@ class DepartureFetcher
   include ActiveModel::SerializerSupport
 
   def initialize(params)
-    @time = params.fetch(:time, Time.current)
+    @time = params[:time] ? Time.zone.parse(params[:time]) : Time.current
     @stop_id = params[:stop_id]
   end
 

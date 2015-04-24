@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe DepartureFetcher do
-  let(:now) { Time.parse("7:30") }
+  let(:now) { Time.zone.parse("7:30") }
   subject(:stop_time_fetcher) { DepartureFetcher.new(params) }
 
   describe "#stop_times" do
-    let(:params) { { stop_id: stop.id, time: now } }
+    let(:params) { { stop_id: stop.id, time: now.to_s } }
     let!(:stop) { create(:stop) }
     let!(:applicable_stop_time) { create(:stop_time, stop: stop, departure_time: now + 10.minutes) }
     let!(:non_applicable_stop_time) { create(:stop_time, stop: stop, departure_time: now - 2.hours) }
@@ -18,7 +18,7 @@ RSpec.describe DepartureFetcher do
   describe "#departures" do
     let!(:stop) { create(:stop) }
     let!(:stop_time) { create(:stop_time, stop: stop, departure_time: now + 10.minutes) }
-    let(:params) { { stop_id: stop.id, time: now } }
+    let(:params) { { stop_id: stop.id, time: now.to_s } }
     let(:fake_realtime_updates) { double("RealtimeUpdates", for_stop_time: fake_stop_time_update) }
 
     before do

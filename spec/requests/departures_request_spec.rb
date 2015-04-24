@@ -9,7 +9,7 @@ RSpec.describe "stops api" do
     let!(:stop_time) { create(:stop_time, stop: stop, trip: trip, departure_time: 10.minutes.from_now ) }
 
     before do
-      fixture = File.read('spec/fixtures/arrivals.buf')
+      fixture = File.read('spec/fixtures/realtime_updates.buf')
       allow(Metro::Connection).to receive(:get).and_return(fixture)
     end
 

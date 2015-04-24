@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Metro::RealtimeUpdates do
-  let(:fixture) { File.read('spec/fixtures/arrivals.buf') }
+  let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
   subject(:realtime_updates) { Metro::RealtimeUpdates.new(fixture) }
 
   describe "#fetch" do

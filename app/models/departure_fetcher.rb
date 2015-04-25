@@ -17,6 +17,7 @@ class DepartureFetcher
     @stop_times ||= stop.stop_times
       .where("departure_time > :start_time AND departure_time < :end_time", query_options)
       .includes(:trip, :route)
+      .order(:departure_time)
   end
 
   def valid?

@@ -28,14 +28,14 @@ RSpec.describe "stops api" do
     context "with a rails id" do
       it "returns the stop" do
         get "/api/stops/#{stop.id}"
-        expect(json["stop"]["id"]).to eq(stop.id)
+        expect(json["data"]["id"]).to eq(stop.id)
       end
     end
 
     context "with a legacy remote_id" do
       it "returns the stop" do
         get "/api/stops/#{stop.remote_id}"
-        expect(json["stop"]["id"]).to eq(stop.id)
+        expect(json["data"]["id"]).to eq(stop.id)
       end
     end
   end

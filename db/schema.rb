@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150418141347) do
+ActiveRecord::Schema.define(version: 20150425204038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,24 @@ ActiveRecord::Schema.define(version: 20150418141347) do
 
   add_index "routes", ["agency_id"], name: "index_routes_on_agency_id", using: :btree
   add_index "routes", ["remote_id", "agency_id"], name: "index_routes_on_remote_id_and_agency_id", using: :btree
+
+  create_table "services", force: :cascade do |t|
+    t.integer  "agency_id"
+    t.integer  "remote_id"
+    t.boolean  "monday",     default: false
+    t.boolean  "tuesday",    default: false
+    t.boolean  "wednesday",  default: false
+    t.boolean  "thursday",   default: false
+    t.boolean  "friday",     default: false
+    t.boolean  "saturday",   default: false
+    t.boolean  "sunday",     default: false
+    t.date     "start_date"
+    t.date     "end_date"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "services", ["agency_id"], name: "index_services_on_agency_id", using: :btree
 
   create_table "stop_times", force: :cascade do |t|
     t.time     "arrival_time"

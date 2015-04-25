@@ -20,6 +20,19 @@ RSpec.describe Metro::Importer do
     end
   end
 
+  describe "#import_services!" do
+    it "imports all the services" do
+      importer.import_services!
+      expect(Service.count).to eq(3)
+    end
+
+    it "is atomic" do
+      importer.import_services!
+      importer.import_services!
+      expect(Service.count).to eq(3)
+    end
+  end
+
   describe "#import_stops!" do
     it "imports all the stops" do
       importer.import_stops!

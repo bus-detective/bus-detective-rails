@@ -50,7 +50,7 @@ class Metro::Importer
           route_type: r.type,
           url: r.url,
           color: r.color,
-          text_color: r.text_color
+          text_color: "fff"
         }
       end
     end

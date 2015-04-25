@@ -4,9 +4,9 @@ Ruby: 2.2.0 - Rails: 4.2.0
 
 ### Setup
 
-fetch stop data:
+fetch stop data (This can take a while)
 
-    ./bin/data
+    rake metro:import
 
 ### Run
 

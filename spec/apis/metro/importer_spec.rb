@@ -36,52 +36,52 @@ RSpec.describe Metro::Importer do
   describe "#import_stops!" do
     it "imports all the stops" do
       importer.import_stops!
-      expect(Stop.count).to eq(12)
+      expect(Stop.count).to eq(10)
     end
 
     it "is atomic" do
       importer.import_stops!
       importer.import_stops!
-      expect(Stop.count).to eq(12)
+      expect(Stop.count).to eq(10)
     end
   end
 
   describe "#import_routes!" do
     it "imports all the routes" do
       importer.import_routes!
-      expect(Route.count).to eq(46)
+      expect(Route.count).to eq(10)
     end
 
     it "is atomic" do
       importer.import_routes!
       importer.import_routes!
-      expect(Route.count).to eq(46)
+      expect(Route.count).to eq(10)
     end
   end
 
   describe "#import_trips!" do
     it "imports all the trips" do
       importer.import_trips!
-      expect(Trip.count).to eq(22)
+      expect(Trip.count).to eq(10)
     end
 
     it "is atomic" do
       importer.import_trips!
       importer.import_trips!
-      expect(Trip.count).to eq(22)
+      expect(Trip.count).to eq(10)
     end
   end
 
   describe "#import_stop_times!" do
     it "imports all the trips" do
       importer.import_stop_times!
-      expect(StopTime.count).to eq(149)
+      expect(StopTime.count).to eq(10)
     end
 
     it "is atomic" do
       importer.import_stop_times!
       importer.import_stop_times!
-      expect(StopTime.count).to eq(149)
+      expect(StopTime.count).to eq(10)
     end
   end
 

@@ -1,5 +1,4 @@
-class DepartureFetcherSerializer < ActiveModel::Serializer
-  root :data
+class DepartureFetcherSerializer < ApplicationSerializer
   has_many :departures
 end
 

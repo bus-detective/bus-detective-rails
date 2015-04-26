@@ -101,8 +101,8 @@ class Metro::Importer
       trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: agency)
       stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: agency)
       stop_time.update!(
-        arrival_time: st.arrival_time,
-        departure_time: st.departure_time,
+        arrival_time: Metro::TimeParser.new(st.arrival_time, agency.timezone).time,
+        departure_time: Metro::TimeParser.new(st.departure_time, agency.timezone).time,
         stop_sequence: st.stop_sequence,
         stop_headsign: st.stop_headsign,
         pickup_type: st.pickup_type,

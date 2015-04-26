@@ -60,7 +60,7 @@ RSpec.describe DepartureFetcher do
       end
 
       it "applies the departure time the scheduled stop_time" do
-        expect(stop_time_fetcher.departures.first.time).to eq(stop_time.reload.departure_time)
+        expect(stop_time_fetcher.departures.first.time).to eq(stop_time.departure_time)
       end
     end
   end

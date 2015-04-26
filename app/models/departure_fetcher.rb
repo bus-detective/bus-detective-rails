@@ -9,7 +9,7 @@ class DepartureFetcher
   def departures
     @departures ||= stop_times.map { |stop_time|
       stop_time_update = realtime_updates.for_stop_time(stop_time)
-      Departure.new(stop_time: stop_time, stop_time_update: stop_time_update)
+      Departure.new(date: @time.to_date, stop_time: stop_time, stop_time_update: stop_time_update)
     }
   end
 

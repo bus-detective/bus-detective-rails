@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Departure do
-  let(:stop_time) { create(:stop_time, departure_time: Time.new) }
-  subject(:departure) { Departure.new(stop_time: stop_time, stop_time_update: stop_time_update) }
+  let(:time) { Time.zone.parse("2015-04-23 7:30") }
+  let(:stop_time) { create(:stop_time, departure_time: time) }
+  subject(:departure) { Departure.new(date: time.to_date, stop_time: stop_time, stop_time_update: stop_time_update) }
 
   describe "time" do
     context "with no stop_time_update" do
@@ -10,6 +11,20 @@ RSpec.describe Departure do
 
       it "is stop_time.departure_time" do
         expect(departure.time).to eq(stop_time.departure_time)
+      end
+
+      it "applies the date to the stop_time (because the database resets it to 2000-01-01)" do
+        stop_time.reload
+        expect(departure.time.to_date).to eq(time.to_date)
+      end
+
+      context "When time could span across a dateline" do
+        let(:time) { Time.zone.parse("2015-04-23 23:00") }
+
+        it "maintains the correct date" do
+          stop_time.reload
+          expect(departure.time.to_date).to eq(time.to_date)
+        end
       end
     end
 

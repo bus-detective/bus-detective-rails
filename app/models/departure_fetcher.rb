@@ -14,9 +14,10 @@ class DepartureFetcher
   end
 
   def stop_times
-    @stop_times ||= stop.stop_times
-      .where("departure_time > :start_time AND departure_time < :end_time", query_options)
-      .includes(:trip, :route)
+    @stop_times ||= StopTime
+      .where(stop: stop, trips: { service_id: Service.for_time(@time) })
+      .where("departure_time > :start_time AND departure_time < :end_time", time_query)
+      .includes(:route)
       .order(:departure_time)
   end
 
@@ -26,7 +27,7 @@ class DepartureFetcher
 
   private
 
-  def query_options
+  def time_query
     {
       start_time: @time - 10.minutes,
       end_time: @time + 1.hour

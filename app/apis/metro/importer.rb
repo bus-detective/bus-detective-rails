@@ -1,7 +1,7 @@
 class Metro::Importer
   DEFAULT_ENDPOINT = "http://www.go-metro.com/uploads/GTFS/google_transit_info.zip"
 
-  def initialize(options)
+  def initialize(options = {})
     @endpoint = options.fetch(:endpoint, DEFAULT_ENDPOINT)
     @logger = options.fetch(:logger, Rails.logger)
     @logger.info("Fetching #{@endpoint}")
@@ -9,15 +9,35 @@ class Metro::Importer
 
   def import!
     @logger.info("Importing agency #{agency.name}")
-    @logger.info("Step 1/4: Importing routes (#{source.routes.size})")
+    @logger.info("Step 1/5: Importing services (#{source.calendars.size})")
+    import_services!
+    @logger.info("Step 2/5: Importing routes (#{source.routes.size})")
     import_routes!
-    @logger.info("Step 2/4: Importing stops (#{source.stops.size})")
+    @logger.info("Step 3/5: Importing stops (#{source.stops.size})")
     import_stops!
-    @logger.info("Step 3/4: Importing trips (#{source.trips.size})")
+    @logger.info("Step 4/5: Importing trips (#{source.trips.size})")
     import_trips!
-    @logger.info("Step 4/4: Importing stop times (#{source.stop_times.size})")
+    @logger.info("Step 5/5: Importing stop times (#{source.stop_times.size})")
     import_stop_times!
     true
+  end
+
+  def import_services!
+    source.each_calendar do |cal|
+      Service.find_or_create_by!(remote_id: cal.service_id, agency: agency) do |record|
+        record.attributes = {
+          monday: cal.monday,
+          tuesday: cal.tuesday,
+          wednesday: cal.wednesday,
+          thursday: cal.thursday,
+          friday: cal.friday,
+          saturday: cal.saturday,
+          sunday: cal.sunday,
+          start_date: cal.start_date,
+          end_date: cal.end_date
+        }
+      end
+    end
   end
 
   def import_stops!
@@ -50,7 +70,7 @@ class Metro::Importer
           route_type: r.type,
           url: r.url,
           color: r.color,
-          text_color: r.text_color
+          text_color: "fff"
         }
       end
     end
@@ -58,20 +78,20 @@ class Metro::Importer
 
   def import_trips!
     source.each_trip do |t|
-      route = Route.find_or_create_by!(remote_id: t.route_id, agency: agency)
-      Trip.find_or_create_by!(remote_id: t.id, agency: agency) do |record|
-        record.attributes = {
-          route: route,
-          service_id: t.service_id,
-          headsign: t.headsign,
-          short_name: t.short_name,
-          direction_id: t.direction_id,
-          block_id: t.block_id,
-          shape_id: t.shape_id,
-          wheelchair_accessible: t.wheelchair_accessible,
-          bikes_allowed: t.instance_variable_get("@bikes_allowed")
-        }
-      end
+      trip = Trip.find_or_create_by(remote_id: t.id, agency: agency)
+      trip.update!(
+        route: Route.find_or_create_by!(remote_id: t.route_id, agency: agency),
+        service: Service.find_or_create_by!(remote_id: t.service_id, agency: agency),
+        remote_id: t.id,
+        agency: agency,
+        headsign: t.headsign,
+        short_name: t.short_name,
+        direction_id: t.direction_id,
+        block_id: t.block_id,
+        shape_id: t.shape_id,
+        wheelchair_accessible: t.wheelchair_accessible,
+        bikes_allowed: t.instance_variable_get("@bikes_allowed")
+      )
     end
   end
 
@@ -79,17 +99,16 @@ class Metro::Importer
     source.each_stop_time do |st|
       stop = Stop.find_or_create_by!(remote_id: st.stop_id, agency: agency)
       trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: agency)
-      StopTime.find_or_create_by!(stop: stop, trip: trip, agency: agency) do |record|
-        record.attributes = {
-          arrival_time: st.arrival_time,
-          departure_time: st.departure_time,
-          stop_sequence: st.stop_sequence,
-          stop_headsign: st.stop_headsign,
-          pickup_type: st.pickup_type,
-          drop_off_type: st.drop_off_type,
-          shape_dist_traveled: st.shape_dist_traveled
-        }
-      end
+      stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: agency)
+      stop_time.update!(
+        arrival_time: Metro::TimeParser.new(st.arrival_time, agency.timezone).time,
+        departure_time: Metro::TimeParser.new(st.departure_time, agency.timezone).time,
+        stop_sequence: st.stop_sequence,
+        stop_headsign: st.stop_headsign,
+        pickup_type: st.pickup_type,
+        drop_off_type: st.drop_off_type,
+        shape_dist_traveled: st.shape_dist_traveled
+      )
     end
   end
 

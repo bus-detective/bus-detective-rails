@@ -7,4 +7,8 @@ class Api::StopsController < ApplicationController
       render json: { errors: "Invalid parameters" }, status: :bad_request
     end
   end
+
+  def show
+    render json: Stop.find_legacy(params[:id])
+  end
 end

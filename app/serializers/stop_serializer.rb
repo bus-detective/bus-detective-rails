@@ -1,4 +1,4 @@
-class StopSerializer < ActiveModel::Serializer
+class StopSerializer < ApplicationSerializer
   attributes :id, :name, :direction
 
   def stop_id

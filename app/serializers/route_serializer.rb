@@ -1,4 +1,4 @@
-class RouteSerializer < ActiveModel::Serializer
-  attributes :id, :long_name, :color, :text_color
+class RouteSerializer < ApplicationSerializer
+  attributes :id, :short_name, :long_name, :color, :text_color
 end
 

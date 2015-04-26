@@ -17,4 +17,10 @@ class Stop < ActiveRecord::Base
   def direction
     DIRECTION_LABELS[remote_id.split(//).last()]
   end
+
+  def self.find_legacy(id)
+    # This is to support the case where a user has a favorite saved from
+    # before the switch to postres generated ids
+    Stop.where(id: id).first || Stop.find_by(remote_id: id)
+  end
 end

@@ -15,7 +15,7 @@ RSpec.describe Departure do
 
       it "applies the date to the stop_time (because the database resets it to 2000-01-01)" do
         stop_time.reload
-        expect(departure.time.to_date).to eq(time.to_date)
+        expect(departure.time).to eq(time)
       end
 
       context "When time could span across a dateline" do
@@ -23,7 +23,7 @@ RSpec.describe Departure do
 
         it "maintains the correct date" do
           stop_time.reload
-          expect(departure.time.to_date).to eq(time.to_date)
+          expect(departure.time).to eq(time)
         end
       end
     end

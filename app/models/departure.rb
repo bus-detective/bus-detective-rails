@@ -20,7 +20,7 @@ class Departure
     else
       # Need to apply the supplied date because ActiveRecord times will use 2000-01-01.
       # See: http://stackoverflow.com/questions/13257344
-      time = @stop_time.departure_time.strftime("%H:%M:%S %z")
+      time = @stop_time.departure_time.in_time_zone.strftime("%H:%M:%S %z")
       Time.zone.parse("#{@date} #{time}")
     end
   end

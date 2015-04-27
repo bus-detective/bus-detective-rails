@@ -17,8 +17,8 @@ else
     DUMP_FILE="db/${HEROKU_APP}-${BACKUP_ID}.dump"
 fi
 
-BACKUP_ID=`heroku pg:backups | grep -Ehom1 "^b\d{3}"`
-BACKUP_URL=`heroku pg:backups public-url ${BACKUP_ID} --app ${HEROKU_APP} | grep -m1 -E "'" | sed "s/'//g" | sed "s/ //g"`
+BACKUP_ID=`heroku pg:backups --app ${HEROKU_APP} | grep -Ehom1 "^b\d{3}"`
+BACKUP_URL=`heroku pg:backups public-url ${BACKUP_ID} --app ${HEROKU_APP} | grep -m1 -E "" | sed "s/'//g" | sed "s/ //g"`
 
 if [ ! -f $DUMP_FILE ]; then
     curl -Lo $DUMP_FILE $BACKUP_URL

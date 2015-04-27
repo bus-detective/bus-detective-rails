@@ -8,7 +8,7 @@ class Departure
     @stop_time_update = options.fetch(:stop_time_update)
   end
 
-  delegate :route, to: :stop_time
+  delegate :route, :trip, to: :stop_time
 
   def realtime?
     @stop_time_update.present?

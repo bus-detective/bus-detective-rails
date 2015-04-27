@@ -17,7 +17,7 @@ class DepartureFetcher
     @stop_times ||= StopTime
       .where(stop: stop, trips: { service_id: Service.for_time(@time) })
       .where("departure_time > :start_time AND departure_time < :end_time", time_query)
-      .includes(:route, :trip)
+      .includes(:route, :trip, :stop)
       .order(:departure_time)
   end
 

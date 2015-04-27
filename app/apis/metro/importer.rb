@@ -45,8 +45,8 @@ class Metro::Importer
       Stop.find_or_create_by!(remote_id: s.id, agency: agency) do |record|
         record.attributes = {
           code: s.code,
-          name: s.name,
-          description: s.desc,
+          name: Metro::StringHelper.titleize(s.name),
+          description: Metro::StringHelper.titleize(s.desc),
           latitude: s.lat,
           longitude: s.lon,
           zone_id: s.zone_id,
@@ -65,7 +65,7 @@ class Metro::Importer
       Route.find_or_create_by!(remote_id: r.id, agency: agency) do |record|
         record.attributes = {
           short_name: r.short_name,
-          long_name: r.long_name,
+          long_name: Metro::StringHelper.titleize(r.long_name),
           description: r.desc,
           route_type: r.type,
           url: r.url,
@@ -84,7 +84,7 @@ class Metro::Importer
         service: Service.find_or_create_by!(remote_id: t.service_id, agency: agency),
         remote_id: t.id,
         agency: agency,
-        headsign: t.headsign,
+        headsign: Metro::StringHelper.titleize_headsign(t.headsign),
         short_name: t.short_name,
         direction_id: t.direction_id,
         block_id: t.block_id,

@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   end
 
   root to: "index#show"
+  get "*path", to: "index#show"
 end

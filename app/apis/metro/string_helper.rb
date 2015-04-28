@@ -1,5 +1,5 @@
 class Metro::StringHelper
-  EXCLUDED = ["st", "dr", "rd", "ln", "pl", "ct", "pk", "ave"]
+  EXCLUDED = []
 
   def self.titleize(string)
     return nil if string.nil?

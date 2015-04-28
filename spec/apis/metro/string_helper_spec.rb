@@ -10,18 +10,13 @@ RSpec.describe Metro::StringHelper do
     end
 
     context "with a normal caps string" do
-      let(:input) { "Montgomery rd & Lester rd" }
-      specify { expect(output).to eq("Montgomery rd & Lester rd") }
+      let(:input) { "Montgomery Rd & Lester Rd" }
+      specify { expect(output).to eq("Montgomery Rd & Lester Rd") }
     end
 
     context "with an all caps string" do
       let(:input) { "MONTGOMERY RD & LESTER RD" }
-      specify { expect(output).to eq("Montgomery rd & Lester rd") }
-    end
-
-    context "with a string containing a numbered street name" do
-      let(:input) { "3RD ST - GEST ST" }
-      specify { expect(output).to eq("3rd st - Gest st") }
+      specify { expect(output).to eq("Montgomery Rd & Lester Rd") }
     end
   end
 

@@ -12,6 +12,7 @@ gem 'ruby-protocol-buffers'
 gem 'gtfs'
 gem 'active_model_serializers', '~> 0.8.3'
 gem 'geokit-rails'
+gem 'pg_search'
 
 group :development, :test do
   gem 'byebug'

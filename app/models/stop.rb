@@ -5,6 +5,9 @@ class Stop < ActiveRecord::Base
   has_many :routes, -> { uniq }, through: :trips
   belongs_to :agency
 
+  include PgSearch
+  pg_search_scope :search, against: [:name, :code]
+
   DIRECTION_LABELS = {
     "i" => "inbound",
     "o" => "outbound",

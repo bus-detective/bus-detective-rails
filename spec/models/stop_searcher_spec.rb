@@ -15,13 +15,43 @@ describe StopSearcher do
   end
 
   describe "#results" do
-    context "with a name" do
-      let!(:matching_stop) { create(:stop, name: "8th and Walnut") }
-      let!(:non_matching_stop) { create(:stop, name: "7th and Main") }
-      let(:params) { { query: "walnut" } }
+    context "by query" do
+      let!(:matching_stop) { create(:stop, name: "8th & Walnut", code: "1234") }
+      let!(:non_matching_stop) { create(:stop, name: "7th & Main", code: "456") }
 
-      it "returns stops matching the given name" do
-        expect(stop_searcher.results).to eq([matching_stop])
+      context "with a single word" do
+        let(:params) { { query: "walnut" } }
+        it "returns only the mating stop" do
+          expect(stop_searcher.results).to eq([matching_stop])
+        end
+      end
+
+      context "with multiple words" do
+        let(:params) { { query: "walnut 8th" } }
+        it "returns only the mating stop" do
+          expect(stop_searcher.results).to eq([matching_stop])
+        end
+      end
+
+      context "with a 'and' instead of '&'" do
+        let(:params) { { query: "8th and walnut" } }
+        it "returns only the mating stop" do
+          expect(stop_searcher.results).to eq([matching_stop])
+        end
+      end
+
+      context "with a spelled out street" do
+        let(:params) { { query: "eighth" } }
+        it "returns only the mating stop" do
+          expect(stop_searcher.results).to eq([matching_stop])
+        end
+      end
+
+      context "with a stop code" do
+        let(:params) { { query: "1234" } }
+        it "returns only the mating stop" do
+          expect(stop_searcher.results).to eq([matching_stop])
+        end
       end
     end
 

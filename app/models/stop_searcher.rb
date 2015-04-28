@@ -47,7 +47,8 @@ class StopSearcher
     scope = Stop.includes(:routes)
 
     if @params[:query]
-      scope = scope.where("name ILIKE ?", "%#{@params[:query]}%")
+      substituted_query = @params[:query].gsub(/(#{QUERY_SUBSTITUTIONS.keys.join("|")})/, QUERY_SUBSTITUTIONS)
+      scope = scope.search(substituted_query)
     end
 
     if @params[:longitude] && @params[:latitude]
@@ -56,4 +57,20 @@ class StopSearcher
 
     scope
   end
+
+  QUERY_SUBSTITUTIONS = {
+    "and" => "&",
+    "first" => "1st",
+    "second" => "2nd",
+    "thrid" => "3rd",
+    "fourth" => "4th",
+    "fifth" => "5th",
+    "sixth" => "6th",
+    "seventh" => "7th",
+    "eighth" => "8th",
+    "ninth" => "9th",
+    "tenth" => "10th",
+    "eleventh" => "11th",
+    "twelfth" => "12th",
+  }
 end

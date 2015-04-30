@@ -24,6 +24,6 @@ class Stop < ActiveRecord::Base
   def self.find_legacy(id)
     # This is to support the case where a user has a favorite saved from
     # before the switch to postres generated ids
-    Stop.where(id: id).first || Stop.find_by(remote_id: id)
+    Stop.where(id: id).first || Stop.find_by!(remote_id: id)
   end
 end

@@ -51,7 +51,7 @@ class StopSearcher
     end
 
     if @params[:longitude] && @params[:latitude]
-      scope = scope.by_distance(origin: [@params[:latitude], @params[:longitude]]).limit(20)
+      scope = scope.by_distance(origin: [@params[:latitude], @params[:longitude]])
     end
 
     scope

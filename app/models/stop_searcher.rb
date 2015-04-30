@@ -47,7 +47,6 @@ class StopSearcher
     scope = Stop.includes(:routes)
 
     if @params[:query]
-      substituted_query = @params[:query].gsub(/(#{QUERY_SUBSTITUTIONS.keys.join("|")})/, QUERY_SUBSTITUTIONS)
       scope = scope.search(substituted_query)
     end
 
@@ -56,6 +55,10 @@ class StopSearcher
     end
 
     scope
+  end
+
+  def substituted_query
+    @params[:query].gsub(/(#{QUERY_SUBSTITUTIONS.keys.join("|")})/, QUERY_SUBSTITUTIONS)
   end
 
   QUERY_SUBSTITUTIONS = {

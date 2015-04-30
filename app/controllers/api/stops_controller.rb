@@ -1,4 +1,4 @@
-class Api::StopsController < ApplicationController
+class Api::StopsController < ApiController
   def index
     searcher =  StopSearcher.new(params)
     if searcher.valid?

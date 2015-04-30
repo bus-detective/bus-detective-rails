@@ -1,4 +1,4 @@
-class Api::DeparturesController < ApplicationController
+class Api::DeparturesController < ApiController
   def index
     fetcher = DepartureFetcher.new(params)
     if fetcher.valid?

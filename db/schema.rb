@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150430224711) do
+ActiveRecord::Schema.define(version: 20150501153223) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 20150430224711) do
 
   create_table "services", force: :cascade do |t|
     t.integer  "agency_id"
-    t.integer  "remote_id"
+    t.string   "remote_id"
     t.boolean  "monday",     default: false
     t.boolean  "tuesday",    default: false
     t.boolean  "wednesday",  default: false

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150425204038) do
+ActiveRecord::Schema.define(version: 20150501165537) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,12 +24,13 @@ ActiveRecord::Schema.define(version: 20150425204038) do
     t.string "timezone"
     t.string "language"
     t.string "phone"
+    t.string "gtfs_endpoint"
   end
 
   add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree
 
   create_table "routes", force: :cascade do |t|
-    t.integer  "remote_id"
+    t.string   "remote_id"
     t.string   "short_name"
     t.string   "long_name"
     t.string   "description"
@@ -47,7 +48,7 @@ ActiveRecord::Schema.define(version: 20150425204038) do
 
   create_table "services", force: :cascade do |t|
     t.integer  "agency_id"
-    t.integer  "remote_id"
+    t.string   "remote_id"
     t.boolean  "monday",     default: false
     t.boolean  "tuesday",    default: false
     t.boolean  "wednesday",  default: false
@@ -105,7 +106,7 @@ ActiveRecord::Schema.define(version: 20150425204038) do
   add_index "stops", ["remote_id", "agency_id"], name: "index_stops_on_remote_id_and_agency_id", using: :btree
 
   create_table "trips", force: :cascade do |t|
-    t.integer  "remote_id"
+    t.string   "remote_id"
     t.integer  "service_id"
     t.string   "headsign"
     t.string   "short_name"

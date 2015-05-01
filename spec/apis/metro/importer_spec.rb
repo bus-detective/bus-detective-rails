@@ -1,22 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Metro::Importer do
-  let(:fixture) { Rails.root.join("spec/fixtures/google_transit_info.zip") }
-  let(:importer) { Metro::Importer.new(endpoint: fixture) }
+  let(:fixture_path) { Rails.root.join("spec/fixtures/google_transit_info.zip") }
+  let(:fake_agency) { create(:agency, gtfs_endpoint: fixture_path) }
+  let(:importer) { Metro::Importer.new(fake_agency) }
 
-  describe "#agency" do
-    it "is persisted" do
-      expect(importer.agency).to be_persisted
-    end
-
-    it "sets the name" do
-      expect(importer.agency.name).to eq("Southwest Ohio Regional Transit Authority")
-    end
-
-    it "is atomic" do
-      importer.agency
-      importer.agency
-      expect(Agency.count).to eq(1)
+  describe "update_agency!" do
+    it "sets the agencies name" do
+      importer.update_agency!
+      expect(fake_agency.name).to eq("Southwest Ohio Regional Transit Authority")
     end
   end
 

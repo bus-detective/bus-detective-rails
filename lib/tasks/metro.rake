@@ -1,18 +1,16 @@
 namespace :metro do
   desc "Import metro data for all existing agencies"
   task :import, [:gtfs_endpoint] => [:environment] do |t, args|
-    ActiveRecord::Base.logger.silence do
-      agency = Agency.find_or_create_by(gtfs_endpoint: args[:gtfs_endpoint])
-      Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
-    end
+    ActiveRecord::Base.logger.level = 2
+    agency = Agency.find_or_create_by(gtfs_endpoint: args[:gtfs_endpoint])
+    Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
   end
 
   desc "Import metro data for a new agency"
   task import_existing: :environment do
-    ActiveRecord::Base.logger.silence do
-      Agency.find_each do |agency|
-        Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
-      end
+    ActiveRecord::Base.logger.level = 2
+    Agency.find_each do |agency|
+      Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
     end
   end
 

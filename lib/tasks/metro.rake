@@ -1,7 +1,18 @@
 namespace :metro do
-  task import: :environment do
+  task :import, [:gtfs_endpoint] => [:environment] do |t, args|
     desc "Import metro data from go-metro.com"
-    Metro::Importer.new(logger: Logger.new(STDOUT)).import!
+    ActiveRecord::Base.logger.silence do
+      logger = Logger.new(STDOUT)
+
+      if args[:gtfs_endpoint]
+        agency = Agency.find_or_create_by(gtfs_endpoint: args[:gtfs_endpoint])
+        Metro::Importer.new(agency, logger: logger).import!
+      else
+        Agency.find_each do |agency|
+          Metro::Importer.new(agency, logger: logger).import!
+        end
+      end
+    end
   end
 
   task titleize: :environment do

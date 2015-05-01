@@ -2,11 +2,10 @@ class Metro::Importer
   def initialize(agency, options = {})
     @agency = agency
     @logger = options.fetch(:logger, Rails.logger)
-    @logger.info("Fetching #{@endpoint}")
   end
 
   def import!
-    @logger.info("Importing: #{source_agency.name}")
+    @logger.info("Fetching: #{@agency.gtfs_endpoint}")
     update_agency!
     @logger.info("Step 1/5: Importing services (#{source.calendars.size})")
     import_services!

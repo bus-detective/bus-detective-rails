@@ -9,8 +9,10 @@ namespace :metro do
 
   desc "Import metro data for a new agency"
   task import_existing: :environment do
-    Agency.find_each do |agency|
-      Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
+    ActiveRecord::Base.logger.silence do
+      Agency.find_each do |agency|
+        Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
+      end
     end
   end
 

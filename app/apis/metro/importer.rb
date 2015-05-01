@@ -6,7 +6,7 @@ class Metro::Importer
   end
 
   def import!
-    @logger.info("Importing agency #{source_agency.name}")
+    @logger.info("Importing: #{source_agency.name}")
     update_agency!
     @logger.info("Step 1/5: Importing services (#{source.calendars.size})")
     import_services!

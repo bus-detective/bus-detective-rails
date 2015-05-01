@@ -1,14 +1,13 @@
 class Metro::Importer
-  DEFAULT_ENDPOINT = "http://www.go-metro.com/uploads/GTFS/google_transit_info.zip"
-
-  def initialize(options = {})
-    @endpoint = options.fetch(:endpoint, DEFAULT_ENDPOINT)
+  def initialize(agency, options = {})
+    @agency = agency
     @logger = options.fetch(:logger, Rails.logger)
     @logger.info("Fetching #{@endpoint}")
   end
 
   def import!
-    @logger.info("Importing agency #{agency.name}")
+    @logger.info("Importing agency #{source_agency.name}")
+    update_agency!
     @logger.info("Step 1/5: Importing services (#{source.calendars.size})")
     import_services!
     @logger.info("Step 2/5: Importing routes (#{source.routes.size})")
@@ -24,7 +23,7 @@ class Metro::Importer
 
   def import_services!
     source.each_calendar do |cal|
-      Service.find_or_create_by!(remote_id: cal.service_id, agency: agency) do |record|
+      Service.find_or_create_by!(remote_id: cal.service_id, agency: @agency) do |record|
         record.attributes = {
           monday: cal.monday,
           tuesday: cal.tuesday,
@@ -42,7 +41,7 @@ class Metro::Importer
 
   def import_stops!
     source.each_stop do |s|
-      Stop.find_or_create_by!(remote_id: s.id, agency: agency) do |record|
+      Stop.find_or_create_by!(remote_id: s.id, agency: @agency) do |record|
         record.attributes = {
           code: s.code,
           name: Metro::StringHelper.titleize(s.name),
@@ -62,7 +61,7 @@ class Metro::Importer
 
   def import_routes!
     source.each_route do |r|
-      Route.find_or_create_by!(remote_id: r.id, agency: agency) do |record|
+      Route.find_or_create_by!(remote_id: r.id, agency: @agency) do |record|
         record.attributes = {
           short_name: r.short_name,
           long_name: Metro::StringHelper.titleize(r.long_name),
@@ -78,12 +77,12 @@ class Metro::Importer
 
   def import_trips!
     source.each_trip do |t|
-      trip = Trip.find_or_create_by(remote_id: t.id, agency: agency)
+      trip = Trip.find_or_create_by(remote_id: t.id, agency: @agency)
       trip.update!(
-        route: Route.find_or_create_by!(remote_id: t.route_id, agency: agency),
-        service: Service.find_or_create_by!(remote_id: t.service_id, agency: agency),
+        route: Route.find_or_create_by!(remote_id: t.route_id, agency: @agency),
+        service: Service.find_or_create_by!(remote_id: t.service_id, agency: @agency),
         remote_id: t.id,
-        agency: agency,
+        agency: @agency,
         headsign: Metro::StringHelper.titleize_headsign(t.headsign),
         short_name: t.short_name,
         direction_id: t.direction_id,
@@ -97,12 +96,12 @@ class Metro::Importer
 
   def import_stop_times!
     source.each_stop_time do |st|
-      stop = Stop.find_or_create_by!(remote_id: st.stop_id, agency: agency)
-      trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: agency)
-      stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: agency)
+      stop = Stop.find_or_create_by!(remote_id: st.stop_id, agency: @agency)
+      trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: @agency)
+      stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: @agency)
       stop_time.update!(
-        arrival_time: Metro::TimeParser.new(st.arrival_time, agency.timezone).time,
-        departure_time: Metro::TimeParser.new(st.departure_time, agency.timezone).time,
+        arrival_time: Metro::TimeParser.new(st.arrival_time, source_agency.timezone).time,
+        departure_time: Metro::TimeParser.new(st.departure_time, source_agency.timezone).time,
         stop_sequence: st.stop_sequence,
         stop_headsign: st.stop_headsign,
         pickup_type: st.pickup_type,
@@ -112,28 +111,31 @@ class Metro::Importer
     end
   end
 
-  def agency
+  def update_agency!
+    @agency.update!(
+      remote_id: source_agency.id,
+      name: source_agency.name,
+      url: source_agency.url,
+      fare_url: source_agency.fare_url,
+      timezone: source_agency.timezone,
+      language: source_agency.lang,
+      phone: source_agency.phone
+    )
+  end
+
+  def source_agency
     # assumes only one agency per import
     if source.agencies.size > 1
       raise InvalidDataError.new("Only one agency is allowed per import")
     end
-    a = source.agencies.first
-    @agency ||= Agency.find_or_create_by(remote_id: source.agencies.first.id) do |record|
-      record.attributes = {
-        name: a.name,
-        url: a.url,
-        fare_url: a.fare_url,
-        timezone: a.timezone,
-        language: a.lang,
-        phone: a.phone
-      }
-    end
+
+    source.agencies.first
   end
 
   private
 
   def source
-    @source ||= GTFS::Source.build(@endpoint)
+    @source ||= GTFS::Source.build(@agency.gtfs_endpoint)
   end
 
   class Error < StandardError

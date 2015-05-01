@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150425204038) do
+ActiveRecord::Schema.define(version: 20150430224711) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20150425204038) do
     t.string "timezone"
     t.string "language"
     t.string "phone"
+    t.string "gtfs_endpoint"
   end
 
   add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree

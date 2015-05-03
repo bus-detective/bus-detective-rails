@@ -1,5 +1,5 @@
 namespace :metro do
-  desc "Import metro data for all existing agencies"
+  desc "Import metro data for a new agency"
   task :import, [:gtfs_endpoint] => [:environment] do |t, args|
     gtfs_endpoint = args[:gtfs_endpoint]
 
@@ -14,7 +14,7 @@ namespace :metro do
     Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
   end
 
-  desc "Import metro data for a new agency"
+  desc "Import metro data for all existing agencies"
   task import_existing: :environment do
     ActiveRecord::Base.logger.level = 2
     Agency.find_each do |agency|

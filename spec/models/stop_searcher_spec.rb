@@ -87,5 +87,17 @@ describe StopSearcher do
     it "has total_results" do
       expect(stop_searcher.total_results).to eq(10)
     end
+
+    context 'when per_page is a string' do
+      let(:params) { { per_page: '5' } }
+
+      it "sets per_page" do
+        expect(stop_searcher.per_page).to eq(5)
+      end
+
+      it "has total_pages" do
+        expect(stop_searcher.total_pages).to eq(2)
+      end
+    end
   end
 end

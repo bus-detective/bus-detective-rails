@@ -62,5 +62,5 @@ echo "  + Fetching Cincinnati Metro data"
 rake metro:import
 
 echo "Ok, setup complete. Run"
-echo "shoreman Procfile.dev"
+echo "shoreman Procfile"
 echo "to start the application."

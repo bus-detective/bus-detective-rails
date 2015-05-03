@@ -20,6 +20,22 @@ else
 fi
 
 #
+# Check for Shoreman
+#
+if test ! $(which shoreman)
+then
+  echo
+  echo "  x You need to install shoreman: https://github.com/chrismytton/shoreman"
+  echo
+  echo "    On Mac OS:"
+  echo "    brew install --HEAD chrismytton/formula/shoreman"
+  exit 1
+else
+  echo "  + shoreman found."
+fi
+
+
+#
 # Install gems
 #
 echo "  + Bootstrapping your Rubies."

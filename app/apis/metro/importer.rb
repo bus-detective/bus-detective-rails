@@ -17,7 +17,12 @@ class Metro::Importer
     import_trips!
     @logger.info("Step 5/5: Importing stop times (#{source.stop_times.size})")
     import_stop_times!
+    update_route_stop_cache!
     true
+  end
+
+  def update_route_stop_cache!
+    RouteStop.update_cache
   end
 
   def import_services!

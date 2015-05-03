@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150501165537) do
+ActiveRecord::Schema.define(version: 20150503132110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,13 @@ ActiveRecord::Schema.define(version: 20150501165537) do
   end
 
   add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree
+
+  create_table "route_stops", force: :cascade do |t|
+    t.integer "route_id", null: false
+    t.integer "stop_id",  null: false
+  end
+
+  add_index "route_stops", ["stop_id", "route_id"], name: "index_route_stops_on_stop_id_and_route_id", unique: true, using: :btree
 
   create_table "routes", force: :cascade do |t|
     t.string   "remote_id"

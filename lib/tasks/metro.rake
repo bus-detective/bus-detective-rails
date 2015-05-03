@@ -1,8 +1,16 @@
 namespace :metro do
   desc "Import metro data for all existing agencies"
   task :import, [:gtfs_endpoint] => [:environment] do |t, args|
+    gtfs_endpoint = args[:gtfs_endpoint]
+
+    if gtfs_endpoint.blank?
+      puts "GTFS endpoint is required for import.\n\n"
+      puts "rake metro:import['http://www.go-metro.com/uploads/GTFS/google_transit_info.zip']"
+      exit 1
+    end
+
     ActiveRecord::Base.logger.level = 2
-    agency = Agency.find_or_create_by(gtfs_endpoint: args[:gtfs_endpoint])
+    agency = Agency.find_or_create_by!(gtfs_endpoint: gtfs_endpoint)
     Metro::Importer.new(agency, logger: Logger.new(STDOUT)).import!
   end
 

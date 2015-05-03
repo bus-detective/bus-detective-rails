@@ -43,7 +43,7 @@ bundle exec rake db:migrate
 # import data
 #
 echo "  + Fetching Cincinnati Metro data"
-rake metro:import
+rake metro:import['http://www.go-metro.com/uploads/GTFS/google_transit_info.zip']
 
 echo "Ok, setup complete. Run"
 echo "shoreman Procfile.dev"

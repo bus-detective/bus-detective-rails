@@ -2,11 +2,12 @@ class StopSearcher
   include ActiveModel::SerializerSupport
   DEFAULT_PER_PAGE = 20
 
-  attr_reader :per_page
+  attr_reader :per_page, :page
 
   def initialize(params)
     @params = params
     @per_page = params.fetch(:per_page) { DEFAULT_PER_PAGE }.to_i
+    @page = params.fetch(:page) { 1 }.to_i
   end
 
   def results
@@ -19,10 +20,6 @@ class StopSearcher
 
   def total_pages
     total_results / per_page
-  end
-
-  def page
-    @params[:page] || 1
   end
 
   def offset

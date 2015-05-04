@@ -7,6 +7,7 @@ RSpec.describe Stop do
 
     let!(:trip) { create(:trip, route: route)}
     let!(:stop_time) { create(:stop_time, stop: stop, trip: trip) }
+    let!(:route_stop) { create(:route_stop, route: route, stop: stop) }
 
     it "associates routes to each stop" do
       expect(stop.routes).to eq([route])

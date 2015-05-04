@@ -2,7 +2,15 @@ class Stop < ActiveRecord::Base
   acts_as_mappable(lat_column_name: :latitude, lng_column_name: :longitude)
   has_many :stop_times
   has_many :trips, through: :stop_times
-  has_many :routes, -> { uniq }, through: :trips
+
+  # To get a stops routes, we have to query through a lot of tables:
+  #
+  # stops -> stop_times -> trips -> routes and it's pretty slow.
+  #
+  # On import we denormalize the data into route_stops for better performance.
+  has_many :route_stops, dependent: :destroy
+  has_many :routes, through: :route_stops
+
   belongs_to :agency
 
   include PgSearch

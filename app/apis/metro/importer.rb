@@ -17,6 +17,7 @@ class Metro::Importer
     import_trips!
     @logger.info("Step 5/5: Importing stop times (#{source.stop_times.size})")
     import_stop_times!
+    update_route_stop_cache!
     true
   end
 
@@ -132,6 +133,10 @@ class Metro::Importer
   end
 
   private
+
+  def update_route_stop_cache!
+    RouteStop.update_cache
+  end
 
   def source
     @source ||= GTFS::Source.build(@agency.gtfs_endpoint)

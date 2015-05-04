@@ -22,6 +22,12 @@ namespace :metro do
     end
   end
 
+  desc "Update route_stop cache"
+  task update_route_stop_cache: :environment do
+    ActiveRecord::Base.logger.level = 2
+    RouteStop.update_cache
+  end
+
   desc "Titleize existing metro data"
   task titleize: :environment do
     Stop.find_each do |s|

@@ -6,8 +6,8 @@ class StopSearcher
 
   def initialize(params)
     @params = params
-    @per_page = params.fetch(:per_page) { DEFAULT_PER_PAGE }.to_i
-    @page = params.fetch(:page) { 1 }.to_i
+    @per_page = params.fetch(:per_page, DEFAULT_PER_PAGE).to_i
+    @page = params.fetch(:page, 1).to_i
   end
 
   def results

@@ -21,10 +21,6 @@ class Metro::Importer
     true
   end
 
-  def update_route_stop_cache!
-    RouteStop.update_cache
-  end
-
   def import_services!
     source.each_calendar do |cal|
       Service.find_or_create_by!(remote_id: cal.service_id, agency: @agency) do |record|
@@ -137,6 +133,10 @@ class Metro::Importer
   end
 
   private
+
+  def update_route_stop_cache!
+    RouteStop.update_cache
+  end
 
   def source
     @source ||= GTFS::Source.build(@agency.gtfs_endpoint)

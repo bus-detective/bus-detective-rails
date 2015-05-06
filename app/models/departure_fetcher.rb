@@ -10,7 +10,7 @@ class DepartureFetcher
     @departures ||= stop_times.map { |stop_time|
       stop_time_update = realtime_updates.for_stop_time(stop_time)
       Departure.new(date: @time.to_date, stop_time: stop_time, stop_time_update: stop_time_update)
-    }
+    }.sort_by(&:time)
   end
 
   def stop_times
@@ -18,7 +18,6 @@ class DepartureFetcher
       .where(stop: stop, trips: { service_id: Service.for_time(@time) })
       .where("departure_time > :start_time AND departure_time < :end_time", time_query)
       .includes(:route, :trip, :stop)
-      .order(:departure_time)
   end
 
   def valid?

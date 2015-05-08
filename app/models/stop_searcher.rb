@@ -59,6 +59,11 @@ class StopSearcher
 
   QUERY_SUBSTITUTIONS = {
     "and" => "&",
+    "street" => "st",
+    "road" => "rd",
+    "lane" => "ln",
+    "avenue" => "ave",
+    "boulevard" => "blvd",
     "first" => "1st",
     "second" => "2nd",
     "thrid" => "3rd",

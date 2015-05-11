@@ -1,3 +1,5 @@
+require 'duration'
+
 class Departure
   include ActiveModel::SerializerSupport
   attr_reader :stop_time
@@ -9,6 +11,10 @@ class Departure
   end
 
   delegate :route, :trip, to: :stop_time
+
+  def duration_from(t)
+    ::Duration.new(time - t)
+  end
 
   def realtime?
     @stop_time_update.present?

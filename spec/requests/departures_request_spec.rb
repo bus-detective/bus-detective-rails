@@ -27,6 +27,13 @@ RSpec.describe "departures api" do
         expect(json["data"]["departures"].first["delay"]).to eq(120)
       end
     end
+
+    context "missing a stop id" do
+      it "responds with a bad request" do
+        get "/api/departures/?stop_id=&time=#{now}"
+        expect(response).to be_bad_request
+      end
+    end
   end
 end
 

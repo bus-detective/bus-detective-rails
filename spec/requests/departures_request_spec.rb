@@ -4,8 +4,8 @@ RSpec.describe "departures api" do
   let(:json) { JSON.parse(response.body) }
 
   describe "api/departures" do
-    let(:now) { Time.zone.parse("2015-04-23 7:30am") }
-    let!(:trip) { create(:trip, remote_id: 940135, service: create(:service, thursday: true)) }
+    let(:now) { Time.zone.parse("2015-02-16 17:55:00 -0500") }
+    let!(:trip) { create(:trip, remote_id: 940135, service: create(:service, monday: true)) }
     let!(:stop) { create(:stop, remote_id: "HAMBELi") }
     let!(:stop_time) { create(:stop_time, stop: stop, trip: trip, departure_time: now + 10.minutes) }
 

@@ -1,7 +1,7 @@
 module Metro
   class Connection
     def self.host
-      'http://developer.go-metro.com'
+      'developer.go-metro.com'
     end
 
     def self.get(endpoint)

@@ -1,8 +1,14 @@
 # Bus Detective
 
 Ruby: 2.2.0 - Rails: 4.2.0
+PostgreSQL
+Redis
 
 ### Setup
+
+#### Copy example files
+    cp .env.example .env
+    cp config/database.yml.example config/database.yml
 
 #### Fetch stop data
 

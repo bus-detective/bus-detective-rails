@@ -1,27 +1,26 @@
 source 'https://rubygems.org'
 
-ruby '2.2.0'
+ruby '2.2.2'
 
-gem 'rails', '4.2.0'
+gem 'rails', '~> 4.2.0'
+gem 'active_model_serializers', '~> 0.8.3' # Because people hate 0.9.x branch for the different API, and 0.10.x is built on 0.8
+gem 'geokit-rails' # Provides acts_as_mappable
+gem 'gtfs'         # Support for General Transit Feed Specification (format of the stop/route data)
 gem 'pg'
+gem 'pg_search'    # Full text search support
 gem 'puma'
-gem 'http'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
-gem 'ruby-protocol-buffers'
-gem 'gtfs'
-gem 'active_model_serializers', '~> 0.8.3'
-gem 'geokit-rails'
-gem 'pg_search'
+gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 
 group :development, :test do
   gem 'byebug'
-  gem 'web-console', '~> 2.0'
-  gem 'spring'
   gem 'dotenv-rails'
   gem 'factory_girl_rails'
   gem 'rspec-rails'
+  gem 'spring'
   gem 'spring-commands-rspec'
+  gem 'web-console', '~> 2.0'
 end
 
 group :test do
@@ -29,7 +28,7 @@ group :test do
 end
 
 group :production do
-  gem 'uglifier'
   gem 'rails_12factor'
   gem 'sentry-raven'
+  gem 'uglifier'
 end

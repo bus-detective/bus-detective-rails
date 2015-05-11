@@ -5,7 +5,7 @@ module Metro
     end
 
     def self.get(endpoint)
-      HTTP.get(host + endpoint).to_s
+      Net::HTTP.get(host, endpoint)
     end
   end
 end

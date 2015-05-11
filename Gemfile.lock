@@ -38,7 +38,6 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.3.8)
     arel (6.0.0)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
@@ -72,12 +71,6 @@ GEM
       multi_json
       rake
       rubyzip (~> 1.1)
-    http (0.8.8)
-      addressable (~> 2.3)
-      http-form_data (~> 1.0.1)
-      http_parser.rb (~> 0.6.0)
-    http-form_data (1.0.1)
-    http_parser.rb (0.6.0)
     i18n (0.7.0)
     json (1.8.2)
     loofah (2.0.2)
@@ -187,7 +180,6 @@ DEPENDENCIES
   factory_girl_rails
   geokit-rails
   gtfs
-  http
   pg
   pg_search
   puma

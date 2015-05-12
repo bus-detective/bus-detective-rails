@@ -1,8 +1,8 @@
 # Bus Detective
 
-Ruby: 2.2.0 - Rails: 4.2.0
-PostgreSQL
-Redis
+* Ruby: 2.2.0 - Rails: 4.2.0
+* PostgreSQL
+* Redis
 
 ### Setup
 

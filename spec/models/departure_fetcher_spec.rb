@@ -63,5 +63,65 @@ RSpec.describe DepartureFetcher do
         expect(stop_time_fetcher.departures.first.time).to eq(stop_time.departure_time)
       end
     end
+
+    context "when a departure is less than 10 minutes past" do
+      let!(:stop_time) { create(:stop_time, stop: stop, trip: trip, departure_time: now - 9.minutes) }
+
+      context "and realtime updates are in the past for the stop time" do
+        let(:fake_stop_time_update) { OpenStruct.new(departure_time: now - 9.minutes) }
+
+        it "it shows already past departures for a short while" do
+          expect(stop_time_fetcher.departures.size).to eq(1)
+        end
+      end
+
+      context "and realtime updates do not exist for the stop time" do
+        let(:fake_stop_time_update) { nil }
+
+        it "it shows already past departures for a short while" do
+          expect(stop_time_fetcher.departures.size).to eq(1)
+        end
+      end
+    end
+
+    context "when a departure is up to an hour in the past" do
+      let!(:stop_time) { create(:stop_time, stop: stop, trip: trip, departure_time: now - 55.minutes) }
+
+      context "and realtime updates are available showing upcoming departure for the stop time" do
+        let(:fake_stop_time_update) { OpenStruct.new(departure_time: now + 5.minutes) }
+
+        it "shows late departures up to an hour past due" do
+          expect(stop_time_fetcher.departures.size).to eq(1)
+        end
+      end
+
+      context "and realtime updates do not exist for the stop time" do
+        let(:fake_stop_time_update) { nil }
+
+        it "it won't show that stop time" do
+          expect(stop_time_fetcher.departures.size).to be_zero
+        end
+      end
+    end
+
+    context "when a departure is more than an hour in the past" do
+      let!(:stop_time) { create(:stop_time, stop: stop, trip: trip, departure_time: now - 65.minutes) }
+
+      context "and realtime updates are available showing upcoming departure for the stop time" do
+        let(:fake_stop_time_update) { OpenStruct.new(departure_time: now + 5.minutes) }
+
+        it "it won't show that stop time" do
+          expect(stop_time_fetcher.departures.size).to be_zero
+        end
+      end
+
+      context "and realtime updates do not exist for the stop time" do
+        let(:fake_stop_time_update) { nil }
+
+        it "it won't show that stop time" do
+          expect(stop_time_fetcher.departures.size).to be_zero
+        end
+      end
+    end
   end
 end

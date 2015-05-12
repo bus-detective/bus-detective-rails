@@ -1,13 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Stop do
-  describe "#routes" do
-    let(:stop) { create(:stop) }
-    let(:route) { create(:route) }
+  let(:agency) { create(:agency) }
 
-    let!(:trip) { create(:trip, route: route)}
-    let!(:stop_time) { create(:stop_time, stop: stop, trip: trip) }
-    let!(:route_stop) { create(:route_stop, route: route, stop: stop) }
+  describe "#routes" do
+
+    let!(:route_stop) { create(:route_stop) }
+    let(:stop) { route_stop.stop }
+    let(:route) { route_stop.route }
+    let!(:trip) { create(:trip, agency: agency, route: route)}
+    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip) }
 
     it "associates routes to each stop" do
       expect(stop.routes).to eq([route])
@@ -15,7 +17,7 @@ RSpec.describe Stop do
   end
 
   describe "#direction" do
-    let(:stop) { build(:stop, remote_id: remote_id) }
+    let(:stop) { build(:stop, agency: agency, remote_id: remote_id) }
     context "inbound" do
       let(:remote_id) { "8THWALi" }
       specify { expect(stop.direction).to eq("inbound") }

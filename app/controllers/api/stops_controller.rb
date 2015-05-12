@@ -1,6 +1,6 @@
 class Api::StopsController < ApiController
   def index
-    searcher =  StopSearcher.new(params)
+    searcher = StopSearcher.new(params)
     if searcher.valid?
       render json: searcher
     else

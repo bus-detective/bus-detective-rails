@@ -6,7 +6,7 @@ class DepartureFetcher
   def initialize(params)
     @time = params[:time] ? Time.zone.parse(params[:time]) : Time.current
     @stop_id = params[:stop_id]
-    @time_limit = params.fetch(:time_limit, 10)
+    @time_limit = params.fetch(:time_limit, 10).to_i
 
     @active_duration = Duration.new((-1 * @time_limit.minutes))
   end

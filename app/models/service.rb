@@ -4,6 +4,8 @@ class Service < ActiveRecord::Base
   has_many :stop_times, through: :trips
 
   def self.for_time(time)
+    # This looks weird, but the days are boolean columns and
+    # 'select * from foo where bar' works in postgres for boolean columns
     where(time.strftime('%A').downcase)
   end
 end

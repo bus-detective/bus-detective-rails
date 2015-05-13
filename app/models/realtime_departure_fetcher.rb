@@ -19,11 +19,8 @@ class RealtimeDepartureFetcher < DepartureFetcher
 
   private
 
-  def time_query
-    {
-      start_time: @time - 1.hour,
-      end_time: @time + 1.hour
-    }
+  def start_time
+    @time - 1.hour
   end
 
   def active?(departure)

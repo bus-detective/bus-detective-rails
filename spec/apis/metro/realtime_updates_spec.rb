@@ -2,18 +2,20 @@ require 'rails_helper'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
-  subject(:realtime_updates) { Metro::RealtimeUpdates.new(fixture) }
+  subject { Metro::RealtimeUpdates.new(fixture) }
 
   describe "#fetch" do
+    let(:agency) { create(:agency, :with_rt_endpoint) }
+
     it "calls Connection.get with the endpoint" do
-      allow(Metro::Connection).to receive(:get).and_return(fixture)
-      Metro::RealtimeUpdates.fetch
-      expect(Metro::Connection).to have_received(:get).with(Metro::RealtimeUpdates::ENDPOINT)
+      allow(Metro::Connection).to receive(:get).with(agency.realtime_endpoint).and_return(fixture)
+      Metro::RealtimeUpdates.fetch(agency)
+      expect(Metro::Connection).to have_received(:get).with(agency.realtime_endpoint)
     end
   end
 
   describe "#for_trip" do
-    let(:trip_update) { realtime_updates.for_trip(trip) }
+    let(:trip_update) { subject.for_trip(trip) }
 
     context "with a matching trip.remote_id" do
       let(:trip) { build(:trip, remote_id: 940135) }
@@ -26,13 +28,13 @@ RSpec.describe Metro::RealtimeUpdates do
     context "with a non-matching trip.remote_id" do
       let(:trip) { build(:trip, remote_id: 999999) }
       it "returns nil" do
-        expect(realtime_updates.for_trip(trip)).to be_nil
+        expect(subject.for_trip(trip)).to be_nil
       end
     end
   end
 
   describe "#for_stop_time" do
-    let(:stop_time_update) { realtime_updates.for_stop_time(stop_time) }
+    let(:stop_time_update) { subject.for_stop_time(stop_time) }
 
     context "with a matching stop_time.trip.remote_id and stop_time.stop.remote.id" do
       let!(:trip) { build(:trip, remote_id: 940135) }
@@ -48,7 +50,7 @@ RSpec.describe Metro::RealtimeUpdates do
     context "with a non-matching stop_time" do
       let(:stop_time) { build(:stop_time) }
       it "returns nil" do
-        expect(realtime_updates.for_stop_time(stop_time)).to be_nil
+        expect(subject.for_stop_time(stop_time)).to be_nil
       end
     end
   end

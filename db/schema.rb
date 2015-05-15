@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150503132110) do
+ActiveRecord::Schema.define(version: 20150512192738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20150503132110) do
     t.string "language"
     t.string "phone"
     t.string "gtfs_endpoint"
+    t.string "realtime_endpoint"
   end
 
   add_index "agencies", ["remote_id"], name: "index_agencies_on_remote_id", using: :btree
@@ -132,4 +133,15 @@ ActiveRecord::Schema.define(version: 20150503132110) do
   add_index "trips", ["remote_id", "agency_id"], name: "index_trips_on_remote_id_and_agency_id", using: :btree
   add_index "trips", ["route_id"], name: "index_trips_on_route_id", using: :btree
 
+  add_foreign_key "route_stops", "routes"
+  add_foreign_key "route_stops", "stops"
+  add_foreign_key "routes", "agencies"
+  add_foreign_key "services", "agencies"
+  add_foreign_key "stop_times", "agencies"
+  add_foreign_key "stop_times", "stops"
+  add_foreign_key "stop_times", "trips"
+  add_foreign_key "stops", "agencies"
+  add_foreign_key "trips", "agencies"
+  add_foreign_key "trips", "routes"
+  add_foreign_key "trips", "services"
 end

@@ -3,10 +3,8 @@ require 'time'
 
 module Metro
   class RealtimeUpdates
-    ENDPOINT = "/TMGTFSRealTimeWebService/TripUpdate/"
-
-    def self.fetch
-      new(Connection.get(ENDPOINT))
+    def self.fetch(agency)
+      new(Connection.get(agency.realtime_endpoint))
     end
 
     def initialize(buffer)

@@ -5,7 +5,7 @@ class RealtimeDepartureFetcher < DepartureFetcher
     super(agency, stop, time, params)
 
     time_limit = params.fetch(:time_limit, 10).to_i
-    @active_duration = Duration.new((-1 * time_limit.minutes))
+    @active_duration = Interval.new((-1 * time_limit.minutes))
   end
 
   def departures

@@ -11,7 +11,7 @@ class Departure
   delegate :route, :trip, to: :stop_time
 
   def duration_from(t)
-    ::Duration.new(time - t)
+    ::Interval.new(time - t)
   end
 
   def realtime?

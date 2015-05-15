@@ -5,10 +5,10 @@ RSpec.describe StopTime do
   let(:trip) { create(:trip, agency: agency, remote_id: 940135, service: create(:service, agency: agency, tuesday: true)) }
   let(:stop) { create(:stop, agency: agency, remote_id: "HAMBELi") }
   before do
-    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Duration.for_time(start_time - 10.minutes).to_s)
-    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Duration.for_time(start_time + 10.minutes).to_s)
-    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Duration.for_time(end_time - 10.minutes).to_s)
-    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Duration.for_time(end_time + 10.minutes).to_s)
+    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(start_time - 10.minutes).to_s)
+    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(start_time + 10.minutes).to_s)
+    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(end_time - 10.minutes).to_s)
+    create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(end_time + 10.minutes).to_s)
   end
 
   let(:stop_times) { StopTime.between(start_time, end_time).to_a }

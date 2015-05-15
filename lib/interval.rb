@@ -1,4 +1,4 @@
-class Duration
+class Interval
   include Comparable
 
   attr_reader :seconds
@@ -31,24 +31,24 @@ class Duration
 
   # Compare this duration to another
   def <=>(other)
-    return false unless other.is_a?(Duration)
+    return false unless other.is_a?(Interval)
     @seconds <=> other.seconds
   end
 
   def +(other)
-    Duration.new(@seconds + other.to_i)
+    Interval.new(@seconds + other.to_i)
   end
 
   def -(other)
-    Duration.new(@seconds - other.to_i)
+    Interval.new(@seconds - other.to_i)
   end
 
   def *(other)
-    Duration.new(@seconds * other.to_i)
+    Interval.new(@seconds * other.to_i)
   end
 
   def /(other)
-    Duration.new(@seconds / other.to_i)
+    Interval.new(@seconds / other.to_i)
   end
 
   # @return true if total is 0

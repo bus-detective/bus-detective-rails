@@ -5,9 +5,11 @@ class StopTime < ActiveRecord::Base
   has_one :route, through: :trip
   has_one :service, through: :trip
 
-
+  # You might think that noon - 12 hours is midnight.
+  # You would be right most of the time, except on days that don't have 24
+  # hours such as around daylight savings time changes
   def departure_time_on(date)
-    start_time = date.at_beginning_of_day + 12.hours - 12.hours
+    start_time = date.noon - 12.hours
     start_time + Interval.parse(departure_time)
   end
 
@@ -22,7 +24,6 @@ class StopTime < ActiveRecord::Base
     base_clause =
       joins(trip: :service)
       .where("services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ?", Interval.for_time(start_time).to_s)
-      .includes(:trip)
 
     if start_time.day != end_time.day
       # assume we cross over a day

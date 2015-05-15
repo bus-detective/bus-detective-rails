@@ -22,8 +22,6 @@ class Departure
     if @stop_time_update
       @stop_time_update.departure_time
     else
-      # Need to apply the supplied date because ActiveRecord times will use 2000-01-01.
-      # See: http://stackoverflow.com/questions/13257344
       @stop_time.departure_time_on(@date)
     end
   end

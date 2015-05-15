@@ -9,8 +9,7 @@ class StopTime < ActiveRecord::Base
   # You would be right most of the time, except on days that don't have 24
   # hours such as around daylight savings time changes
   def departure_time_on(date)
-    start_time = date.noon - 12.hours
-    start_time + Interval.parse(departure_time)
+    self.class.offset_start(date) + Interval.parse(departure_time)
   end
 
   # RULE: The arrival_time and departure_time are expressed as an interval.
@@ -21,24 +20,19 @@ class StopTime < ActiveRecord::Base
   # time for the day on which the trip schedule begins. If you don't have
   # separate times for arrival and departure at a stop, enter the same value
   def self.between(start_time, end_time)
-    base_clause =
-      joins(trip: :service)
+    # Start time is always treated as "today", but end time could be the following day
+    # today_end is an interval from the offset described above
+    today_end = Interval.new(end_time - offset_start(start_time))
+    joins(trip: :service)
       .where('? between services.start_date and services.end_date', start_time)
       .where("services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ?", Interval.for_time(start_time).to_s)
+      .where("(services.#{start_time.strftime('%A').downcase} AND departure_time <= interval ?) OR (services.#{end_time.strftime('%A').downcase} AND departure_time <= interval ?)",
+              today_end.to_s,
+              Interval.for_time(end_time).to_s)
+  end
 
-    if start_time.day != end_time.day
-      # assume we cross over a day
-      # Get the end time as an interval from the start of the previous day to check for today's routes
-      # Use the end_date as is to check for "tomorrows" routes
-      today_end = Interval.new(end_time - start_time.at_beginning_of_day)
-      base_clause.where("(services.#{start_time.strftime('%A').downcase} AND departure_time <= interval ?) OR (services.#{end_time.strftime('%A').downcase} AND departure_time <= interval ?)", 
-                        today_end.to_s,
-                        Interval.for_time(end_time).to_s)
-
-    else
-      # assume we are within a single day
-      base_clause.where("departure_time <= interval ?", Interval.for_time(end_time).to_s)
-    end
+  def self.offset_start(time)
+    time.noon - 12.hours
   end
 end
 

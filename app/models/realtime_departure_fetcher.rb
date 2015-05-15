@@ -1,5 +1,3 @@
-require 'duration'
-
 class RealtimeDepartureFetcher < DepartureFetcher
   include ActiveModel::SerializerSupport
 

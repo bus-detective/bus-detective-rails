@@ -5,7 +5,7 @@ RSpec.describe "departures api" do
   let(:now) { Time.zone.parse("2015-02-16 17:55:00 -0500") }
   let!(:trip) { create(:trip, agency: agency, remote_id: 940135, service: create(:service, agency: agency, monday: true)) }
   let!(:stop) { create(:stop, agency: agency, remote_id: "HAMBELi") }
-  let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: now + 10.minutes) }
+  let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Duration.for_time(now + 10.minutes).to_s) }
 
   before do
     fixture = File.read('spec/fixtures/realtime_updates.buf')

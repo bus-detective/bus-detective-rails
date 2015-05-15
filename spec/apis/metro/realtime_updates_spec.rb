@@ -39,7 +39,7 @@ RSpec.describe Metro::RealtimeUpdates do
     context "with a matching stop_time.trip.remote_id and stop_time.stop.remote.id" do
       let!(:trip) { build(:trip, remote_id: 940135) }
       let!(:stop) { build(:stop, remote_id: "HAMBELi") }
-      let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, departure_time: 10.minutes.from_now ) }
+      let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, departure_time: Duration.for_time(10.minutes.from_now).to_s ) }
 
       it "returns a StopTimeUpdate for the stop_time" do
         expect(stop_time_update).to be_a(Metro::RealtimeUpdates::StopTimeUpdate)

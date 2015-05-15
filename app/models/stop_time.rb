@@ -23,6 +23,7 @@ class StopTime < ActiveRecord::Base
   def self.between(start_time, end_time)
     base_clause =
       joins(trip: :service)
+      .where('? between services.start_date and services.end_date', start_time)
       .where("services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ?", Interval.for_time(start_time).to_s)
 
     if start_time.day != end_time.day

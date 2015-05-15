@@ -7,5 +7,6 @@ class Service < ActiveRecord::Base
     # This looks weird, but the days are boolean columns and
     # 'select * from foo where bar' works in postgres for boolean columns
     where(time.strftime('%A').downcase)
+      .where('? between services.start_date and services.end_date', time)
   end
 end

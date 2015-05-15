@@ -16,9 +16,9 @@ class DepartureFetcher
 
   def stop_times
     @stop_times ||= agency.stop_times
+      .between(start_time, end_time)
       .where(stop: stop, trips: { service_id: agency.services.for_time(@time) })
-      .where("departure_time > :start_time AND departure_time < :end_time", time_query)
-      .includes(:route, :trip, :stop)
+      .includes(:trip)
       .to_a
   end
 
@@ -28,11 +28,12 @@ class DepartureFetcher
 
   protected
 
-  def time_query
-    {
-      start_time: @time - 10.minutes,
-      end_time: @time + 1.hour
-    }
+  def start_time
+    @time - 10.minutes
+  end
+
+  def end_time
+    @time + 1.hour
   end
 end
 

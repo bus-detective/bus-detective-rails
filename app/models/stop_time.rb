@@ -5,12 +5,14 @@ class StopTime < ActiveRecord::Base
   has_one :route, through: :trip
   has_one :service, through: :trip
 
-  # You might think that noon - 12 hours is midnight.
-  # You would be right most of the time, except on days that don't have 24
-  # hours such as around daylight savings time changes
   def departure_time_on(date)
     self.class.offset_start(date) + Interval.parse(departure_time)
   end
+
+  # FIXME: Technically all of the dates below probably need to be in the
+  # timezone of the stop. To do that we probably need to have this entire query
+  # run in the database so that we can convert a UTC time to local time and
+  # calculate the offset there.
 
   # RULE: The arrival_time and departure_time are expressed as an interval.
   # The time is measured from "noon minus 12h" (effectively midnight, except
@@ -23,14 +25,25 @@ class StopTime < ActiveRecord::Base
     # Start time is always treated as "today", but end time could be the following day
     # today_end is an interval from the offset described above
     today_end = Interval.new(end_time - offset_start(start_time))
-    joins(trip: :service)
+    base_query = joins(trip: :service)
       .where('? between services.start_date and services.end_date', start_time)
-      .where("services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ?", Interval.for_time(start_time).to_s)
-      .where("(services.#{start_time.strftime('%A').downcase} AND departure_time <= interval ?) OR (services.#{end_time.strftime('%A').downcase} AND departure_time <= interval ?)",
-              today_end.to_s,
-              Interval.for_time(end_time).to_s)
+
+    if start_time.day == end_time.day
+      base_query
+        .where("services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ? AND departure_time <= interval ?",
+          Interval.for_time(start_time).to_s,
+          today_end.to_s)
+    else
+      base_query
+        .where("(services.#{start_time.strftime('%A').downcase} AND departure_time >= interval ?) OR (services.#{end_time.strftime('%A').downcase} AND departure_time <= interval ?)",
+          Interval.for_time(start_time).to_s,
+          Interval.for_time(end_time).to_s)
+    end
   end
 
+  # You might think that noon - 12 hours is midnight.
+  # You would be right most of the time, except on days that don't have 24
+  # hours such as around daylight savings time changes
   def self.offset_start(time)
     time.noon - 12.hours
   end

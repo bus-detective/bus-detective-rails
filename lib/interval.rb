@@ -14,7 +14,7 @@ class Interval
   end
 
   def self.for_time(time)
-    new(time - time.at_beginning_of_day)
+    new(time - (time.noon - 12.hours))
   end
 
   def initialize(args = 0)

@@ -1,3 +1,5 @@
+require 'ordinalize'
+
 module TsqueryBuilder
   extend ActiveSupport::Inflector
   extend Ordinalize
@@ -15,6 +17,7 @@ module TsqueryBuilder
     ['highway', 'hwy'],
     ['lane', 'ln'],
     ['place', 'pl'],
+    ['parkway', 'pkwy'],
     ['road', 'rd'],
     ['route', 'rte'],
     ['square', 'sq', 'sqr'],

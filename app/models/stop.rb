@@ -13,8 +13,13 @@ class Stop < ActiveRecord::Base
 
   belongs_to :agency
 
-  include PgSearch
-  pg_search_scope :search, against: [:name, :code]
+  def self.search(ts_query_terms)
+    joins(%(INNER JOIN
+            (SELECT "stops"."id" AS pg_search_id,
+            ts_rank(to_tsvector('english', coalesce("stops"."name"::text, '')) || to_tsvector('english', coalesce("stops"."code"::text, '')), to_tsquery('english', '#{ts_query_terms}')), 0 AS rank
+            FROM "stops" WHERE to_tsvector('english', coalesce("stops"."name"::text, '')) || to_tsvector('english', coalesce("stops"."code"::text, '')) @@ to_tsquery('english', '#{ts_query_terms}')) pg_search ON "stops"."id" = pg_search.pg_search_id))
+              .order('pg_search.rank DESC, "stops"."id" ASC')
+  end
 
   DIRECTION_LABELS = {
     "i" => "inbound",

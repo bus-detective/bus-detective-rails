@@ -1,5 +1,6 @@
 class StopSearcher
   include ActiveModel::SerializerSupport
+
   DEFAULT_PER_PAGE = 20
 
   attr_reader :per_page, :page
@@ -43,7 +44,7 @@ class StopSearcher
     scope = Stop.includes(:routes)
 
     if @params[:query]
-      scope = scope.search(substituted_query)
+      scope = scope.search(TsqueryBuilder.build(@params[:query]))
     end
 
     if @params[:longitude] && @params[:latitude]
@@ -52,29 +53,5 @@ class StopSearcher
 
     scope
   end
-
-  def substituted_query
-    @params[:query].gsub(/(#{QUERY_SUBSTITUTIONS.keys.join("|")})/, QUERY_SUBSTITUTIONS)
-  end
-
-  QUERY_SUBSTITUTIONS = {
-    "and" => "&",
-    "street" => "st",
-    "road" => "rd",
-    "lane" => "ln",
-    "avenue" => "ave",
-    "boulevard" => "blvd",
-    "first" => "1st",
-    "second" => "2nd",
-    "thrid" => "3rd",
-    "fourth" => "4th",
-    "fifth" => "5th",
-    "sixth" => "6th",
-    "seventh" => "7th",
-    "eighth" => "8th",
-    "ninth" => "9th",
-    "tenth" => "10th",
-    "eleventh" => "11th",
-    "twelfth" => "12th",
-  }
 end
+

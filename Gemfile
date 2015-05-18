@@ -7,7 +7,6 @@ gem 'active_model_serializers', '~> 0.8.3' # Because people hate 0.9.x branch fo
 gem 'geokit-rails' # Provides acts_as_mappable
 gem 'gtfs'         # Support for General Transit Feed Specification (format of the stop/route data)
 gem 'pg'
-gem 'pg_search'    # Full text search support
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'

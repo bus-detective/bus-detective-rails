@@ -49,7 +49,7 @@ describe StopSearcher do
 
       context "with a stop code" do
         let(:params) { { query: "1234" } }
-        it "returns only the mating stop" do
+        it "returns only the matching stop" do
           expect(stop_searcher.results).to eq([matching_stop])
         end
       end

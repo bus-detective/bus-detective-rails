@@ -7,7 +7,7 @@ set -e
 DATABASE='bus_detective_development'
 HEROKU_APP='busdetective'
 
-dropdb ${DATABASE}
+dropdb ${DATABASE} --if-exists
 createdb ${DATABASE}
 
 if [ -z $BACKUP_ID ]; then

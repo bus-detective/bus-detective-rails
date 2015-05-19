@@ -23,9 +23,11 @@ RSpec.describe DepartureFetcher do
     end
   end
 
+
+
   describe "departures without realtime updates" do
-    let(:departure_time) { Interval.for_time(now + 10.minutes) }
-    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: departure_time) }
+    let(:departure_time) { now + 10.minutes }
+    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
 
     it "creates one for each stop_time" do
       expect(subject.departures.size).to eq(1)
@@ -36,11 +38,11 @@ RSpec.describe DepartureFetcher do
     end
 
     it "applies the departure time the scheduled stop_time" do
-      expect(subject.departures.first.time).to eq(stop_time.departure_time_on(now))
+      expect(subject.departures.first.time).to eq(departure_time)
     end
 
     context "when a departure is less than 10 minutes past" do
-      let(:departure_time) { Interval.for_time(now - 9.minutes) }
+      let(:departure_time) { now - 9.minutes }
 
       it "it shows already past departures for a short while" do
         expect(subject.departures.size).to eq(1)
@@ -48,7 +50,7 @@ RSpec.describe DepartureFetcher do
     end
 
     context "when a departure is up to an hour in the past" do
-      let(:departure_time) { Interval.for_time(now - 55.minutes) }
+      let(:departure_time) { now - 55.minutes }
 
       it "it won't show that stop time" do
         expect(subject.departures.size).to be_zero
@@ -56,7 +58,7 @@ RSpec.describe DepartureFetcher do
     end
 
     context "when a departure is more than an hour in the past" do
-      let(:departure_time) { Interval.for_time(now - 65.minutes) }
+      let(:departure_time) { now - 65.minutes }
 
       it "it won't show that stop time" do
         expect(subject.departures.size).to be_zero

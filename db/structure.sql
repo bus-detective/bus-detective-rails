@@ -176,6 +176,28 @@ CREATE TABLE services (
 
 
 --
+-- Name: service_days; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW service_days AS
+ SELECT sd.id,
+    sd.agency_id,
+    sd.remote_id,
+    sd.start_date,
+    sd.end_date,
+    sd.dow
+   FROM ( SELECT services.id,
+            services.agency_id,
+            services.remote_id,
+            services.start_date,
+            services.end_date,
+            unnest(ARRAY['monday'::text, 'tuesday'::text, 'wednesday'::text, 'thursday'::text, 'friday'::text, 'saturday'::text, 'sunday'::text]) AS dow,
+            unnest(ARRAY[services.monday, services.tuesday, services.wednesday, services.thursday, services.friday, services.saturday, services.sunday]) AS active
+           FROM services) sd
+  WHERE sd.active;
+
+
+--
 -- Name: services_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -661,4 +683,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150512135655');
 INSERT INTO schema_migrations (version) VALUES ('20150512192738');
 
 INSERT INTO schema_migrations (version) VALUES ('20150515140017');
+
+INSERT INTO schema_migrations (version) VALUES ('20150519180934');
 

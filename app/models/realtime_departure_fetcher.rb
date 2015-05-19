@@ -11,7 +11,7 @@ class RealtimeDepartureFetcher < DepartureFetcher
   def departures
     @departures ||= stop_times.map { |stop_time|
       stop_time_update = realtime_updates.for_stop_time(stop_time)
-      Departure.new(date: @time.to_date, stop_time: stop_time, stop_time_update: stop_time_update)
+      Departure.new(stop_time: stop_time, stop_time_update: stop_time_update)
     }.sort_by(&:time).select { |d| active?(d) }
   end
 

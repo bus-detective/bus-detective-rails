@@ -3,7 +3,6 @@ class Departure
   attr_reader :stop_time
 
   def initialize(options)
-    @date = options.fetch(:date)
     @stop_time = options.fetch(:stop_time)
     @stop_time_update = options.fetch(:stop_time_update)
   end
@@ -22,7 +21,7 @@ class Departure
     if @stop_time_update
       @stop_time_update.departure_time
     else
-      @stop_time.departure_time_on(@date)
+      @stop_time.departure_time
     end
   end
 

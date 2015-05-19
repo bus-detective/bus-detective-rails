@@ -9,13 +9,13 @@ RSpec.describe RealtimeDepartureFetcher do
 
   describe "#stop_times" do
     let!(:applicable_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now + 10.minutes).to_s)
+      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now + 10.minutes))
     }
     let!(:out_of_time_range_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now - 2.hours).to_s)
+      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now - 2.hours))
     }
     let!(:different_service_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: create(:trip, agency: agency), departure_time: Interval.for_time(now).to_s)
+      create(:stop_time, agency: agency, stop: stop, trip: create(:trip, agency: agency), departure_time: Interval.for_time(now))
     }
 
     it "searches stop_times within a time range and on the service" do
@@ -24,8 +24,8 @@ RSpec.describe RealtimeDepartureFetcher do
   end
 
   describe "#departures" do
-    let(:departure_time) { Interval.for_time(now + 10.minutes) }
-    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: departure_time) }
+    let(:departure_time) { now + 10.minutes }
+    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
     let(:fake_realtime_updates) { double("RealtimeUpdates", for_stop_time: fake_stop_time_update) }
 
     before do
@@ -60,12 +60,12 @@ RSpec.describe RealtimeDepartureFetcher do
       end
 
       it "applies the departure time the scheduled stop_time" do
-        expect(subject.departures.first.time).to eq(stop_time.departure_time_on(now))
+        expect(subject.departures.first.time).to eq(departure_time)
       end
     end
 
     context "when a departure is less than 10 minutes past" do
-      let(:departure_time) { Interval.for_time(now - 9.minutes) }
+      let(:departure_time) { now - 9.minutes }
 
       context "and realtime updates are in the past for the stop time" do
         let(:fake_stop_time_update) { OpenStruct.new(departure_time: now - 9.minutes, delay: 9) }
@@ -85,7 +85,7 @@ RSpec.describe RealtimeDepartureFetcher do
     end
 
     context "when a departure is up to an hour in the past" do
-      let(:departure_time) { Interval.for_time(now - 55.minutes) }
+      let(:departure_time) { now - 55.minutes }
 
       context "and realtime updates are available showing upcoming departure for the stop time" do
         let(:fake_stop_time_update) { OpenStruct.new(departure_time: now + 5.minutes, delay: 5) }
@@ -105,7 +105,7 @@ RSpec.describe RealtimeDepartureFetcher do
     end
 
     context "when a departure is more than an hour in the past" do
-      let(:departure_time) { Interval.for_time(now - 65.minutes ) }
+      let(:departure_time) { now - 65.minutes }
 
       context "and realtime updates are available showing upcoming departure for the stop time" do
         let(:fake_stop_time_update) { OpenStruct.new(departure_time: Interval.for_time(now + 5.minutes)) }

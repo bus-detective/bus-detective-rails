@@ -2,21 +2,23 @@ require 'rails_helper'
 
 RSpec.describe Departure do
   let!(:now) { Time.zone.now }
-  let(:time) { Time.zone.parse("2015-04-23 7:30") }
-  let(:stop_time) { create(:stop_time, departure_time: Interval.for_time(time)) }
+  let(:time) { Time.zone.parse("2015-04-23 07:30") }
+  let(:stop_time) {
+    attrs = attributes_for(:stop_time, departure_time: Interval.for_time(time)).merge(departure_time: time.to_s)
+    CalculatedStopTime.new(attrs)
+  }
 
-  subject(:departure) { Departure.new(date: time.to_date, stop_time: stop_time, stop_time_update: stop_time_update) }
+  subject(:departure) { Departure.new(stop_time: stop_time, stop_time_update: stop_time_update) }
 
   context "with no stop_time_update" do
     let(:stop_time_update) { nil }
 
     it "has the time of the scheduled departure_time" do
-      expect(departure.time).to eq(stop_time.departure_time_on(time))
+      expect(departure.time).to eq(stop_time.departure_time)
     end
 
     it "applies the date to the stop_time (because the database resets it to 2000-01-01)" do
-      stop_time.reload
-      expect(departure.time).to eq(time)
+      expect(departure.time).to eq(stop_time.departure_time)
     end
 
     it "is not realtime" do
@@ -43,7 +45,6 @@ RSpec.describe Departure do
       let(:time) { Time.zone.parse("2015-04-23 23:00") }
 
       it "maintains the correct date" do
-        stop_time.reload
         expect(departure.time).to eq(time)
       end
     end

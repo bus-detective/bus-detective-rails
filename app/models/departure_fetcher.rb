@@ -10,16 +10,17 @@ class DepartureFetcher
 
   def departures
     @departures ||= stop_times.map { |stop_time|
-      Departure.new(date: @time.to_date, stop_time: stop_time, stop_time_update: nil)
+      Departure.new(stop_time: stop_time, stop_time_update: nil)
     }.sort_by(&:time)
   end
 
   def stop_times
-    @stop_times ||= agency.stop_times
+    @stop_times ||= ActiveRecord::Base.connection.select_all(agency.stop_times
       .where(stop: stop)
       .between(start_time, end_time)
       .includes(:trip)
-      .to_a
+      .select_for_departure.to_sql)
+      .map { |h| CalculatedStopTime.new(h.symbolize_keys) }
   end
 
   def valid?

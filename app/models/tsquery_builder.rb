@@ -33,7 +33,8 @@ module TsqueryBuilder
   def self.build(query)
     return unless query
 
-    query_parts = query.strip.downcase.split(/&|and/)
+    # Space around and below is important so that a word containing 'and' isn't split
+    query_parts = query.strip.downcase.split(/&| and /)
     query_parts.map { |q| build_ts_query(q) }.map { |q| "(#{q})" }.join(" & ")
   end
 

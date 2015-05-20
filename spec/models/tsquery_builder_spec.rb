@@ -17,4 +17,8 @@ RSpec.describe TsqueryBuilder do
   it 'provides substitutions' do
     expect(TsqueryBuilder.build('Main St and Twelfth Ave')).to eq('(main & (street | st | str)) & ((12 | twelfth | 12th) & (avenue | ave))')
   end
+
+  it 'does not mess up words with and in it' do
+    expect(TsqueryBuilder.build('Highland & University')).to eq('(highland) & (university)')
+  end
 end

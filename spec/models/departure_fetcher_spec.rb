@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DepartureFetcher do
-  let(:now) { Time.zone.parse("2015-04-23 7:30am") }
+  let(:now) { Time.zone.parse("2015-04-23 07:30:00-0400") }
   let(:stop) { create(:stop) }
   let(:agency) { stop.agency }
   let(:trip) { create(:trip, agency: agency, service: create(:service, agency: agency, thursday: true)) }
@@ -9,13 +9,13 @@ RSpec.describe DepartureFetcher do
 
   describe "#stop_times" do
     let!(:applicable_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: now + 10.minutes)
+      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now + 10.minutes))
     }
     let!(:out_of_time_range_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: now - 2.hours)
+      create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(now - 2.hours))
     }
     let!(:different_service_stop_time) {
-      create(:stop_time, agency: agency, stop: stop, trip: create(:trip, agency: agency), departure_time: now)
+      create(:stop_time, agency: agency, stop: stop, trip: create(:trip, agency: agency), departure_time: Interval.for_time(now))
     }
 
     it "searches stop_times within a time range and on the service" do
@@ -23,9 +23,11 @@ RSpec.describe DepartureFetcher do
     end
   end
 
+
+
   describe "departures without realtime updates" do
     let(:departure_time) { now + 10.minutes }
-    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: departure_time) }
+    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
 
     it "creates one for each stop_time" do
       expect(subject.departures.size).to eq(1)
@@ -36,7 +38,7 @@ RSpec.describe DepartureFetcher do
     end
 
     it "applies the departure time the scheduled stop_time" do
-      expect(subject.departures.first.time).to eq(stop_time.departure_time)
+      expect(subject.departures.first.time).to eq(departure_time)
     end
 
     context "when a departure is less than 10 minutes past" do

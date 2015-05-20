@@ -2,10 +2,13 @@ require 'rails_helper'
 
 RSpec.describe Departure do
   let!(:now) { Time.zone.now }
-  let(:time) { Time.zone.parse("2015-04-23 7:30") }
-  let(:stop_time) { create(:stop_time, departure_time: time) }
+  let(:time) { Time.zone.parse("2015-04-23 07:30") }
+  let(:stop_time) {
+    attrs = attributes_for(:stop_time, departure_time: Interval.for_time(time)).merge(departure_time: time.to_s)
+    CalculatedStopTime.new(attrs)
+  }
 
-  subject(:departure) { Departure.new(date: time.to_date, stop_time: stop_time, stop_time_update: stop_time_update) }
+  subject(:departure) { Departure.new(stop_time: stop_time, stop_time_update: stop_time_update) }
 
   context "with no stop_time_update" do
     let(:stop_time_update) { nil }
@@ -15,8 +18,7 @@ RSpec.describe Departure do
     end
 
     it "applies the date to the stop_time (because the database resets it to 2000-01-01)" do
-      stop_time.reload
-      expect(departure.time).to eq(time)
+      expect(departure.time).to eq(stop_time.departure_time)
     end
 
     it "is not realtime" do
@@ -28,14 +30,14 @@ RSpec.describe Departure do
     end
 
     it "calculates the duration from the scheduled departure time" do
-      expect(departure.duration_from(time)).to eq(Duration.new(0.minutes))
+      expect(departure.duration_from(time)).to eq(Interval.new(0))
     end
 
     context "with a scheduled time in the past" do
       let(:time) { now - 5.minutes }
 
       it "can calculate the duration from the scheduled departure time in the past" do
-        expect(departure.duration_from(now)).to eq(Duration.new(-5.minutes))
+        expect(departure.duration_from(now)).to eq(Interval.new(-5.minutes))
       end
     end
 
@@ -43,14 +45,13 @@ RSpec.describe Departure do
       let(:time) { Time.zone.parse("2015-04-23 23:00") }
 
       it "maintains the correct date" do
-        stop_time.reload
         expect(departure.time).to eq(time)
       end
     end
   end
 
   context "with a stop_time_update" do
-    let(:time) { now + 5.minutes }
+    let(:time) { now + 10.minutes }
     let(:stop_time_update) { OpenStruct.new(departure_time: time, delay: 10) }
 
     it "has the time of the realtime departure_time" do
@@ -66,14 +67,14 @@ RSpec.describe Departure do
     end
 
     it "can calculate the duration from the realtime departure time" do
-      expect(departure.duration_from(now)).to eq(Duration.new(5.minutes))
+      expect(departure.duration_from(now)).to eq(Interval.new(10.minutes))
     end
 
     context "with a departure time in the past" do
       let(:time) { now - 5.minutes }
 
       it "can calculate the duration from the scheduled departure time in the past" do
-        expect(departure.duration_from(now)).to eq(Duration.new(-5.minutes))
+        expect(departure.duration_from(now)).to eq(Interval.new(-5.minutes))
       end
     end
   end

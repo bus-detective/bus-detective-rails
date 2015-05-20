@@ -52,7 +52,7 @@ class Metro::Importer
           url: s.url,
           location_type: s.location_type,
           parent_station: s.parent_station,
-          timezone: s.timezone,
+          timezone: s.timezone || @agency.timezone,
           wheelchair_boarding: s.wheelchair_boarding
         }
       end
@@ -77,20 +77,20 @@ class Metro::Importer
 
   def import_trips!
     source.each_trip do |t|
-      trip = Trip.find_or_create_by(remote_id: t.id, agency: @agency)
-      trip.update!(
-        route: Route.find_or_create_by!(remote_id: t.route_id, agency: @agency),
-        service: Service.find_or_create_by!(remote_id: t.service_id, agency: @agency),
-        remote_id: t.id,
-        agency: @agency,
-        headsign: Metro::StringHelper.titleize_headsign(t.headsign),
-        short_name: t.short_name,
-        direction_id: t.direction_id,
-        block_id: t.block_id,
-        shape_id: t.shape_id,
-        wheelchair_accessible: t.wheelchair_accessible,
-        bikes_allowed: t.instance_variable_get("@bikes_allowed")
-      )
+      trip = Trip.find_or_initialize_by(remote_id: t.id, agency: @agency)
+      trip.attributes = {route: Route.find_or_create_by!(remote_id: t.route_id, agency: @agency),
+                         service: Service.find_or_create_by!(remote_id: t.service_id, agency: @agency),
+                         remote_id: t.id,
+                         agency: @agency,
+                         headsign: Metro::StringHelper.titleize_headsign(t.headsign),
+                         short_name: t.short_name,
+                         direction_id: t.direction_id,
+                         block_id: t.block_id,
+                         shape_id: t.shape_id,
+                         wheelchair_accessible: t.wheelchair_accessible,
+                         bikes_allowed: t.instance_variable_get("@bikes_allowed")
+      }
+      trip.save!
     end
   end
 
@@ -98,16 +98,16 @@ class Metro::Importer
     source.each_stop_time do |st|
       stop = Stop.find_or_create_by!(remote_id: st.stop_id, agency: @agency)
       trip = Trip.find_or_create_by!(remote_id: st.trip_id, agency: @agency)
-      stop_time = StopTime.find_or_create_by(stop: stop, trip: trip, agency: @agency)
-      stop_time.update!(
-        arrival_time: Metro::TimeParser.new(st.arrival_time, source_agency.timezone).time,
-        departure_time: Metro::TimeParser.new(st.departure_time, source_agency.timezone).time,
-        stop_sequence: st.stop_sequence,
-        stop_headsign: st.stop_headsign,
-        pickup_type: st.pickup_type,
-        drop_off_type: st.drop_off_type,
-        shape_dist_traveled: st.shape_dist_traveled
-      )
+      stop_time = StopTime.find_or_initialize_by(stop: stop, trip: trip, agency: @agency)
+      stop_time.attributes = { arrival_time: st.arrival_time,
+                               departure_time: st.departure_time,
+                               stop_sequence: st.stop_sequence,
+                               stop_headsign: st.stop_headsign,
+                               pickup_type: st.pickup_type,
+                               drop_off_type: st.drop_off_type,
+                               shape_dist_traveled: st.shape_dist_traveled
+      }
+      stop_time.save!
     end
   end
 

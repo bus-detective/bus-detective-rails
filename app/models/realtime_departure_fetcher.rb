@@ -1,5 +1,3 @@
-require 'duration'
-
 class RealtimeDepartureFetcher < DepartureFetcher
   include ActiveModel::SerializerSupport
 
@@ -7,13 +5,13 @@ class RealtimeDepartureFetcher < DepartureFetcher
     super(agency, stop, time, params)
 
     time_limit = params.fetch(:time_limit, 10).to_i
-    @active_duration = Duration.new((-1 * time_limit.minutes))
+    @active_duration = Interval.new((-1 * time_limit.minutes))
   end
 
   def departures
     @departures ||= stop_times.map { |stop_time|
       stop_time_update = realtime_updates.for_stop_time(stop_time)
-      Departure.new(date: @time.to_date, stop_time: stop_time, stop_time_update: stop_time_update)
+      Departure.new(stop_time: stop_time, stop_time_update: stop_time_update)
     }.sort_by(&:time).select { |d| active?(d) }
   end
 

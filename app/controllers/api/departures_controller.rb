@@ -28,6 +28,8 @@ class Api::DeparturesController < ApiController
   end
 
   def time
+    # TODO: Confirm how time is being passed. We need it in local time for
+    # offset to work correctly I think.
     params[:time] ? Time.zone.parse(params[:time]) : Time.current
   end
 end

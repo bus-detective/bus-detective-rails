@@ -30,8 +30,15 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE FUNCTION start_time(start_date date DEFAULT ('now'::text)::date) RETURNS timestamp without time zone
-    LANGUAGE sql
-    AS $$ SELECT start_date + interval '12:00:00' - interval '12:00:00' $$;
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+  noon varchar(50);
+BEGIN
+  SELECT INTO noon to_char(start_date, 'YYYY-mm-dd') || ' 12:00:00';
+  RETURN noon::timestamp - interval '12 hours';
+END;
+$$;
 
 
 SET default_tablespace = '';
@@ -685,4 +692,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150512192738');
 INSERT INTO schema_migrations (version) VALUES ('20150515140017');
 
 INSERT INTO schema_migrations (version) VALUES ('20150519180934');
+
+INSERT INTO schema_migrations (version) VALUES ('20150520011853');
 

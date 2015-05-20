@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DepartureFetcher do
-  let(:now) { Time.zone.parse("2015-04-23 7:30am") }
+  let(:now) { Time.zone.parse("2015-04-23 07:30:00-0400") }
   let(:stop) { create(:stop) }
   let(:agency) { stop.agency }
   let(:trip) { create(:trip, agency: agency, service: create(:service, agency: agency, thursday: true)) }

@@ -10,20 +10,23 @@ class StopTime < ActiveRecord::Base
   # other queries that use the 'days' query
   #
   # HINT: If you're using this, you should be using CalculatedStopTime
-  # 
+  #
   # Timezones are hard.
   # They need to go in/out as UTC so Rails will properly convert them to local
   # time. But internally, we want to do comparisons in them at the timezone
   # of the agency, so we have to conver them to the local time in the between
   # query below.
   #
+  # Controlling formatting of times coming out of DB because Postgres 9.3 adds
+  # on a +00 (timezone) which confuses Rails when we try to parse it to local
+  # time.
   def self.select_for_departure
     readonly.select("stop_times.id, stop_times.stop_sequence, stop_times.stop_headsign,
            stop_times.pickup_type, stop_times.drop_off_type,
            stop_times.shape_dist_traveled, stop_times.agency_id,
            stop_times.stop_id, stop_times.trip_id,
-           ((start_time(days.d) + stop_times.arrival_time) AT TIME ZONE 'UTC') as arrival_time,
-           ((start_time(days.d) + stop_times.departure_time) AT TIME ZONE 'UTC') as departure_time")
+           to_char(((start_time(days.d) + stop_times.arrival_time) AT TIME ZONE 'UTC'), 'YYYY-MM-DD HH24:MI:SS') as arrival_time,
+           to_char(((start_time(days.d) + stop_times.departure_time) AT TIME ZONE 'UTC'), 'YYYY-MM-DD HH24:MI:SS') as departure_time")
   end
 
   # Expand the service days into actual dates so that we can use them to calculate

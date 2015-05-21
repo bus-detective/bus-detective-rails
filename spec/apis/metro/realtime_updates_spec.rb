@@ -8,9 +8,9 @@ RSpec.describe Metro::RealtimeUpdates do
     let(:agency) { create(:agency, :with_rt_endpoint) }
 
     it "calls Connection.get with the endpoint" do
-      allow(Metro::Connection).to receive(:get).with(agency.realtime_endpoint).and_return(fixture)
+      allow(Metro::Connection).to receive(:get).with(agency.gtfs_trip_updates_url).and_return(fixture)
       Metro::RealtimeUpdates.fetch(agency)
-      expect(Metro::Connection).to have_received(:get).with(agency.realtime_endpoint)
+      expect(Metro::Connection).to have_received(:get).with(agency.gtfs_trip_updates_url)
     end
   end
 

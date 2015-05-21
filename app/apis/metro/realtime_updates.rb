@@ -4,7 +4,7 @@ require 'time'
 module Metro
   class RealtimeUpdates
     def self.fetch(agency)
-      new(Connection.get(agency.realtime_endpoint))
+      new(Connection.get(agency.gtfs_trip_updates_url))
     end
 
     def initialize(buffer)

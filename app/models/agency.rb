@@ -6,6 +6,6 @@ class Agency < ActiveRecord::Base
   has_many :services
 
   def realtime?
-    realtime_endpoint.present?
+    gtfs_trip_updates_url.present?
   end
 end

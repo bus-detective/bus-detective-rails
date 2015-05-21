@@ -7,15 +7,17 @@ class Metro::Importer
   def import!
     @logger.info("Fetching: #{@agency.gtfs_endpoint}")
     update_agency!
-    @logger.info("Step 1/5: Importing services (#{source.calendars.size})")
+    @logger.info("Step 1/6: Importing services (#{source.calendars.size})")
     import_services!
-    @logger.info("Step 2/5: Importing routes (#{source.routes.size})")
+    @logger.info("Step 2/6: Importing services exceptions (#{source.calendar_dates.size})")
+    import_services_exceptions!
+    @logger.info("Step 3/6: Importing routes (#{source.routes.size})")
     import_routes!
-    @logger.info("Step 3/5: Importing stops (#{source.stops.size})")
+    @logger.info("Step 4/6: Importing stops (#{source.stops.size})")
     import_stops!
-    @logger.info("Step 4/5: Importing trips (#{source.trips.size})")
+    @logger.info("Step 5/6: Importing trips (#{source.trips.size})")
     import_trips!
-    @logger.info("Step 5/5: Importing stop times (#{source.stop_times.size})")
+    @logger.info("Step 6/6: Importing stop times (#{source.stop_times.size})")
     import_stop_times!
     update_route_stop_cache!
     true
@@ -36,6 +38,12 @@ class Metro::Importer
           end_date: cal.end_date
         }
       end
+    end
+  end
+
+  def import_services_exceptions!
+    source.each_calendar_date do |cal|
+      ServiceException.find_or_create_by!(agency: @agency, service: Service.find_by!(remote_id: cal.service_id, agency: @agency), date: cal.date, exception: cal.exception_type)
     end
   end
 

@@ -59,7 +59,9 @@ CREATE TABLE agencies (
     language character varying,
     phone character varying,
     gtfs_endpoint character varying,
-    realtime_endpoint character varying
+    gtfs_trip_updates_url character varying,
+    gtfs_vehicle_positions_url character varying(150),
+    gtfs_service_alerts_url character varying(150)
 );
 
 
@@ -694,4 +696,8 @@ INSERT INTO schema_migrations (version) VALUES ('20150515140017');
 INSERT INTO schema_migrations (version) VALUES ('20150519180934');
 
 INSERT INTO schema_migrations (version) VALUES ('20150520011853');
+
+INSERT INTO schema_migrations (version) VALUES ('20150521170418');
+
+INSERT INTO schema_migrations (version) VALUES ('20150521171330');
 

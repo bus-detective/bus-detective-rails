@@ -15,12 +15,15 @@ class DepartureFetcher
   end
 
   def stop_times
-    @stop_times ||= ActiveRecord::Base.connection.select_all(agency.stop_times
-      .where(stop: stop)
-      .between(start_time, end_time)
-      .includes(:trip)
-      .select_for_departure.to_sql)
-      .map { |h| CalculatedStopTime.new(h.symbolize_keys) }
+    @stop_times ||= begin
+      query = agency.stop_times
+        .where(stop: stop)
+        .between(start_time, end_time)
+        .includes(:trip)
+        .select_for_departure.to_sql
+
+      ActiveRecord::Base.connection.select_all(query).map { |h| CalculatedStopTime.new(h.symbolize_keys) }
+    end
   end
 
   def valid?

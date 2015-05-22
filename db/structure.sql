@@ -41,6 +41,15 @@ END;
 $$;
 
 
+--
+-- Name: english_stem; Type: TEXT SEARCH DICTIONARY; Schema: public; Owner: -
+--
+
+CREATE TEXT SEARCH DICTIONARY english_stem (
+    TEMPLATE = pg_catalog.snowball,
+    language = 'english', stopwords = 'english' );
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -265,7 +274,6 @@ ALTER SEQUENCE services_id_seq OWNED BY services.id;
 
 CREATE TABLE stop_times (
     id integer NOT NULL,
-    stop_sequence character varying,
     stop_headsign character varying,
     pickup_type integer,
     drop_off_type integer,
@@ -276,7 +284,8 @@ CREATE TABLE stop_times (
     stop_id integer,
     trip_id integer,
     arrival_time interval NOT NULL,
-    departure_time interval NOT NULL
+    departure_time interval NOT NULL,
+    stop_sequence integer
 );
 
 
@@ -767,4 +776,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150521170418');
 INSERT INTO schema_migrations (version) VALUES ('20150521171330');
 
 INSERT INTO schema_migrations (version) VALUES ('20150521180058');
+
+INSERT INTO schema_migrations (version) VALUES ('20150522141154');
 

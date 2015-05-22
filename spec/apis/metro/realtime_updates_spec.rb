@@ -47,6 +47,18 @@ RSpec.describe Metro::RealtimeUpdates do
       end
     end
 
+    context "with stop_sequence after one of the given updated" do
+      let!(:trip) { build(:trip, remote_id: 940135) }
+      let!(:stop) { build(:stop, remote_id: "NA") }
+      let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, stop_sequence: 99, departure_time: Interval.for_time(10.minutes.from_now).to_s ) }
+
+      it "interprets the delay as the delay from the previous stop_sequence" do
+        expect(stop_time_update).to be_a(Metro::RealtimeUpdates::StopTimeUpdate)
+        expect(stop_time_update.stop_sequence).to eq(97)
+        expect(stop_time_update.delay).to eq(120)
+      end
+    end
+
     context "with a non-matching stop_time" do
       let(:stop_time) { build(:stop_time) }
       it "returns nil" do

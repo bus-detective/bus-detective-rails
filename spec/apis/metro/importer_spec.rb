@@ -13,73 +13,46 @@ RSpec.describe Metro::Importer do
   end
 
   describe "#import_services!" do
-    it "imports all the services" do
-      importer.import_services!
-      expect(Service.count).to eq(3)
-    end
-
     it "is atomic" do
-      importer.import_services!
+      importer.import!
       importer.import_services!
       expect(Service.count).to eq(3)
     end
   end
 
   describe "#import_stops!" do
-    it "imports all the stops" do
-      importer.import_stops!
-      expect(Stop.count).to eq(10)
-    end
-
     it "is atomic" do
-      importer.import_stops!
+      importer.import!
       importer.import_stops!
       expect(Stop.count).to eq(10)
     end
   end
 
   describe "#import_routes!" do
-    it "imports all the routes" do
-      importer.import_routes!
-      expect(Route.count).to eq(10)
-    end
-
     it "is atomic" do
-      importer.import_routes!
+      importer.import!
       importer.import_routes!
       expect(Route.count).to eq(10)
     end
   end
 
   describe "#import_trips!" do
-    it "imports all the trips" do
+    it "is atomic" do
+      importer.import!
       importer.import_trips!
       expect(Trip.count).to eq(10)
-    end
-
-    it "is atomic" do
-      importer.import_trips!
-      importer.import_trips!
-      expect(Trip.count).to eq(10)
-    end
-  end
-
-  describe "#import_stop_times!" do
-    it "imports all the trips" do
-      importer.import_stop_times!
-      expect(StopTime.count).to eq(10)
-    end
-
-    it "is atomic" do
-      importer.import_stop_times!
-      importer.import_stop_times!
-      expect(StopTime.count).to eq(10)
     end
   end
 
   describe "#import" do
     it "imports everything" do
       expect(importer.import!).to eq(true)
+      expect(Trip.count).to eq(10)
+      expect(Route.count).to eq(10)
+      expect(Stop.count).to eq(10)
+      expect(Service.count).to eq(3)
+      expect(StopTime.count).to eq(10)
+      expect(ServiceException.count).to eq(2)
     end
   end
 end

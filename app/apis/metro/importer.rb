@@ -51,7 +51,7 @@ class Metro::Importer
 
   def import_services!
     source.each_calendar do |cal|
-      service = Service.find_or_create_by!(remote_id: cal.service_id, agency: @agency)
+      service = Service.find_or_initialize_by(remote_id: cal.service_id, agency: @agency)
       service.attributes = {
         monday: cal.monday,
         tuesday: cal.tuesday,
@@ -76,7 +76,7 @@ class Metro::Importer
 
   def import_stops!
     source.each_stop do |s|
-      stop = Stop.find_or_create_by!(remote_id: s.id, agency: @agency)
+      stop = Stop.find_or_initialize_by(remote_id: s.id, agency: @agency)
       stop.attributes = {
         code: s.code,
         name: Metro::StringHelper.titleize(s.name),
@@ -96,7 +96,7 @@ class Metro::Importer
 
   def import_routes!
     source.each_route do |r|
-      route = Route.find_or_create_by!(remote_id: r.id, agency: @agency)
+      route = Route.find_or_initialize_by(remote_id: r.id, agency: @agency)
       route.attributes = {
         short_name: r.short_name,
         long_name: Metro::StringHelper.titleize(r.long_name),

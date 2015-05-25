@@ -43,10 +43,11 @@ class StopTime < ActiveRecord::Base
     joins("INNER JOIN agencies ON stop_times.agency_id = agencies.id
            INNER JOIN trips ON stop_times.trip_id = trips.id
            INNER JOIN (
-              SELECT coalesce(service_exceptions.service_id, service_days.id) as service_id, d as date, dow
-              FROM (SELECT d::date FROM generate_series('#{start_time.to_date}', '#{end_time.to_date}', interval '1 day') d) days
-              LEFT JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day'))
-              LEFT JOIN service_exceptions ON service_exceptions.date = days.d
+              SELECT agencies.id as agency_id, coalesce(service_exceptions.service_id, service_days.id) as service_id, d as date, rtrim(to_char(days.d, 'day')) as dow
+              FROM agencies
+              CROSS JOIN (SELECT d::date FROM generate_series('#{start_time.to_date}', '#{end_time.to_date}', interval '1 day') d) days
+              LEFT JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+              LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id
               WHERE service_exceptions.exception IS NULL OR service_exceptions.exception = 1) effective_services ON trips.service_id = effective_services.service_id")
   end
 end

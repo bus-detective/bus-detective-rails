@@ -28,17 +28,7 @@ RSpec.describe DepartureFetcher do
     let(:departure_time) { now + 10.minutes }
     let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
 
-    it "creates one for each stop_time" do
-      expect(subject.departures.size).to eq(1)
-    end
-
-    it "is not realtime" do
-      expect(subject.departures.first).to_not be_realtime
-    end
-
-    it "applies the departure time the scheduled stop_time" do
-      expect(subject.departures.first.time).to eq(departure_time)
-    end
+    it_behaves_like "scheduled departures"
 
     context "when a departure is less than 10 minutes past" do
       let(:departure_time) { now - 9.minutes }

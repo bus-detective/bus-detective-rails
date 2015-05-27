@@ -27,14 +27,12 @@ RSpec.describe RealtimeDepartureFetcher do
     let(:departure_time) { now + 10.minutes }
     let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
 
-    [Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError].each do |error|
-      context "handling #{error}" do
-        before do
-          expect(Metro::RealtimeUpdates).to receive(:fetch).with(agency).and_raise(error)
-        end
-
-        it_behaves_like "scheduled departures"
+    context "handling Metro::Error" do
+      before do
+        expect(Metro::RealtimeUpdates).to receive(:fetch).with(agency).and_raise(Metro::Error)
       end
+
+      it_behaves_like "scheduled departures"
     end
   end
 

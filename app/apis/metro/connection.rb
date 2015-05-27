@@ -2,12 +2,6 @@ require 'uri'
 
 module Metro
   class Connection
-    @open_timeout = 2
-
-    def self.open_timeout=(val)
-      @open_timeout = val
-    end
-
     def self.get(url)
       uri = if url.is_a? URI
               url

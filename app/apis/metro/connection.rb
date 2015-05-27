@@ -9,7 +9,7 @@ module Metro
               URI(url)
             end
 
-      HTTP.timeout(:global, :write => 1, :connect => 1, :read => 3)
+      HTTP.timeout(:global, :write => 2, :connect => 2, :read => 4)
         .get(uri).to_s
     rescue HTTP::Error, IOError, Errno::EINVAL, Errno::ECONNRESET
       raise Metro::Error.new("Failed to get data from: #{uri}")

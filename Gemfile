@@ -11,6 +11,7 @@ gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
+gem 'sentry-raven'
 
 group :development, :test do
   gem 'byebug'
@@ -31,6 +32,5 @@ end
 
 group :production do
   gem 'rails_12factor'
-  gem 'sentry-raven'
   gem 'uglifier'
 end

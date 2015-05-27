@@ -31,8 +31,8 @@ class RealtimeDepartureFetcher < DepartureFetcher
     unless instance_variable_defined?(:@realtime_updates)
       begin
         @realtime_updates = Metro::RealtimeUpdates.fetch(agency)
-      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-        Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+        Raven.capture_exception(e)
         @realtime_updates = nil
       end
     end

@@ -23,6 +23,21 @@ RSpec.describe RealtimeDepartureFetcher do
     end
   end
 
+  describe "error handling" do
+    let(:departure_time) { now + 10.minutes }
+    let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
+
+    [Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError].each do |error|
+      context "handling #{error}" do
+        before do
+          expect(Metro::RealtimeUpdates).to receive(:fetch).with(agency).and_raise(error)
+        end
+
+        it_behaves_like "scheduled departures"
+      end
+    end
+  end
+
   describe "#departures" do
     let(:departure_time) { now + 10.minutes }
     let!(:stop_time) { create(:stop_time, agency: agency, stop: stop, trip: trip, departure_time: Interval.for_time(departure_time)) }
@@ -51,17 +66,7 @@ RSpec.describe RealtimeDepartureFetcher do
     context "when an associated realtime update does not exist for the stop time" do
       let(:fake_stop_time_update) { nil }
 
-      it "creates one for each stop_time" do
-        expect(subject.departures.size).to eq(1)
-      end
-
-      it "is not realtime" do
-        expect(subject.departures.first).to_not be_realtime
-      end
-
-      it "applies the departure time the scheduled stop_time" do
-        expect(subject.departures.first.time).to eq(departure_time)
-      end
+      it_behaves_like "scheduled departures"
     end
 
     context "when a departure is less than 10 minutes past" do

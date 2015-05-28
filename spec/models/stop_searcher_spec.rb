@@ -6,11 +6,15 @@ describe StopSearcher do
   describe "#valid?" do
     context "with invalid parameters" do
       let(:params) { { foo: "bar" } }
-      specify { expect(stop_searcher.valid?).to eq(false) }
+      specify { expect(stop_searcher).not_to be_valid }
     end
     context "with valid parameters" do
       let(:params) { { query: "foo" } }
-      specify { expect(stop_searcher.valid?).to eq(true) }
+      specify { expect(stop_searcher).to be_valid }
+    end
+    context 'when per_page is 0' do
+      let(:params) { { per_page: 0, query: "foo" } }
+      specify { expect(stop_searcher).not_to be_valid }
     end
   end
 
@@ -67,12 +71,12 @@ describe StopSearcher do
   end
 
   describe "pagination" do
-    let!(:stops) { create_list(:stop, 9, name: "walnut") }
+    let!(:stops) { create_list(:stop, 8, name: "walnut") }
     let!(:last_stop) { create(:stop, name: "walnut last") }
     let(:params) { { per_page: 5, page: 2 } }
 
     it "paginates the results" do
-      expect(stop_searcher.results.size).to eq(5)
+      expect(stop_searcher.results.size).to eq(4)
       expect(stop_searcher.results).to include(last_stop)
     end
     it "sets per_page" do
@@ -85,8 +89,9 @@ describe StopSearcher do
       expect(stop_searcher.page).to eq(2)
     end
     it "has total_results" do
-      expect(stop_searcher.total_results).to eq(10)
+      expect(stop_searcher.total_results).to eq(9)
     end
+
 
     context 'when per_page is a string' do
       let(:params) { { per_page: '5' } }
@@ -108,7 +113,7 @@ describe StopSearcher do
       end
 
       it "paginates the results" do
-        expect(stop_searcher.results.size).to eq(5)
+        expect(stop_searcher.results.size).to eq(4)
         expect(stop_searcher.results).to include(last_stop)
       end
     end

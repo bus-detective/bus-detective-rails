@@ -20,7 +20,7 @@ class StopSearcher
   end
 
   def total_pages
-    total_results / per_page
+    (total_results.to_f / per_page).ceil
   end
 
   def offset
@@ -28,13 +28,17 @@ class StopSearcher
   end
 
   def valid?
+    @per_page > 0 && has_location_or_query?
+  end
+
+  private
+
+  def has_location_or_query?
     [
       @params[:query].present?,
       @params[:latitude].present? && @params[:longitude].present?,
     ].any?
   end
-
-  private
 
   def paginated_results
     @paginated_results ||= filtered_results.offset(offset).limit(per_page)

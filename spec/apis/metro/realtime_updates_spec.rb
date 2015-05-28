@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'protocol_buffers'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
@@ -64,6 +65,16 @@ RSpec.describe Metro::RealtimeUpdates do
       it "returns nil" do
         expect(subject.for_stop_time(stop_time)).to be_nil
       end
+    end
+  end
+
+  context 'with an invalid feed' do
+    before do
+      expect(TransitRealtime::FeedMessage).to receive(:parse).and_raise(ProtocolBuffers::DecodeError)
+    end
+
+    it 'throws a Metro::Error' do
+      expect { subject.new(fixture) }.to raise_error(Metro::Error)
     end
   end
 end

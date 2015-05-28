@@ -8,7 +8,11 @@ module Metro
     end
 
     def initialize(buffer)
-      @feed = TransitRealtime::FeedMessage.parse(buffer)
+      begin
+        @feed = TransitRealtime::FeedMessage.parse(buffer)
+      rescue ProtocolBuffers::DecodeError
+        raise Metro::Error.new "Problem parsing feed"
+      end
     end
 
     def for_stop_time(stop_time)

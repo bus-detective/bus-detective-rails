@@ -7,8 +7,8 @@ class StopSearcher
 
   def initialize(params)
     @params = params
-    @per_page = params.fetch(:per_page, DEFAULT_PER_PAGE).to_i
-    @page = params.fetch(:page, 1).to_i
+    @per_page = positive_or_default(params[:per_page].to_i, DEFAULT_PER_PAGE)
+    @page = positive_or_default(params[:page].to_i, 1)
   end
 
   def results
@@ -35,6 +35,10 @@ class StopSearcher
   end
 
   private
+
+  def positive_or_default(v, d)
+    v > 0 ? v : d
+  end
 
   def paginated_results
     @paginated_results ||= filtered_results.offset(offset).limit(per_page)

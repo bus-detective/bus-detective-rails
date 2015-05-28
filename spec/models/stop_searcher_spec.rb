@@ -75,6 +75,7 @@ describe StopSearcher do
       expect(stop_searcher.results.size).to eq(5)
       expect(stop_searcher.results).to include(last_stop)
     end
+
     it "sets per_page" do
       expect(stop_searcher.per_page).to eq(5)
     end
@@ -110,6 +111,38 @@ describe StopSearcher do
       it "paginates the results" do
         expect(stop_searcher.results.size).to eq(5)
         expect(stop_searcher.results).to include(last_stop)
+      end
+    end
+
+    context "when page is undefined" do
+      let(:params) { { per_page: 5, page: 'undefined' } }
+
+      it "defaults page to 1" do
+        expect(stop_searcher.page).to eq(1)
+      end
+    end
+
+    context "when page is less than 1" do
+      let(:params) { { per_page: 5, page: 0 } }
+
+      it "defaults page to 1" do
+        expect(stop_searcher.page).to eq(1)
+      end
+    end
+
+    context "when per_page is undefined" do
+      let(:params) { { per_page: 'undefined', page: 1 } }
+
+      it "paginates the results using the default value" do
+        expect(stop_searcher.total_results).to eq(10)
+      end
+    end
+
+    context "when per_page is less than 1" do
+      let(:params) { { per_page: 0, page: 1 } }
+
+      it "paginates the results using the default value" do
+        expect(stop_searcher.total_results).to eq(10)
       end
     end
   end

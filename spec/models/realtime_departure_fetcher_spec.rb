@@ -29,7 +29,7 @@ RSpec.describe RealtimeDepartureFetcher do
 
     context "handling Metro::Error" do
       before do
-        expect(Metro::RealtimeUpdates).to receive(:fetch).with(agency).and_raise(Metro::Error)
+        allow_any_instance_of(Metro::RealtimeUpdates).to receive(:fetch).and_raise(Metro::Error)
       end
 
       it_behaves_like "scheduled departures"
@@ -42,7 +42,7 @@ RSpec.describe RealtimeDepartureFetcher do
     let(:fake_realtime_updates) { double("RealtimeUpdates", for_stop_time: fake_stop_time_update) }
 
     before do
-      allow(Metro::RealtimeUpdates).to receive(:fetch).with(agency).and_return(fake_realtime_updates)
+      allow_any_instance_of(Metro::RealtimeUpdates).to receive(:fetch).and_return(fake_realtime_updates)
     end
 
     context "when an associated realtime update exists for the stop time" do

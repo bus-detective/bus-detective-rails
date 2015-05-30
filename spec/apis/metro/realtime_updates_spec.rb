@@ -3,14 +3,16 @@ require 'protocol_buffers'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
-  subject { Metro::RealtimeUpdates.new(fixture) }
+  let(:agency) { create(:agency, :with_rt_endpoint) }
+  subject { Metro::RealtimeUpdates.new(agency) }
+
+  before do
+    allow(Metro::Connection).to receive(:get).with(agency.gtfs_trip_updates_url).and_return(fixture)
+    subject.fetch
+  end
 
   describe "#fetch" do
-    let(:agency) { create(:agency, :with_rt_endpoint) }
-
     it "calls Connection.get with the endpoint" do
-      allow(Metro::Connection).to receive(:get).with(agency.gtfs_trip_updates_url).and_return(fixture)
-      Metro::RealtimeUpdates.fetch(agency)
       expect(Metro::Connection).to have_received(:get).with(agency.gtfs_trip_updates_url)
     end
   end
@@ -74,7 +76,7 @@ RSpec.describe Metro::RealtimeUpdates do
     end
 
     it 'throws a Metro::Error' do
-      expect { subject.new(fixture) }.to raise_error(Metro::Error)
+      expect { subject.fetch }.to raise_error(Metro::Error)
     end
   end
 end

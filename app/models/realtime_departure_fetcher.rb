@@ -30,7 +30,7 @@ class RealtimeDepartureFetcher < DepartureFetcher
     # continually try and call the service
     unless instance_variable_defined?(:@realtime_updates)
       begin
-        @realtime_updates = Metro::RealtimeUpdates.fetch(agency)
+        @realtime_updates = Metro::RealtimeUpdates.new(agency).fetch
       rescue Metro::Error => e
         Raven.capture_exception(e)
         @realtime_updates = nil

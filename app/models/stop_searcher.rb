@@ -45,7 +45,7 @@ class StopSearcher
   end
 
   def filtered_results
-    scope = Stop.includes(:routes)
+    scope = Stop.includes(:routes, :agency)
 
     if @params[:query]
       scope = scope.search(TsqueryBuilder.build(@params[:query]))

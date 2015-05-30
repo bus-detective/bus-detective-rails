@@ -1,30 +1,24 @@
 class StopSearcher
   include ActiveModel::SerializerSupport
 
-  DEFAULT_PER_PAGE = 20
-
   attr_reader :per_page, :page
 
   def initialize(params)
     @params = params
-    @per_page = params.fetch(:per_page, DEFAULT_PER_PAGE).to_i
+    @per_page = params.fetch(:per_page, Kaminari.config.default_per_page).to_i
     @page = params.fetch(:page, 1).to_i
   end
 
   def results
-    @results ||= paginated_results
+    @results ||= filtered_results.page(page).per(per_page)
   end
 
   def total_results
-    filtered_results.count
+    results.total_count
   end
 
   def total_pages
-    (total_results.to_f / per_page).ceil
-  end
-
-  def offset
-    per_page * (page - 1)
+    results.total_pages
   end
 
   def valid?
@@ -38,10 +32,6 @@ class StopSearcher
       @params[:query].present?,
       @params[:latitude].present? && @params[:longitude].present?,
     ].any?
-  end
-
-  def paginated_results
-    @paginated_results ||= filtered_results.offset(offset).limit(per_page)
   end
 
   def filtered_results

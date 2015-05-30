@@ -37,6 +37,7 @@ class Metro::Importer
     # ServiceException and StopTime are child tables that no other tables reference
     # so blowing them away completely is fine. They also don't have remote_ids that
     # would make them easy to match with the source data.
+    RouteStop.joins(route: :agency).where(routes: { agency_id: @agency }).delete_all
     ServiceException.where(agency: @agency).delete_all
     StopTime.where(agency: @agency).delete_all
 

@@ -13,17 +13,19 @@ class Metro::Importer
       update_agency!
       @logger.info("Deleting old data before importing")
       delete_old_data!
-      @logger.info("Step 1/6: Importing services (#{source.calendars.size})")
+      @logger.info("Step 1/7: Importing services (#{source.calendars.size})")
       import_services!
-      @logger.info("Step 2/6: Importing services exceptions (#{source.calendar_dates.size})")
+      @logger.info("Step 2/7: Importing services exceptions (#{source.calendar_dates.size})")
       import_services_exceptions!
-      @logger.info("Step 3/6: Importing routes (#{source.routes.size})")
+      @logger.info("Step 3/7: Importing routes (#{source.routes.size})")
       import_routes!
-      @logger.info("Step 4/6: Importing stops (#{source.stops.size})")
+      @logger.info("Step 4/7: Importing stops (#{source.stops.size})")
       import_stops!
-      @logger.info("Step 5/6: Importing trips (#{source.trips.size})")
+      @logger.info("Step 5/7: Importing shapes (#{source.shapes.size})")
+      import_shapes!
+      @logger.info("Step 6/7: Importing trips (#{source.trips.size})")
       import_trips!
-      @logger.info("Step 6/6: Importing stop times (#{source.stop_times.size})")
+      @logger.info("Step 7/7: Importing stop times (#{source.stop_times.size})")
       import_stop_times!
       update_route_stop_cache!
     end
@@ -44,6 +46,8 @@ class Metro::Importer
     # stored serialized in local storage on the client, so changing IDs would mess
     # those up. Which might be a different problem.)
     Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).delete_all
+    ShapePoint.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).delete_all
+    Shape.where(agency: @agency).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).delete_all
     Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).delete_all
     Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).delete_all
     Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).delete_all
@@ -110,10 +114,26 @@ class Metro::Importer
     end
   end
 
+  def import_shapes!
+    # shapes.txt is a denormalized data set. We normalize the data
+    # into two tables: shapes, and shape_points
+    source.each_shape do |s|
+      shape = Shape.find_or_create_by(remote_id: s.id, agency: @agency)
+      shape_point = ShapePoint.find_or_initialize_by(shape: shape, sequence: s.pt_sequence)
+      shape_point.update!(
+        shape: shape,
+        latitude: s.pt_lat,
+        longitude: s.pt_lon,
+        distance_traveled: s.dist_traveled
+      )
+    end
+  end
+
   def import_trips!
     source.each_trip do |t|
       route = Route.find_by!(remote_id: t.route_id, agency: @agency)
       service = Service.find_by!(remote_id: t.service_id, agency: @agency)
+      shape = Shape.find_by!(remote_id: t.shape_id, agency: @agency)
       trip = Trip.find_or_initialize_by(remote_id: t.id, agency: @agency)
       trip.attributes = {route: route,
                          service: service,

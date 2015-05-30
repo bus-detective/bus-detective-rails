@@ -6,11 +6,13 @@ gem 'rails', '~> 4.2.0'
 gem 'active_model_serializers', '~> 0.8.3' # Because people hate 0.9.x branch for the different API, and 0.10.x is built on 0.8
 gem 'geokit-rails' # Provides acts_as_mappable
 gem 'gtfs'         # Support for General Transit Feed Specification (format of the stop/route data)
+gem 'http'
 gem 'pg'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
+gem 'sentry-raven'
 gem 'kaminari'
 
 group :development, :test do
@@ -32,6 +34,5 @@ end
 
 group :production do
   gem 'rails_12factor'
-  gem 'sentry-raven'
   gem 'uglifier'
 end

@@ -6,7 +6,7 @@ class CalculatedStopTime
   attr_reader :id, :stop_sequence, :stop_headsign, :arrival_time, :departure_time
   def initialize(options)
     @id = options[:id].to_i
-    @stop_sequence       = options[:stop_sequence]
+    @stop_sequence       = options[:stop_sequence].to_i
     @stop_headsign       = options[:stop_headsign]
     @pickup_type         = options[:pickup_type].to_i
     @drop_off_type       = options[:drop_off_type].to_i

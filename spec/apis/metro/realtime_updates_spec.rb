@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'protocol_buffers'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
@@ -8,9 +9,9 @@ RSpec.describe Metro::RealtimeUpdates do
     let(:agency) { create(:agency, :with_rt_endpoint) }
 
     it "calls Connection.get with the endpoint" do
-      allow(Metro::Connection).to receive(:get).with(agency.realtime_endpoint).and_return(fixture)
+      allow(Metro::Connection).to receive(:get).with(agency.gtfs_trip_updates_url).and_return(fixture)
       Metro::RealtimeUpdates.fetch(agency)
-      expect(Metro::Connection).to have_received(:get).with(agency.realtime_endpoint)
+      expect(Metro::Connection).to have_received(:get).with(agency.gtfs_trip_updates_url)
     end
   end
 
@@ -47,11 +48,33 @@ RSpec.describe Metro::RealtimeUpdates do
       end
     end
 
+    context "with stop_sequence after one of the given updated" do
+      let!(:trip) { build(:trip, remote_id: 940135) }
+      let!(:stop) { build(:stop, remote_id: "NA") }
+      let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, stop_sequence: 99, departure_time: Interval.for_time(10.minutes.from_now).to_s ) }
+
+      it "interprets the delay as the delay from the previous stop_sequence" do
+        expect(stop_time_update).to be_a(Metro::RealtimeUpdates::StopTimeUpdate)
+        expect(stop_time_update.stop_sequence).to eq(97)
+        expect(stop_time_update.delay).to eq(120)
+      end
+    end
+
     context "with a non-matching stop_time" do
       let(:stop_time) { build(:stop_time) }
       it "returns nil" do
         expect(subject.for_stop_time(stop_time)).to be_nil
       end
+    end
+  end
+
+  context 'with an invalid feed' do
+    before do
+      expect(TransitRealtime::FeedMessage).to receive(:parse).and_raise(ProtocolBuffers::DecodeError)
+    end
+
+    it 'throws a Metro::Error' do
+      expect { subject.new(fixture) }.to raise_error(Metro::Error)
     end
   end
 end

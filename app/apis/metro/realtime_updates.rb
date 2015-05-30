@@ -4,17 +4,21 @@ require 'time'
 module Metro
   class RealtimeUpdates
     def self.fetch(agency)
-      new(Connection.get(agency.realtime_endpoint))
+      new(Connection.get(agency.gtfs_trip_updates_url))
     end
 
     def initialize(buffer)
-      @feed = TransitRealtime::FeedMessage.parse(buffer)
+      begin
+        @feed = TransitRealtime::FeedMessage.parse(buffer)
+      rescue ProtocolBuffers::DecodeError
+        raise Metro::Error.new "Problem parsing feed"
+      end
     end
 
     def for_stop_time(stop_time)
       trip_update = for_trip(stop_time.trip)
       if trip_update
-        trip_update.stop_time_updates.find { |stu| stu.stop_id == stop_time.stop.remote_id }
+        trip_update.stop_time_update_for(stop_time)
       else
         nil
       end
@@ -39,22 +43,39 @@ module Metro
         @trip_update.trip.trip_id
       end
 
+      def stop_time_update_for(stop_time)
+        exact_match(stop_time) || nearest_match(stop_time)
+      end
+
+      private
+
       def stop_time_updates
-        @trip_update.stop_time_update.map { |stu| StopTimeUpdate.new(stu) }
+        @stop_time_updates ||= @trip_update.stop_time_update.map { |stu| StopTimeUpdate.new(stu) }
+      end
+
+      def exact_match(stop_time)
+        stop_time_updates.find { |stu| stu.stop_id == stop_time.stop.remote_id }
+      end
+
+      def nearest_match(stop_time)
+        stop_time_updates
+          .select { |st| st.stop_sequence < stop_time.stop_sequence }
+          .sort_by { |st| st.stop_sequence }
+          .last
       end
     end
 
     class StopTimeUpdate
+      delegate :stop_id, :stop_sequence, to: :@stop_time_update
+
       def initialize(stop_time_update)
         @stop_time_update = stop_time_update
       end
 
-      def stop_id
-        @stop_time_update.stop_id
-      end
-
       def delay
-        @stop_time_update.departure.delay
+        # Departure and Arrival always exist, an unset delay is returned as 0
+        # so choose the max one to determine the delay
+        [@stop_time_update.departure.delay, @stop_time_update.arrival.delay].max
       end
 
       def departure_time

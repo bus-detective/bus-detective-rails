@@ -41,6 +41,15 @@ END;
 $$;
 
 
+--
+-- Name: english_stem; Type: TEXT SEARCH DICTIONARY; Schema: public; Owner: -
+--
+
+CREATE TEXT SEARCH DICTIONARY english_stem (
+    TEMPLATE = pg_catalog.snowball,
+    language = 'english', stopwords = 'english' );
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -59,7 +68,9 @@ CREATE TABLE agencies (
     language character varying,
     phone character varying,
     gtfs_endpoint character varying,
-    realtime_endpoint character varying
+    gtfs_trip_updates_url character varying,
+    gtfs_vehicle_positions_url character varying(150),
+    gtfs_service_alerts_url character varying(150)
 );
 
 
@@ -205,6 +216,40 @@ CREATE VIEW service_days AS
 
 
 --
+-- Name: service_exceptions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE service_exceptions (
+    id integer NOT NULL,
+    agency_id integer,
+    service_id integer,
+    date date,
+    exception integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: service_exceptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE service_exceptions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: service_exceptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE service_exceptions_id_seq OWNED BY service_exceptions.id;
+
+
+--
 -- Name: services_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -229,7 +274,6 @@ ALTER SEQUENCE services_id_seq OWNED BY services.id;
 
 CREATE TABLE stop_times (
     id integer NOT NULL,
-    stop_sequence character varying,
     stop_headsign character varying,
     pickup_type integer,
     drop_off_type integer,
@@ -240,7 +284,8 @@ CREATE TABLE stop_times (
     stop_id integer,
     trip_id integer,
     arrival_time interval NOT NULL,
-    departure_time interval NOT NULL
+    departure_time interval NOT NULL,
+    stop_sequence integer
 );
 
 
@@ -372,6 +417,13 @@ ALTER TABLE ONLY routes ALTER COLUMN id SET DEFAULT nextval('routes_id_seq'::reg
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY service_exceptions ALTER COLUMN id SET DEFAULT nextval('service_exceptions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY services ALTER COLUMN id SET DEFAULT nextval('services_id_seq'::regclass);
 
 
@@ -418,6 +470,14 @@ ALTER TABLE ONLY route_stops
 
 ALTER TABLE ONLY routes
     ADD CONSTRAINT routes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: service_exceptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY service_exceptions
+    ADD CONSTRAINT service_exceptions_pkey PRIMARY KEY (id);
 
 
 --
@@ -598,6 +658,14 @@ ALTER TABLE ONLY route_stops
 
 
 --
+-- Name: fk_rails_5fe09f577c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY service_exceptions
+    ADD CONSTRAINT fk_rails_5fe09f577c FOREIGN KEY (service_id) REFERENCES services(id);
+
+
+--
 -- Name: fk_rails_7ac710f08a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -635,6 +703,14 @@ ALTER TABLE ONLY route_stops
 
 ALTER TABLE ONLY services
     ADD CONSTRAINT fk_rails_f0cd5d1f9f FOREIGN KEY (agency_id) REFERENCES agencies(id);
+
+
+--
+-- Name: fk_rails_f4f3aa4b66; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY service_exceptions
+    ADD CONSTRAINT fk_rails_f4f3aa4b66 FOREIGN KEY (agency_id) REFERENCES agencies(id);
 
 
 --
@@ -694,4 +770,12 @@ INSERT INTO schema_migrations (version) VALUES ('20150515140017');
 INSERT INTO schema_migrations (version) VALUES ('20150519180934');
 
 INSERT INTO schema_migrations (version) VALUES ('20150520011853');
+
+INSERT INTO schema_migrations (version) VALUES ('20150521170418');
+
+INSERT INTO schema_migrations (version) VALUES ('20150521171330');
+
+INSERT INTO schema_migrations (version) VALUES ('20150521180058');
+
+INSERT INTO schema_migrations (version) VALUES ('20150522141154');
 

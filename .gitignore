@@ -21,3 +21,6 @@ vendor/ruby
 .env
 database.yml
 /coverage
+
+# Redis file
+dump.rdb

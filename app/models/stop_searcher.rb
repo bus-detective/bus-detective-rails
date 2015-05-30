@@ -5,8 +5,8 @@ class StopSearcher
 
   def initialize(params)
     @params = params
-    @per_page = params.fetch(:per_page, Kaminari.config.default_per_page).to_i
-    @page = params.fetch(:page, 1).to_i
+    @per_page = positive_or_default(params[:per_page].to_i, Kaminari.config.default_per_page)
+    @page = positive_or_default(params[:page].to_i, 1)
   end
 
   def results
@@ -22,16 +22,16 @@ class StopSearcher
   end
 
   def valid?
-    @per_page > 0 && has_location_or_query?
-  end
-
-  private
-
-  def has_location_or_query?
     [
       @params[:query].present?,
       @params[:latitude].present? && @params[:longitude].present?,
     ].any?
+  end
+
+  private
+
+  def positive_or_default(v, d)
+    v > 0 ? v : d
   end
 
   def filtered_results

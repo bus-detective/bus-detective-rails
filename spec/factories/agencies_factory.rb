@@ -7,7 +7,7 @@ FactoryGirl.define do
     timezone 'America/New_York'
 
     trait :with_rt_endpoint do
-      realtime_endpoint 'http://example.com/gtfs'
+      gtfs_trip_updates_url 'http://example.com/gtfs'
     end
   end
 end

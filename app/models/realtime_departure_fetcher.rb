@@ -32,6 +32,7 @@ class RealtimeDepartureFetcher < DepartureFetcher
       begin
         @realtime_updates = Metro::RealtimeUpdates.new(agency).fetch
       rescue Metro::Error => e
+        Rails.logger.warn(e)
         Raven.capture_exception(e)
         @realtime_updates = nil
       end

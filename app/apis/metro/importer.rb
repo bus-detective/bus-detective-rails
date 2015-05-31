@@ -138,11 +138,11 @@ class Metro::Importer
       trip = Trip.find_or_initialize_by(remote_id: t.id, agency: @agency)
       trip.attributes = {route: route,
                          service: service,
+                         shape: shape,
                          headsign: Metro::StringHelper.titleize_headsign(t.headsign),
                          short_name: t.short_name,
                          direction_id: t.direction_id,
                          block_id: t.block_id,
-                         shape_id: t.shape_id,
                          wheelchair_accessible: t.wheelchair_accessible,
                          bikes_allowed: t.instance_variable_get("@bikes_allowed")
       }

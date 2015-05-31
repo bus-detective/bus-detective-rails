@@ -180,7 +180,7 @@ class Metro::Importer
     @source_agency ||= begin
       # assumes only one agency per import
       if source.agencies.size > 1
-        raise InvalidDataError.new("Only one agency is allowed per import")
+        raise Metro::Error.new("Only one agency is allowed per import")
       end
       source.agencies.first
     end
@@ -195,15 +195,4 @@ class Metro::Importer
   def source
     @source ||= GTFS::Source.build(@agency.gtfs_endpoint)
   end
-
-  class Error < StandardError
-    attr_reader :original_exception
-
-    def initialize(exception = nil)
-      @original_exception = exception
-      super
-    end
-  end
-
-  InvalidDataError = Class.new(Error)
 end

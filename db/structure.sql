@@ -421,13 +421,13 @@ CREATE TABLE trips (
     short_name character varying,
     direction_id integer,
     block_id integer,
-    shape_id integer,
     wheelchair_accessible integer,
     bikes_allowed integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     agency_id integer,
-    route_id integer
+    route_id integer,
+    shape_id integer
 );
 
 
@@ -713,6 +713,13 @@ CREATE INDEX index_trips_on_route_id ON trips USING btree (route_id);
 
 
 --
+-- Name: index_trips_on_shape_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_trips_on_shape_id ON trips USING btree (shape_id);
+
+
+--
 -- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -757,6 +764,14 @@ ALTER TABLE ONLY trips
 
 ALTER TABLE ONLY route_stops
     ADD CONSTRAINT fk_rails_1f4cc828f8 FOREIGN KEY (route_id) REFERENCES routes(id);
+
+
+--
+-- Name: fk_rails_438d0a4a30; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY trips
+    ADD CONSTRAINT fk_rails_438d0a4a30 FOREIGN KEY (shape_id) REFERENCES shapes(id);
 
 
 --
@@ -873,8 +888,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150425204038');
 
 INSERT INTO schema_migrations (version) VALUES ('20150430224711');
 
-INSERT INTO schema_migrations (version) VALUES ('20150501153223');
-
 INSERT INTO schema_migrations (version) VALUES ('20150501165537');
 
 INSERT INTO schema_migrations (version) VALUES ('20150503132110');
@@ -902,4 +915,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150522141154');
 INSERT INTO schema_migrations (version) VALUES ('20150530183019');
 
 INSERT INTO schema_migrations (version) VALUES ('20150530183232');
+
+INSERT INTO schema_migrations (version) VALUES ('20150530202755');
 

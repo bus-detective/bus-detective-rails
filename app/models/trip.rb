@@ -3,4 +3,5 @@ class Trip < ActiveRecord::Base
   belongs_to :route
   belongs_to :agency
   belongs_to :service
+  belongs_to :shape
 end

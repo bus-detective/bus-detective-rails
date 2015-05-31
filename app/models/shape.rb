@@ -4,6 +4,6 @@ class Shape < ActiveRecord::Base
   has_many :shape_points, dependent: :destroy
 
   def coordinates
-    shape_points.map { |sp| [sp.longitude, sp.latitude] }
+    shape_points.order(:sequence).map { |sp| [sp.longitude, sp.latitude] }
   end
 end

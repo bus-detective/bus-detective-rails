@@ -6,7 +6,6 @@ class Metro::Importer
 
   def import!
     @logger.info("Fetching: #{@agency.gtfs_endpoint}")
-    get_source!
 
     ActiveRecord::Base.transaction do
       # Order of these matters because dependencies in the data
@@ -188,10 +187,6 @@ class Metro::Importer
   end
 
   private
-
-  def get_source!
-    @source =  GTFS::Source.build(@agency.gtfs_endpoint)
-  end
 
   def update_route_stop_cache!
     RouteStop.update_cache

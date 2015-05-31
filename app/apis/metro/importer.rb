@@ -33,11 +33,9 @@ class Metro::Importer
   end
 
   def delete_old_data!
-    # Order of these matters because dependencies in the data
     # ServiceException and StopTime are child tables that no other tables reference
     # so blowing them away completely is fine. They also don't have remote_ids that
     # would make them easy to match with the source data.
-    RouteStop.joins(route: :agency).where(routes: { agency_id: @agency }).delete_all
     ServiceException.where(agency: @agency).delete_all
     StopTime.where(agency: @agency).delete_all
 
@@ -46,12 +44,12 @@ class Metro::Importer
     # we don't want to deal with changing primary keys (plus Stops are currently
     # stored serialized in local storage on the client, so changing IDs would mess
     # those up. Which might be a different problem.)
-    Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).delete_all
-    ShapePoint.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).delete_all
-    Shape.where(agency: @agency).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).delete_all
-    Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).delete_all
-    Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).delete_all
-    Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).delete_all
+    Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).destroy_all
+    Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).destroy_all
+    Shape.where(agency: @agency).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
+    ShapePoint.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
+    Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).destroy_all
+    Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).destroy_all
   end
 
   def import_services!

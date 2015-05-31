@@ -47,7 +47,7 @@ class Metro::Importer
     Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).destroy_all
     Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).destroy_all
     Shape.where(agency: @agency).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
-    ShapePoint.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
+    ShapePoint.joins(:shape).where("shaps.agency_id IS ? AND shapes.remote_id NOT IN (?)", @agency.id, source.shapes.map(&:id)).destroy_all
     Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).destroy_all
     Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).destroy_all
   end

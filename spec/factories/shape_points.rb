@@ -3,7 +3,7 @@ FactoryGirl.define do
     shape
     latitude 1.5
     longitude 1.5
-    sequence 1
+    sequence(:sequence) { |n| n }
     distance_traveled 1.5
   end
 end

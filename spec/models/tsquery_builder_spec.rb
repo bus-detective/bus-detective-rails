@@ -21,4 +21,8 @@ RSpec.describe TsqueryBuilder do
   it 'does not mess up words with and in it' do
     expect(TsqueryBuilder.build('Highland & University')).to eq('(highland) & (university)')
   end
+
+  it 'escapes the values' do
+    expect(TsqueryBuilder.build("Highland's & University")).to eq("(highlands) & (university)")
+  end
 end

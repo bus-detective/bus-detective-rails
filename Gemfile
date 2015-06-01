@@ -11,6 +11,7 @@ gem 'pg'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
+gem 'redis-rails'           # For using Redis as the application cache
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 gem 'sentry-raven'
 gem 'kaminari'

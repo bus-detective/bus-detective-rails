@@ -38,4 +38,8 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Temporarily enable caching in development (COMMENT OUT WHEN DONE!)
+  # config.action_controller.perform_caching = true
+  # config.cache_store = :redis_store, ENV.fetch('REDISTOGO_URL')
 end

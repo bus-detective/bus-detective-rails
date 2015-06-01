@@ -3,16 +3,20 @@ require 'time'
 
 module Metro
   class RealtimeUpdates
+    CACHE_OPTS = {
+      expires_in: 15,
+      race_condition_ttl: 15
+    }
+
     def self.fetch(agency)
-      new(Connection.get(agency.gtfs_trip_updates_url))
+     url = agency.gtfs_trip_updates_url
+     new(CacheableConnection.get(url, "rt_trips:#{url}", CACHE_OPTS))
     end
 
     def initialize(buffer)
-      begin
-        @feed = TransitRealtime::FeedMessage.parse(buffer)
-      rescue ProtocolBuffers::DecodeError
-        raise Metro::Error.new "Problem parsing feed"
-      end
+      @feed = TransitRealtime::FeedMessage.parse(buffer)
+    rescue ProtocolBuffers::DecodeError
+      raise Metro::Error.new "Problem parsing feed"
     end
 
     def for_stop_time(stop_time)

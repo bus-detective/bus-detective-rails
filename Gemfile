@@ -13,6 +13,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 gem 'sentry-raven'
+gem 'kaminari'
 
 group :development, :test do
   gem 'byebug'

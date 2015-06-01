@@ -34,8 +34,9 @@ class Metro::Importer
     # ServiceException and StopTime are child tables that no other tables reference
     # so blowing them away completely is fine. They also don't have remote_ids that
     # would make them easy to match with the source data.
-    @agency.service_exceptions.where(agency: @agency).delete_all
-    @agency.stop_times.where(agency: @agency).delete_all
+    @agency.service_exceptions.delete_all
+    @agency.stop_times.delete_all
+    ShapePoint.joins(:shape).where('shapes.agency_id = ?', @agency).destroy_all
 
     # These all have remote_id which makes the easy to identify ones that were
     # removed from the source data. They are also referenced by each other, so
@@ -45,7 +46,6 @@ class Metro::Importer
     @agency.routes.where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).destroy_all
     @agency.trips.where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).destroy_all
     @agency.shapes.where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
-    @agency.shape_points.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
     @agency.stops.where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).destroy_all
     @agency.services.where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).destroy_all
     GC.start
@@ -117,16 +117,18 @@ class Metro::Importer
   def import_shapes!
     # shapes.txt is a denormlized data set. We normalize the data
     # into two tables: shapes, and shape_points
-    source.shapes.each do |s|
-      shape = Shape.find_or_create_by!(remote_id: s.id, agency: @agency)
-      ShapePoint.find_or_initialize_by(shape: shape, sequence: s.pt_sequence).update!(
-        shape: shape,
-        latitude: s.pt_lat,
-        longitude: s.pt_lon,
-        distance_traveled: s.dist_traveled
-      )
+    connection = ActiveRecord::Base.connection.raw_connection
+
+    begin
+      connection.prepare('insert_point', "INSERT INTO shape_points (shape_id, sequence, latitude, longitude, distance_traveled, created_at, updated_at) values($1, $2, $3, $4, $5, now() at time zone 'utc', now() at time zone 'utc')")
+      source.shapes.each do |s|
+        shape = Shape.find_or_create_by!(remote_id: s.id, agency: @agency)
+        connection.exec_prepared('insert_point', [shape.id, s.pt_sequence, s.pt_lat, s.pt_lon, s.dist_traveled])
+      end
+    ensure
+      connection.exec('DEALLOCATE insert_point')
+      GC.start
     end
-    GC.start
   end
 
   def import_trips!
@@ -147,21 +149,19 @@ class Metro::Importer
   end
 
   def import_stop_times!
-    source.stop_times.each do |st|
-      StopTime.create!(
-        stop: Stop.find_by!(remote_id: st.stop_id, agency: @agency),
-        trip: Trip.find_by!(remote_id: st.trip_id, agency: @agency),
-        agency: @agency,
-        arrival_time: st.arrival_time,
-        departure_time: st.departure_time,
-        stop_sequence: st.stop_sequence,
-        stop_headsign: st.stop_headsign,
-        pickup_type: st.pickup_type,
-        drop_off_type: st.drop_off_type,
-        shape_dist_traveled: st.shape_dist_traveled
-      )
+    connection = ActiveRecord::Base.connection.raw_connection
+
+    begin
+      connection.prepare('insert_stop_time', "INSERT INTO stop_times (stop_id, trip_id, agency_id, arrival_time, departure_time, stop_sequence, stop_headsign, pickup_type, drop_off_type, shape_dist_traveled, created_at, updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() at time zone 'utc', now() at time zone 'utc')")
+      source.stop_times.each do |st|
+        stop = Stop.find_by!(remote_id: st.stop_id, agency: @agency)
+        trip = Trip.find_by!(remote_id: st.trip_id, agency: @agency)
+        connection.exec_prepared('insert_stop_time', [stop.id, trip.id, @agency.id, st.arrival_time, st.departure_time, st.stop_sequence, st.stop_headsign, st.pickup_type, st.drop_off_type, st.shape_dist_traveled])
+      end
+    ensure
+      connection.exec('DEALLOCATE insert_stop_time')
+      GC.start
     end
-    GC.start
   end
 
   def update_agency!

@@ -39,7 +39,8 @@ RSpec.describe Metro::Importer do
   describe "#import_shapes!" do
     it "is atomic" do
       importer.import!
-      importer.import_shapes!
+      importer.import!
+      # We delete all the ShapPoints in import, so we're just ensuring they're all deleted and recreated
       expect(Shape.count).to eq(1)
       expect(ShapePoint.count).to eq(10)
     end
@@ -62,6 +63,8 @@ RSpec.describe Metro::Importer do
       expect(Service.count).to eq(3)
       expect(StopTime.count).to eq(10)
       expect(ServiceException.count).to eq(2)
+      expect(Shape.count).to eq(1)
+      expect(ShapePoint.count).to eq(10)
     end
   end
 end

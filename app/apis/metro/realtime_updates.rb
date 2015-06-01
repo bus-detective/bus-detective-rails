@@ -8,14 +8,13 @@ module Metro
       race_condition_ttl: 15
     }
 
-    def initialize(agency)
-     @url = agency.gtfs_trip_updates_url
+    def self.fetch(agency)
+     url = agency.gtfs_trip_updates_url
+     new(CacheableConnection.get(url, "rt_trips:#{url}", CACHE_OPTS))
     end
 
-    def fetch
-      buffer = CacheableConnection.get(@url, "rt_trips:#{@url}", CACHE_OPTS)
+    def initialize(buffer)
       @feed = TransitRealtime::FeedMessage.parse(buffer)
-      self
     rescue ProtocolBuffers::DecodeError
       raise Metro::Error.new "Problem parsing feed"
     end

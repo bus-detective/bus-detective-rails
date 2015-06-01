@@ -1,8 +1,6 @@
 class TripSearcher < ApplicationSearcher
   def valid?
-    [
-      @params[:route_id].present?,
-    ].any?
+    @params[:route_id].present?
   end
 
   def scoped_results

@@ -37,16 +37,17 @@ class Metro::Importer
     ServiceException.where(agency: @agency).delete_all
     StopTime.where(agency: @agency).delete_all
     ShapePoint.joins(:shape).where('shapes.agency_id = ?', @agency).delete_all
+    RouteStop.joins(:route).where('routes.agency_id = ?', @agency).delete_all
 
     # These all have remote_id which makes the easy to identify ones that were
     # removed from the source data. They are also referenced by each other, so
     # we don't want to deal with changing primary keys (plus Stops are currently
     # stored serialized in local storage on the client, so changing IDs would mess
     # those up. Which might be a different problem.)
-    Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).delete_all
     Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).delete_all
     Shape.where(agency: @agency).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).delete_all
     Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).delete_all
+    Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).delete_all
     Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).delete_all
     GC.start
   end

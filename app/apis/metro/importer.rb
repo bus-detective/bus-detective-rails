@@ -6,24 +6,24 @@ class Metro::Importer
 
   def import!
     @logger.info("Fetching: #{@agency.gtfs_endpoint}")
-    get_source!
-
     ActiveRecord::Base.transaction do
       # Order of these matters because dependencies in the data
       update_agency!
       @logger.info("Deleting old data before importing")
       delete_old_data!
-      @logger.info("Step 1/6: Importing services (#{source.calendars.size})")
+      @logger.info("Step 1/7: Importing services (#{source.calendars.size})")
       import_services!
-      @logger.info("Step 2/6: Importing services exceptions (#{source.calendar_dates.size})")
+      @logger.info("Step 2/7: Importing services exceptions (#{source.calendar_dates.size})")
       import_services_exceptions!
-      @logger.info("Step 3/6: Importing routes (#{source.routes.size})")
+      @logger.info("Step 3/7: Importing routes (#{source.routes.size})")
       import_routes!
-      @logger.info("Step 4/6: Importing stops (#{source.stops.size})")
+      @logger.info("Step 4/7: Importing stops (#{source.stops.size})")
       import_stops!
-      @logger.info("Step 5/6: Importing trips (#{source.trips.size})")
+      @logger.info("Step 5/7: Importing shapes (#{source.shapes.size})")
+      import_shapes!
+      @logger.info("Step 6/7: Importing trips (#{source.trips.size})")
       import_trips!
-      @logger.info("Step 6/6: Importing stop times (#{source.stop_times.size})")
+      @logger.info("Step 7/7: Importing stop times (#{source.stop_times.size})")
       import_stop_times!
       update_route_stop_cache!
     end
@@ -31,28 +31,29 @@ class Metro::Importer
   end
 
   def delete_old_data!
-    # Order of these matters because dependencies in the data
     # ServiceException and StopTime are child tables that no other tables reference
     # so blowing them away completely is fine. They also don't have remote_ids that
     # would make them easy to match with the source data.
-    ServiceException.where(agency: @agency).delete_all
-    StopTime.where(agency: @agency).delete_all
+    @agency.service_exceptions.where(agency: @agency).delete_all
+    @agency.stop_times.where(agency: @agency).delete_all
 
     # These all have remote_id which makes the easy to identify ones that were
     # removed from the source data. They are also referenced by each other, so
     # we don't want to deal with changing primary keys (plus Stops are currently
     # stored serialized in local storage on the client, so changing IDs would mess
     # those up. Which might be a different problem.)
-    Trip.where(agency: @agency).where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).delete_all
-    Route.where(agency: @agency).where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).delete_all
-    Stop.where(agency: @agency).where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).delete_all
-    Service.where(agency: @agency).where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).delete_all
+    @agency.routes.where("routes.remote_id NOT IN (?)", source.routes.map(&:id)).destroy_all
+    @agency.trips.where("trips.remote_id NOT IN (?)", source.trips.map(&:id)).destroy_all
+    @agency.shapes.where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
+    @agency.shape_points.joins(:shape).where("shapes.remote_id NOT IN (?)", source.shapes.map(&:id)).destroy_all
+    @agency.stops.where("stops.remote_id NOT IN (?)", source.stops.map(&:id)).destroy_all
+    @agency.services.where("services.remote_id NOT IN (?)", source.calendars.map(&:service_id)).destroy_all
+    GC.start
   end
 
   def import_services!
-    source.each_calendar do |cal|
-      service = Service.find_or_initialize_by(remote_id: cal.service_id, agency: @agency)
-      service.attributes = {
+    source.calendars.each do |cal|
+      Service.find_or_initialize_by(remote_id: cal.service_id, agency: @agency).update!(
         monday: cal.monday,
         tuesday: cal.tuesday,
         wednesday: cal.wednesday,
@@ -62,22 +63,26 @@ class Metro::Importer
         sunday: cal.sunday,
         start_date: cal.start_date,
         end_date: cal.end_date
-      }
-      service.save!
+      )
     end
+    GC.start
   end
 
   def import_services_exceptions!
-    source.each_calendar_date do |cal|
-      service = Service.find_by!(remote_id: cal.service_id, agency: @agency)
-      ServiceException.create!(agency: @agency, service: service, date: cal.date, exception: cal.exception_type)
+    source.calendar_dates.each do |cal|
+      ServiceException.create!(
+        agency: @agency,
+        service: Service.find_by!(remote_id: cal.service_id, agency: @agency),
+        date: cal.date,
+        exception: cal.exception_type
+      )
     end
+    GC.start
   end
 
   def import_stops!
-    source.each_stop do |s|
-      stop = Stop.find_or_initialize_by(remote_id: s.id, agency: @agency)
-      stop.attributes = {
+    source.stops.each do |s|
+      Stop.find_or_initialize_by(remote_id: s.id, agency: @agency).update!(
         code: s.code,
         name: Metro::StringHelper.titleize(s.name),
         description: Metro::StringHelper.titleize(s.desc),
@@ -89,15 +94,14 @@ class Metro::Importer
         parent_station: s.parent_station,
         timezone: s.timezone || @agency.timezone,
         wheelchair_boarding: s.wheelchair_boarding
-      }
-      stop.save!
+      )
     end
+    GC.start
   end
 
   def import_routes!
-    source.each_route do |r|
-      route = Route.find_or_initialize_by(remote_id: r.id, agency: @agency)
-      route.attributes = {
+    source.routes.each do |r|
+      Route.find_or_initialize_by(remote_id: r.id, agency: @agency).update!(
         short_name: r.short_name,
         long_name: Metro::StringHelper.titleize(r.long_name),
         description: r.desc,
@@ -105,45 +109,59 @@ class Metro::Importer
         url: r.url,
         color: r.color,
         text_color: "fff"
-      }
-      route.save!
+      )
     end
+    GC.start
+  end
+
+  def import_shapes!
+    # shapes.txt is a denormlized data set. We normalize the data
+    # into two tables: shapes, and shape_points
+    source.shapes.each do |s|
+      shape = Shape.find_or_create_by!(remote_id: s.id, agency: @agency)
+      ShapePoint.find_or_initialize_by(shape: shape, sequence: s.pt_sequence).update!(
+        shape: shape,
+        latitude: s.pt_lat,
+        longitude: s.pt_lon,
+        distance_traveled: s.dist_traveled
+      )
+    end
+    GC.start
   end
 
   def import_trips!
-    source.each_trip do |t|
-      route = Route.find_by!(remote_id: t.route_id, agency: @agency)
-      service = Service.find_by!(remote_id: t.service_id, agency: @agency)
-      trip = Trip.find_or_initialize_by(remote_id: t.id, agency: @agency)
-      trip.attributes = {route: route,
-                         service: service,
-                         headsign: Metro::StringHelper.titleize_headsign(t.headsign),
-                         short_name: t.short_name,
-                         direction_id: t.direction_id,
-                         block_id: t.block_id,
-                         shape_id: t.shape_id,
-                         wheelchair_accessible: t.wheelchair_accessible,
-                         bikes_allowed: t.instance_variable_get("@bikes_allowed")
-      }
-      trip.save!
+    source.trips.each do |t|
+      Trip.find_or_initialize_by(remote_id: t.id, agency: @agency).update!(
+        route: Route.find_by!(remote_id: t.route_id, agency: @agency),
+        service: Service.find_by!(remote_id: t.service_id, agency: @agency),
+        shape: Shape.find_by!(remote_id: t.shape_id, agency: @agency),
+        headsign: Metro::StringHelper.titleize_headsign(t.headsign),
+        short_name: t.short_name,
+        direction_id: t.direction_id,
+        block_id: t.block_id,
+        wheelchair_accessible: t.wheelchair_accessible,
+        bikes_allowed: t.instance_variable_get("@bikes_allowed")
+      )
     end
+    GC.start
   end
 
   def import_stop_times!
-    source.each_stop_time do |st|
-      stop = Stop.find_by!(remote_id: st.stop_id, agency: @agency)
-      trip = Trip.find_by!(remote_id: st.trip_id, agency: @agency)
-      StopTime.create!(stop: stop,
-                       trip: trip,
-                       agency: @agency,
-                       arrival_time: st.arrival_time,
-                       departure_time: st.departure_time,
-                       stop_sequence: st.stop_sequence,
-                       stop_headsign: st.stop_headsign,
-                       pickup_type: st.pickup_type,
-                       drop_off_type: st.drop_off_type,
-                       shape_dist_traveled: st.shape_dist_traveled)
+    source.stop_times.each do |st|
+      StopTime.create!(
+        stop: Stop.find_by!(remote_id: st.stop_id, agency: @agency),
+        trip: Trip.find_by!(remote_id: st.trip_id, agency: @agency),
+        agency: @agency,
+        arrival_time: st.arrival_time,
+        departure_time: st.departure_time,
+        stop_sequence: st.stop_sequence,
+        stop_headsign: st.stop_headsign,
+        pickup_type: st.pickup_type,
+        drop_off_type: st.drop_off_type,
+        shape_dist_traveled: st.shape_dist_traveled
+      )
     end
+    GC.start
   end
 
   def update_agency!
@@ -162,17 +180,13 @@ class Metro::Importer
     @source_agency ||= begin
       # assumes only one agency per import
       if source.agencies.size > 1
-        raise InvalidDataError.new("Only one agency is allowed per import")
+        raise Metro::Error.new("Only one agency is allowed per import")
       end
       source.agencies.first
     end
   end
 
   private
-
-  def get_source!
-    @source =  GTFS::Source.build(@agency.gtfs_endpoint)
-  end
 
   def update_route_stop_cache!
     RouteStop.update_cache
@@ -181,15 +195,4 @@ class Metro::Importer
   def source
     @source ||= GTFS::Source.build(@agency.gtfs_endpoint)
   end
-
-  class Error < StandardError
-    attr_reader :original_exception
-
-    def initialize(exception = nil)
-      @original_exception = exception
-      super
-    end
-  end
-
-  InvalidDataError = Class.new(Error)
 end

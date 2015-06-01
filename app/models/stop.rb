@@ -1,6 +1,6 @@
 class Stop < ActiveRecord::Base
   acts_as_mappable(lat_column_name: :latitude, lng_column_name: :longitude)
-  has_many :stop_times
+  has_many :stop_times, dependent: :destroy
   has_many :trips, through: :stop_times
 
   # To get a stops routes, we have to query through a lot of tables:

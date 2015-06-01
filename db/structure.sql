@@ -41,15 +41,6 @@ END;
 $$;
 
 
---
--- Name: english_stem; Type: TEXT SEARCH DICTIONARY; Schema: public; Owner: -
---
-
-CREATE TEXT SEARCH DICTIONARY english_stem (
-    TEMPLATE = pg_catalog.snowball,
-    language = 'english', stopwords = 'english' );
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -269,6 +260,73 @@ ALTER SEQUENCE services_id_seq OWNED BY services.id;
 
 
 --
+-- Name: shape_points; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE shape_points (
+    id integer NOT NULL,
+    shape_id integer,
+    latitude double precision,
+    longitude double precision,
+    sequence integer,
+    distance_traveled double precision,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: shape_points_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE shape_points_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shape_points_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE shape_points_id_seq OWNED BY shape_points.id;
+
+
+--
+-- Name: shapes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE shapes (
+    id integer NOT NULL,
+    remote_id character varying,
+    agency_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: shapes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE shapes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shapes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE shapes_id_seq OWNED BY shapes.id;
+
+
+--
 -- Name: stop_times; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -283,8 +341,8 @@ CREATE TABLE stop_times (
     agency_id integer,
     stop_id integer,
     trip_id integer,
-    arrival_time interval NOT NULL,
-    departure_time interval NOT NULL,
+    arrival_time interval,
+    departure_time interval,
     stop_sequence integer
 );
 
@@ -363,13 +421,13 @@ CREATE TABLE trips (
     short_name character varying,
     direction_id integer,
     block_id integer,
-    shape_id integer,
     wheelchair_accessible integer,
     bikes_allowed integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     agency_id integer,
-    route_id integer
+    route_id integer,
+    shape_id integer
 );
 
 
@@ -425,6 +483,20 @@ ALTER TABLE ONLY service_exceptions ALTER COLUMN id SET DEFAULT nextval('service
 --
 
 ALTER TABLE ONLY services ALTER COLUMN id SET DEFAULT nextval('services_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY shape_points ALTER COLUMN id SET DEFAULT nextval('shape_points_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY shapes ALTER COLUMN id SET DEFAULT nextval('shapes_id_seq'::regclass);
 
 
 --
@@ -489,6 +561,22 @@ ALTER TABLE ONLY services
 
 
 --
+-- Name: shape_points_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY shape_points
+    ADD CONSTRAINT shape_points_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: shapes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY shapes
+    ADD CONSTRAINT shapes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: stop_times_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -545,6 +633,20 @@ CREATE INDEX index_routes_on_remote_id_and_agency_id ON routes USING btree (remo
 --
 
 CREATE INDEX index_services_on_agency_id ON services USING btree (agency_id);
+
+
+--
+-- Name: index_shape_points_on_shape_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_shape_points_on_shape_id ON shape_points USING btree (shape_id);
+
+
+--
+-- Name: index_shapes_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_shapes_on_agency_id ON shapes USING btree (agency_id);
 
 
 --
@@ -611,6 +713,13 @@ CREATE INDEX index_trips_on_route_id ON trips USING btree (route_id);
 
 
 --
+-- Name: index_trips_on_shape_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_trips_on_shape_id ON trips USING btree (shape_id);
+
+
+--
 -- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -655,6 +764,14 @@ ALTER TABLE ONLY trips
 
 ALTER TABLE ONLY route_stops
     ADD CONSTRAINT fk_rails_1f4cc828f8 FOREIGN KEY (route_id) REFERENCES routes(id);
+
+
+--
+-- Name: fk_rails_438d0a4a30; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY trips
+    ADD CONSTRAINT fk_rails_438d0a4a30 FOREIGN KEY (shape_id) REFERENCES shapes(id);
 
 
 --
@@ -706,6 +823,14 @@ ALTER TABLE ONLY services
 
 
 --
+-- Name: fk_rails_f1872def08; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY shapes
+    ADD CONSTRAINT fk_rails_f1872def08 FOREIGN KEY (agency_id) REFERENCES agencies(id);
+
+
+--
 -- Name: fk_rails_f4f3aa4b66; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -719,6 +844,14 @@ ALTER TABLE ONLY service_exceptions
 
 ALTER TABLE ONLY stop_times
     ADD CONSTRAINT fk_rails_f5df03eb13 FOREIGN KEY (trip_id) REFERENCES trips(id);
+
+
+--
+-- Name: fk_rails_fd88275625; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY shape_points
+    ADD CONSTRAINT fk_rails_fd88275625 FOREIGN KEY (shape_id) REFERENCES shapes(id);
 
 
 --
@@ -778,4 +911,10 @@ INSERT INTO schema_migrations (version) VALUES ('20150521171330');
 INSERT INTO schema_migrations (version) VALUES ('20150521180058');
 
 INSERT INTO schema_migrations (version) VALUES ('20150522141154');
+
+INSERT INTO schema_migrations (version) VALUES ('20150530183019');
+
+INSERT INTO schema_migrations (version) VALUES ('20150530183232');
+
+INSERT INTO schema_migrations (version) VALUES ('20150530202755');
 

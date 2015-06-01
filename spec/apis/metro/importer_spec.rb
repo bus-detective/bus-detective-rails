@@ -36,6 +36,15 @@ RSpec.describe Metro::Importer do
     end
   end
 
+  describe "#import_shapes!" do
+    it "is atomic" do
+      importer.import!
+      importer.import_shapes!
+      expect(Shape.count).to eq(1)
+      expect(ShapePoint.count).to eq(10)
+    end
+  end
+
   describe "#import_trips!" do
     it "is atomic" do
       importer.import!

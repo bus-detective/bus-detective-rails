@@ -33,3 +33,13 @@ Import data direcrly from the heroku app:
     rake
 
 This project rocks and uses MIT-LICENSE.
+
+
+## Hosting
+
+* Hosting - Heroku under Gaslight account
+* DNS - DNSimple under Gaslight account
+* Monitoring - Skylight (see accounts doc for credentials)
+** Uses environment variables SKYLIGHT_APPLICATION and SKYLIGHT_AUTHENTICATION on Heroku
+
+

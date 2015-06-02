@@ -23,6 +23,6 @@ RSpec.describe TsqueryBuilder do
   end
 
   it 'escapes the values' do
-    expect(TsqueryBuilder.build("Highland's & University")).to eq("(highlands) & (university)")
+    expect(TsqueryBuilder.build("Highland's & University")).to eq("(highland's) & (university)")
   end
 end

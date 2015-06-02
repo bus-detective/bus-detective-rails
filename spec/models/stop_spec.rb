@@ -16,6 +16,14 @@ RSpec.describe Stop do
     end
   end
 
+  describe '#search' do
+    let!(:stop) { create(:stop, agency: agency, name: "Geoff's Stop") }
+
+    it 'can find stops by name' do
+      expect(Stop.search(TsqueryBuilder.build(stop.name))).to eq([stop])
+    end
+  end
+
   describe "#direction" do
     let(:stop) { build(:stop, agency: agency, remote_id: remote_id) }
     context "inbound" do

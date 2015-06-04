@@ -3,22 +3,27 @@ require 'time'
 
 module Metro
   class RealtimeUpdates
+    include Skylight::Helpers
+
     CACHE_OPTS = {
       expires_in: 15,
       race_condition_ttl: 15
     }
 
+    instrument_method title: 'fetching cache data'
     def self.fetch(agency)
      url = agency.gtfs_trip_updates_url
      new(CacheableConnection.get(url, "rt_trips:#{url}", CACHE_OPTS))
     end
 
+    instrument_method title: 'parsing protobuf'
     def initialize(buffer)
       @feed = TransitRealtime::FeedMessage.parse(buffer)
     rescue ProtocolBuffers::DecodeError
       raise Metro::Error.new "Problem parsing feed"
     end
 
+    instrument_method title: 'parsing protobuf'
     def for_stop_time(stop_time)
       trip_update = for_trip(stop_time.trip)
       if trip_update

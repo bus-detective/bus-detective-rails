@@ -2,6 +2,9 @@ require 'uri'
 
 module Metro
   class Connection
+    include Skylight::Helpers
+
+    instrument_method title: 'get data'
     def self.get(url)
       uri = if url.is_a? URI
               url

@@ -22,6 +22,27 @@ RSpec.describe "trips api" do
       end
     end
   end
+
+  describe "api/trips?trip_id=11" do
+    let!(:trip) { create(:trip) }
+    let!(:non_matching_trip) { create(:trip) }
+
+    before do
+      get "/api/trips?trip_id=#{trip.id}"
+    end
+
+    context "with a valid trip_id" do
+      let(:trip_json) { json["data"]["results"].first }
+
+      it "returns trip data for the given trip id" do
+        expect(trip_json['id']).to eq(trip.id)
+      end
+
+      it "returns shape_id data for the given trip id" do
+        expect(trip_json['shape_id'].to_i).to eq(trip.shape_id)
+      end
+    end
+  end
 end
 
 

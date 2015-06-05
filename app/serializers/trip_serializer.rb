@@ -1,4 +1,4 @@
 class TripSerializer < ApplicationSerializer
-  attributes :id, :headsign
+  attributes :id, :headsign, :shape_id
 end
 

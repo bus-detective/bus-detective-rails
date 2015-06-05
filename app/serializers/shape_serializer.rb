@@ -1,4 +1,4 @@
 class ShapeSerializer < ApplicationSerializer
-  attributes :id, :coordinates
+  attributes :id, :type, :coordinates
 end
 

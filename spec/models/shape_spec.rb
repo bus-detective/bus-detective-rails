@@ -6,8 +6,8 @@ RSpec.describe Shape do
   let(:shape) { create(:shape, shape_points: [shape_point1, shape_point2]) }
 
   describe "#coordinates" do
-    it "returns an array of lat, lng douples" do
-      expect(shape.coordinates).to eq([[1.2, 1.1], [2.2, 2.1]])
+    it "returns an array of longitude, latitude doubles" do
+      expect(shape.coordinates).to eq([[1.1, 1.2], [2.1, 2.2]])
     end
   end
 end

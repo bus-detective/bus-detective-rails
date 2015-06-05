@@ -1,6 +1,8 @@
 class Api::TripsController < ApiController
+  include ScopedToAgency
+
   def index
-    searcher = TripSearcher.new(params)
+    searcher = TripSearcher.new(@agency, params)
     if searcher.valid?
       render json: searcher
     else

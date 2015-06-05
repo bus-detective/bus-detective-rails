@@ -5,19 +5,19 @@ RSpec.describe "trips api" do
 
   describe "api/trips?route_id=11" do
     let!(:route) { create(:route) }
-    let!(:matching_trip) { create(:trip, route: route) }
-    let!(:non_matching_trip) { create(:trip) }
+    let!(:matching_trip) { create(:trip, agency: route.agency, route: route) }
+    let!(:non_matching_trip) { create(:trip, agency: route.agency) }
 
     context "with a valid route_id" do
       it "returns trip data for the given route id" do
-        get "/api/trips?route_id=#{route.id}"
+        get "/api/agencies/#{route.agency.id}/trips?route_id=#{route.id}"
         expect(json["data"]["results"].map { |s| s["id"] }).to eq([matching_trip.id])
       end
     end
 
     context "with invalid parameters" do
       it "returns a 400" do
-        get '/api/trips?foo=bar'
+        get "/api/agencies/#{route.agency.id}/trips?foo=bar"
         expect(response.status).to eq(400)
       end
     end
@@ -28,7 +28,7 @@ RSpec.describe "trips api" do
     let!(:non_matching_trip) { create(:trip) }
 
     before do
-      get "/api/trips?trip_id=#{trip.id}"
+      get "/api/agencies/#{trip.agency.id}/trips?trip_id=#{trip.id}"
     end
 
     context "with a valid trip_id" do

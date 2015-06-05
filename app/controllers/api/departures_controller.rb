@@ -1,6 +1,8 @@
 class Api::DeparturesController < ApiController
+  include ScopedToAgency
+
   def index
-    fetcher = departure_fetcher.new(agency, stop, time)
+    fetcher = departure_fetcher.new(@agency, stop, time)
     if fetcher.valid?
       render json: fetcher, serializer: DepartureFetcherSerializer
     else
@@ -11,7 +13,7 @@ class Api::DeparturesController < ApiController
   private
 
   def departure_fetcher
-    @departure_fetcher ||= if agency && agency.realtime?
+    @departure_fetcher ||= if @agency && @agency.realtime?
                              RealtimeDepartureFetcher
                            else
                              DepartureFetcher
@@ -19,12 +21,7 @@ class Api::DeparturesController < ApiController
   end
 
   def stop
-    @stop ||= Stop.find_legacy(params[:stop_id])
-  end
-
-  def agency
-    return nil unless stop
-    @agency ||= stop.agency
+    @stop ||= Stop.where(agency: @agency).find_legacy(params[:stop_id])
   end
 
   def time

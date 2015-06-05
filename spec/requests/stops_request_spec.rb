@@ -9,14 +9,14 @@ RSpec.describe "stops api" do
 
     context "with a query parameter" do
       it "returns stops with the given street name" do
-        get '/api/stops?query=8th'
+        get "/api/agencies/#{matching_stop.agency.id}/stops?query=8th"
         expect(json["data"]["results"].map { |s| s["id"] }).to eq([matching_stop.id])
       end
     end
 
     context "invalid parameters" do
       it "returns a 400" do
-        get '/api/stops?foo=8th'
+        get "/api/agencies/#{matching_stop.agency.id}/stops?foo=8th"
         expect(response.status).to eq(400)
       end
     end
@@ -27,14 +27,14 @@ RSpec.describe "stops api" do
 
     context "with a rails id" do
       it "returns the stop" do
-        get "/api/stops/#{stop.id}"
+        get "/api/agencies/#{stop.agency.id}/stops/#{stop.id}"
         expect(json["data"]["id"]).to eq(stop.id)
       end
     end
 
     context "with a legacy remote_id" do
       it "returns the stop" do
-        get "/api/stops/#{stop.remote_id}"
+        get "/api/agencies/#{stop.agency.id}/stops/#{stop.remote_id}"
         expect(json["data"]["id"]).to eq(stop.id)
       end
     end

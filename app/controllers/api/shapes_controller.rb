@@ -1,7 +1,8 @@
 class Api::ShapesController < ApiController
+  include ScopedToAgency
 
   def show
-    render json: Shape.find_by_id(params[:id])
+    render json: Shape.where(agency: @agency, id: params[:id]).first
   end
 end
 

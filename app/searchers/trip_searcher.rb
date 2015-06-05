@@ -1,4 +1,9 @@
 class TripSearcher < ApplicationSearcher
+  def initialize(agency, params)
+    super(params)
+    @agency = agency
+  end
+
   def valid?
     [
       @params[:route_id].present?,
@@ -7,7 +12,7 @@ class TripSearcher < ApplicationSearcher
   end
 
   def scoped_results
-    scope = Trip
+    scope = Trip.where(agency: @agency)
 
     if @params[:route_id]
       scope = scope.where(route_id: @params[:route_id])
@@ -17,7 +22,9 @@ class TripSearcher < ApplicationSearcher
       scope = scope.where(id: @params[:trip_id])
     end
 
-    scope
+    # Should order by something  since we're paginating and what the results to
+    # be stable.
+    scope.order(:service_id, :headsign)
   end
 end
 

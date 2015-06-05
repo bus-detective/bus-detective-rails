@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 describe StopSearcher do
-  subject(:stop_searcher) { StopSearcher.new(params) }
+  let(:agency) { create(:agency) }
+  subject(:stop_searcher) { StopSearcher.new(agency, params) }
 
   describe "#valid?" do
     context "with invalid parameters" do
@@ -16,8 +17,8 @@ describe StopSearcher do
 
   describe "#results" do
     context "by query" do
-      let!(:matching_stop) { create(:stop, name: "8th & Walnut", code: "1234") }
-      let!(:non_matching_stop) { create(:stop, name: "7th & Main", code: "456") }
+      let!(:matching_stop) { create(:stop, agency: agency, name: "8th & Walnut", code: "1234") }
+      let!(:non_matching_stop) { create(:stop, agency: agency, name: "7th & Main", code: "456") }
 
       context "with a single word" do
         let(:params) { { query: "walnut" } }
@@ -56,8 +57,8 @@ describe StopSearcher do
     end
 
     context "with a latitude and longitude" do
-      let!(:far_stop) { create(:stop, latitude: 38.104836, longitude: -85.511653) }
-      let!(:near_stop) { create(:stop, latitude: 39.104836, longitude: -84.511653) }
+      let!(:far_stop) { create(:stop, agency: agency, latitude: 38.104836, longitude: -85.511653) }
+      let!(:near_stop) { create(:stop, agency: agency, latitude: 39.104836, longitude: -84.511653) }
       let(:params) { { latitude: "39.1043200", longitude: "-84.5118910" } }
 
       it "returns stops matching the given name" do
@@ -67,8 +68,8 @@ describe StopSearcher do
   end
 
   describe "pagination" do
-    let!(:stops) { create_list(:stop, 8, name: "walnut") }
-    let!(:last_stop) { create(:stop, name: "walnut last") }
+    let!(:stops) { create_list(:stop, 8, agency: agency, name: "walnut") }
+    let!(:last_stop) { create(:stop, agency: agency, name: "walnut last") }
     let(:params) { { per_page: 5, page: 2 } }
 
     it "paginates the results" do

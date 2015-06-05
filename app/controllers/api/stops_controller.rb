@@ -1,6 +1,8 @@
 class Api::StopsController < ApiController
+  include ScopedToAgency
+  
   def index
-    searcher = StopSearcher.new(params)
+    searcher = StopSearcher.new(@agency, params)
     if searcher.valid?
       render json: searcher
     else
@@ -9,6 +11,6 @@ class Api::StopsController < ApiController
   end
 
   def show
-    render json: Stop.find_legacy(params[:id])
+    render json: Stop.where(agency: @agency).find_legacy(params[:id])
   end
 end

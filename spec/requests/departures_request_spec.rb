@@ -17,21 +17,21 @@ RSpec.describe "departures api" do
 
     context "with a rails id" do
       it "returns departures for a given stop" do
-        get "/api/departures/?stop_id=#{stop.id}&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=#{stop.id}&time=#{now}"
         expect(json["data"]["departures"].first["delay"]).to eq(0)
       end
     end
 
     context "with a legacy remote_id" do
       it "returns arrivals for given remote_id" do
-        get "/api/departures/?stop_id=#{stop.remote_id}&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=#{stop.remote_id}&time=#{now}"
         expect(json["data"]["departures"].first["delay"]).to eq(0)
       end
     end
 
     context "missing a stop id" do
       it "responds with a bad request" do
-        get "/api/departures/?stop_id=&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=&time=#{now}"
         expect(response).to be_bad_request
       end
     end
@@ -42,21 +42,21 @@ RSpec.describe "departures api" do
 
     context "with a rails id" do
       it "returns departures for a given stop" do
-        get "/api/departures/?stop_id=#{stop.id}&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=#{stop.id}&time=#{now}"
         expect(json["data"]["departures"].first["delay"]).to eq(120)
       end
     end
 
     context "with a legacy remote_id" do
       it "returns arrivals for given remote_id" do
-        get "/api/departures/?stop_id=#{stop.remote_id}&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=#{stop.remote_id}&time=#{now}"
         expect(json["data"]["departures"].first["delay"]).to eq(120)
       end
     end
 
     context "missing a stop id" do
       it "responds with a bad request" do
-        get "/api/departures/?stop_id=&time=#{now}"
+        get "/api/agencies/#{stop.agency.id}/departures/?stop_id=&time=#{now}"
         expect(response).to be_bad_request
       end
     end

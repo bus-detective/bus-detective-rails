@@ -7,7 +7,7 @@ RSpec.describe "shapes api" do
     let!(:shape) { create(:shape) }
     let!(:shape_points) { create_list(:shape_point, 10, shape: shape) }
     before do
-      get "/api/shapes/#{shape.id}"
+      get "/api/agencies/#{shape.agency.id}/shapes/#{shape.id}"
     end
 
     context "with a rails id" do

@@ -17,6 +17,7 @@ gem 'redis-rails'           # For using Redis as the application cache
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 gem 'sentry-raven'          # Error reporting service
 gem 'skylight'              # Profiling and performance monitoring
+gem 'aws-sdk'               # Fetch assets from Amazon S3
 
 group :development, :test do
   gem 'byebug'

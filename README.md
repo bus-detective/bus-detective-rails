@@ -1,3 +1,6 @@
+![Codeship Build Status](https://www.codeship.io/projects/e510f2b0-afb9-0132-3257-0e5ba92aabbb/status)
+[![Code Climate](https://codeclimate.com/github/gaslight/bus-detective/badges/gpa.svg)](https://codeclimate.com/github/gaslight/bus-detective)
+
 # Bus Detective
 
 * Ruby: 2.2.0 - Rails: 4.2.0

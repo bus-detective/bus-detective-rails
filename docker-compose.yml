@@ -1,0 +1,26 @@
+---
+api:
+  build: .
+  command: bundle exec puma -C config/puma.rb
+  ports:
+    - "3000:3000"
+  links:
+    - db
+    - redis
+  volumes:
+    - .:/webApps/app
+  environment:
+    - RACK_ENV=development
+    - RAILS_ENV=development
+    - PORT=3000
+    - REDISTOGO_URL=redis://redis
+
+redis:
+  image: redis:3.0.2
+  ports:
+    - "6379"
+
+db:
+  image: postgres:9.4.4
+  ports:
+    - "5432"

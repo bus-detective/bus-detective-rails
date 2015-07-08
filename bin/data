@@ -1,9 +1,9 @@
 #!/bin/bash
 
 set -x
-
 set -e
 
+HOST=`docker-machine ip $(docker-machine active)`
 DATABASE='bus_detective_development'
 HEROKU_APP='busdetective'
 
@@ -23,4 +23,7 @@ BACKUP_URL=`heroku pg:backups public-url ${BACKUP_ID} --app ${HEROKU_APP} | grep
 if [ ! -f $DUMP_FILE ]; then
     curl -Lo $DUMP_FILE $BACKUP_URL
 fi
-pg_restore --verbose --no-acl --no-owner -d ${DATABASE} $DUMP_FILE
+
+dropdb --if-exists --host $HOST --port 5432 --username postgres $DATABASE
+createdb --host $HOST --port 5432 --username postgres $DATABASE
+pg_restore --host $HOST --port 5432 --username postgres --verbose --no-acl --no-owner -d $DATABASE $DUMP_FILE

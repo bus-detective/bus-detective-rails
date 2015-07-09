@@ -23,9 +23,13 @@ Import data for a new agency:
 
     rake metro:import["http://url_to_gtfs_file.zip"]
 
-Import data direcrly from the heroku app:
+Import data directly from the heroku app:
 
     ./bin/data
+
+Updating data on Heroku
+
+    heroku run:detached --size Performance -a busdetective rake metro:import_existing
 
 ### Run
 

@@ -155,8 +155,8 @@ class Metro::Importer
     begin
       connection.prepare('insert_stop_time', "INSERT INTO stop_times (stop_id, trip_id, agency_id, arrival_time, departure_time, stop_sequence, stop_headsign, pickup_type, drop_off_type, shape_dist_traveled, created_at, updated_at) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now() at time zone 'utc', now() at time zone 'utc')")
       source.stop_times.each do |st|
-        stop = Stop.find_by!(remote_id: st.stop_id, agency: @agency)
-        trip = Trip.find_by!(remote_id: st.trip_id, agency: @agency)
+        stop = Stop.find_by!(remote_id: st.stop_id.strip, agency: @agency)
+        trip = Trip.find_by!(remote_id: st.trip_id.strip, agency: @agency)
         connection.exec_prepared('insert_stop_time', [stop.id, trip.id, @agency.id, st.arrival_time, st.departure_time, st.stop_sequence, st.stop_headsign, st.pickup_type, st.drop_off_type, st.shape_dist_traveled])
       end
     ensure

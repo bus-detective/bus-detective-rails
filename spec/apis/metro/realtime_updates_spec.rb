@@ -50,7 +50,7 @@ RSpec.describe Metro::RealtimeUpdates do
       end
     end
 
-    context "with stop_sequence after one of the given updated" do
+    context "with stop_sequence after one of the given updates" do
       let!(:trip) { build(:trip, remote_id: 940135) }
       let!(:stop) { build(:stop, remote_id: "NA") }
       let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, stop_sequence: 99, departure_time: Interval.for_time(10.minutes.from_now).to_s ) }

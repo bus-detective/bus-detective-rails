@@ -11,7 +11,6 @@
 
 #### Copy example files
     cp .env.example .env
-    cp config/database.yml.example config/database.yml
 
 #### Fetch stop data
 

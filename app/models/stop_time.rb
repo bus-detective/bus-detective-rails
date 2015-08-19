@@ -39,16 +39,28 @@ class StopTime < ActiveRecord::Base
 
   # Effective services are those that are the the normal services for trips
   # where service exceptions are also taken into account
+  # The first part of the union is for additions (exception = 1 is an added
+  # services)
+  # The second half of the union is for normal services that are not removed
+  # (either no exception or an exception that is not 2) (exception = 2 is a
+  # removed service)
   def self.joins_times(start_time, end_time)
     joins("INNER JOIN agencies ON stop_times.agency_id = agencies.id
            INNER JOIN trips ON stop_times.trip_id = trips.id
            INNER JOIN (
-              SELECT agencies.id as agency_id, coalesce(service_exceptions.service_id, service_days.id) as service_id, d as date, rtrim(to_char(days.d, 'day')) as dow
-              FROM agencies
-              CROSS JOIN (SELECT d::date FROM generate_series('#{start_time.to_date}', '#{end_time.to_date}', interval '1 day') d) days
-              LEFT JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
-              LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id
-              WHERE service_exceptions.exception IS NULL OR service_exceptions.exception = 1) effective_services ON trips.service_id = effective_services.service_id")
+             SELECT agencies.id as agency_id, service_exceptions.service_id, d as date, rtrim(to_char(days.d, 'day')) as dow
+             FROM agencies
+               CROSS JOIN (SELECT d::date FROM generate_series('#{start_time.to_date}', '#{end_time.to_date}', interval '1 day') d) days
+               INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+               INNER JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id
+               WHERE service_exceptions.exception = 1
+             UNION ALL
+             SELECT agencies.id as agency_id, service_days.id, d as date, rtrim(to_char(days.d, 'day')) as dow
+             FROM agencies
+               CROSS JOIN (SELECT d::date FROM generate_series('#{start_time.to_date}', '#{end_time.to_date}', interval '1 day') d) days
+               INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+               LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id AND service_days.id = service_exceptions.service_id
+               WHERE service_exceptions IS NULL OR service_exceptions.exception != 2) effective_services ON trips.service_id = effective_services.service_id")
   end
 end
 

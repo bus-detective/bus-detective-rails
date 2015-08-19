@@ -55,8 +55,17 @@ RSpec.describe DepartureFetcher do
     end
 
     context "with service addition" do
-      let(:service) { create(:service, agency: agency, wednesday: true) }
-      let!(:service_addition) { create(:service_exception, :addition, agency: agency, service: service, date: now.to_date) }
+      let(:new_service) { create(:service, agency: agency, wednesday: true) }
+      let!(:service_addition) { create(:service_exception, :addition, agency: agency, service: new_service, date: now.to_date) }
+
+      it "creates one for stop_time based on additional service" do
+        expect(subject.departures.size).to eq(1)
+      end
+    end
+
+    context "with service addition with no dates" do
+      let(:new_service) { create(:service, agency: agency) }
+      let!(:service_addition) { create(:service_exception, :addition, agency: agency, service: new_service, date: now.to_date) }
 
       it "creates one for stop_time based on additional service" do
         expect(subject.departures.size).to eq(1)

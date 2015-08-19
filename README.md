@@ -31,6 +31,17 @@ Updating data on Heroku
 
     heroku run:detached --size Performance -a busdetective rake metro:import_existing
 
+
+### Protobuffers
+
+Google Protocol Buffers are used as a transport layer for the GTFS realtime transit 
+data. These definitions are compiled into ruby classes that are used to represent the
+GTFS data structures. To recompile the definitions, install
+[ruby-protobuf](https://github.com/ruby-protobuf/protobuf/wiki/Installation)
+and run:
+
+    protoc -I ./vendor/definitions --ruby_out ./vendor vendor/definitions/*.proto
+
 ### Run
 
     rails s
@@ -48,5 +59,3 @@ This project rocks and uses MIT-LICENSE.
 * DNS - DNSimple under Gaslight account
 * Monitoring - Skylight (see accounts doc for credentials)
 ** Uses environment variables SKYLIGHT_APPLICATION and SKYLIGHT_AUTHENTICATION on Heroku
-
-

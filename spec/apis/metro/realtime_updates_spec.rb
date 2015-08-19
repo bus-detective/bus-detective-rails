@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'protocol_buffers'
+require 'protobuf'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
@@ -50,7 +50,7 @@ RSpec.describe Metro::RealtimeUpdates do
       end
     end
 
-    context "with stop_sequence after one of the given updated" do
+    context "with stop_sequence after one of the given updates" do
       let!(:trip) { build(:trip, remote_id: 940135) }
       let!(:stop) { build(:stop, remote_id: "NA") }
       let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, stop_sequence: 99, departure_time: Interval.for_time(10.minutes.from_now).to_s ) }
@@ -72,7 +72,7 @@ RSpec.describe Metro::RealtimeUpdates do
 
   context 'with an invalid feed' do
     before do
-      expect(TransitRealtime::FeedMessage).to receive(:parse).and_raise(ProtocolBuffers::DecodeError)
+      expect(Transit_realtime::FeedMessage).to receive(:new).and_raise(Protobuf::Error)
     end
 
     it 'throws a Metro::Error' do

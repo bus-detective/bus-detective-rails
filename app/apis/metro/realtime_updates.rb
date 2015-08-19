@@ -18,8 +18,8 @@ module Metro
 
     instrument_method title: 'parsing protobuf'
     def initialize(buffer)
-      @feed = TransitRealtime::FeedMessage.parse(buffer)
-    rescue ProtocolBuffers::DecodeError
+      @feed = Transit_realtime::FeedMessage.decode(buffer)
+    rescue Protobuf::Error
       raise Metro::Error.new "Problem parsing feed"
     end
 
@@ -82,14 +82,13 @@ module Metro
       end
 
       def delay
-        # Departure and Arrival always exist, an unset delay is returned as 0
-        # so choose the max one to determine the delay
-        [@stop_time_update.departure.delay, @stop_time_update.arrival.delay].max
+        # Departure and Arrival are sometimes nil, so compact and choose the max one to determine the delay
+        [@stop_time_update.departure.try(:delay), @stop_time_update.arrival.try(:delay)].compact.max
       end
 
       def departure_time
         # For whatever reason, arrivals can come after departures ¯\_(ツ)_/¯
-        time = [@stop_time_update.departure.time, @stop_time_update.arrival.time].max
+        time = [@stop_time_update.departure.try(:time), @stop_time_update.arrival.try(:time)].compact.max
         Time.at(time)
       end
     end

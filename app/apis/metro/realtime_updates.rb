@@ -18,8 +18,8 @@ module Metro
 
     instrument_method title: 'parsing protobuf'
     def initialize(buffer)
-      @feed = TransitRealtime::FeedMessage.parse(buffer)
-    rescue ProtocolBuffers::DecodeError
+      @feed = Transit_realtime::FeedMessage.decode(buffer)
+    rescue Protobuf::Error
       raise Metro::Error.new "Problem parsing feed"
     end
 

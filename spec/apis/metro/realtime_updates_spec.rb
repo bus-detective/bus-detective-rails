@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'protocol_buffers'
+require 'protobuf'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
@@ -72,7 +72,7 @@ RSpec.describe Metro::RealtimeUpdates do
 
   context 'with an invalid feed' do
     before do
-      expect(TransitRealtime::FeedMessage).to receive(:parse).and_raise(ProtocolBuffers::DecodeError)
+      expect(Transit_realtime::FeedMessage).to receive(:new).and_raise(Protobuf::Error)
     end
 
     it 'throws a Metro::Error' do

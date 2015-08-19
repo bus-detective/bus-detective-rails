@@ -23,7 +23,7 @@ module Metro
       raise Metro::Error.new "Problem parsing feed"
     end
 
-    instrument_method title: 'parsing protobuf'
+    instrument_method title: 'finding trip update'
     def for_stop_time(stop_time)
       trip_update = for_trip(stop_time.trip)
       if trip_update

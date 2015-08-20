@@ -90,7 +90,6 @@ GEM
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
-    middleware (0.1.0)
     mime-types (2.5)
     mini_portile (0.6.2)
     minitest (5.8.0)
@@ -99,11 +98,6 @@ GEM
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
     pg (0.18.1)
-    protobuf (3.5.1)
-      activesupport (>= 3.2)
-      middleware
-      thor
-      thread_safe
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -181,6 +175,7 @@ GEM
       rspec-mocks (~> 3.2.0)
       rspec-support (~> 3.2.0)
     rspec-support (3.2.2)
+    ruby-protocol-buffers (1.6.1)
     rubyzip (1.1.7)
     sentry-raven (0.13.1)
       faraday (>= 0.7.6)
@@ -228,7 +223,6 @@ DEPENDENCIES
   http
   kaminari
   pg
-  protobuf
   pry
   pry-byebug
   puma
@@ -238,6 +232,7 @@ DEPENDENCIES
   redis
   redis-rails
   rspec-rails
+  ruby-protocol-buffers
   sentry-raven
   simplecov
   skylight

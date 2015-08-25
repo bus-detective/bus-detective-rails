@@ -75,15 +75,25 @@ module Metro
         @stop_time_update[:stop_sequence]
       end
 
+      # For whatever reason, arrivals can come after departures ¯\_(ツ)_/¯
       def delay
-        # departure and arrival might be nil. Choose the max one to determine the delay
-        [@stop_time_update[:departure].try(:[], :delay), @stop_time_update[:arrival].try(:[], :delay)].compact.max
+        [departure[:delay], arrival[:delay]].compact.max
       end
 
       def departure_time
-        # For whatever reason, arrivals can come after departures ¯\_(ツ)_/¯
-        time = [@stop_time_update[:departure].try(:[], :time), @stop_time_update[:arrival].try(:[], :time)].compact.max
+        time = [arrival[:time], departure[:time]].compact.max
         Time.at(time)
+      end
+
+      private
+
+      # arrival or departure might be nil, so default to an empty hash
+      def arrival
+        @stop_time_update[:arrival] || {}
+      end
+
+      def departure
+        @stop_time_update[:departure] || {}
       end
     end
   end

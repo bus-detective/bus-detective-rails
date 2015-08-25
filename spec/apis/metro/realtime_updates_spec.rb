@@ -3,19 +3,8 @@ require 'protocol_buffers'
 
 RSpec.describe Metro::RealtimeUpdates do
   let(:fixture) { File.read('spec/fixtures/realtime_updates.buf') }
-  let(:agency) { create(:agency, :with_rt_endpoint) }
-  subject { Metro::RealtimeUpdates.new(fixture) }
-
-  before do
-    allow(Metro::Connection).to receive(:get).with(agency.gtfs_trip_updates_url).and_return(fixture)
-  end
-
-  describe "#fetch" do
-    it "calls Connection.get with the endpoint" do
-      Metro::RealtimeUpdates.fetch(agency)
-      expect(Metro::Connection).to have_received(:get).with(agency.gtfs_trip_updates_url)
-    end
-  end
+  let(:feed) { Metro::RealtimeProtobuf.parse(fixture) }
+  subject { Metro::RealtimeUpdates.new(feed) }
 
   describe "#for_trip" do
     let(:trip_update) { subject.for_trip(trip) }
@@ -67,16 +56,6 @@ RSpec.describe Metro::RealtimeUpdates do
       it "returns nil" do
         expect(subject.for_stop_time(stop_time)).to be_nil
       end
-    end
-  end
-
-  context 'with an invalid feed' do
-    before do
-      expect(TransitRealtime::FeedMessage).to receive(:parse).and_raise(ProtocolBuffers::DecodeError)
-    end
-
-    it 'throws a Metro::Error' do
-      expect { Metro::RealtimeUpdates.new(fixture) }.to raise_error(Metro::Error)
     end
   end
 end

@@ -10,6 +10,7 @@
 ### Setup
 
 #### Copy example files
+    
     cp .env.example .env
 
 #### Fetch stop data
@@ -29,6 +30,10 @@ Import data directly from the heroku app:
 Updating data on Heroku
 
     heroku run:detached --size Performance -a busdetective rake metro:import_existing
+
+#### Load Testing
+
+    rake load_test[127.0.0.1:3000]
 
 ### Run
 

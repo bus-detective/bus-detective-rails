@@ -1,5 +1,6 @@
 class Agency < ActiveRecord::Base
   has_many :stops
+  has_many :calculated_stop_times
   has_many :trips
   has_many :stop_times
   has_many :routes

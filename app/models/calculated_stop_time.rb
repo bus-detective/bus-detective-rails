@@ -32,14 +32,14 @@ class CalculatedStopTime < StopTime
   # on a +00 (timezone) which confuses Rails when we try to parse it to local
   # time.
   def self.select_for_departure
-    readonly.select(<<-eos
+    readonly.select(<<-SQL
           stop_times.id, stop_times.stop_sequence, stop_times.stop_headsign,
           stop_times.pickup_type, stop_times.drop_off_type,
           stop_times.shape_dist_traveled, stop_times.agency_id,
           stop_times.stop_id, stop_times.trip_id,
           to_char(((start_time(effective_services.date) + stop_times.arrival_time) AT TIME ZONE 'UTC'), 'YYYY-MM-DD HH24:MI:SS') as arrival_time,
           to_char(((start_time(effective_services.date) + stop_times.departure_time) AT TIME ZONE 'UTC'), 'YYYY-MM-DD HH24:MI:SS') as departure_time
-     eos
+     SQL
    )
   end
 
@@ -59,7 +59,7 @@ class CalculatedStopTime < StopTime
   # (either no exception or an exception that is not 2) (exception = 2 is a
   # removed service)
   def self.joins_times(start_time, end_time)
-    joins(<<-eos
+    joins(<<-SQL
            INNER JOIN agencies ON stop_times.agency_id = agencies.id
            INNER JOIN trips ON stop_times.trip_id = trips.id
            INNER JOIN (
@@ -76,7 +76,7 @@ class CalculatedStopTime < StopTime
                INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
                LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id AND service_days.id = service_exceptions.service_id
                WHERE service_exceptions IS NULL OR service_exceptions.exception != 2) effective_services ON trips.service_id = effective_services.service_id
-      eos
+      SQL
     )
   end
 end

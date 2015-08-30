@@ -16,13 +16,10 @@ class DepartureFetcher
 
   def stop_times
     @stop_times ||= begin
-      query = agency.stop_times
+      agency.calculated_stop_times
         .where(stop: stop)
         .between(start_time, end_time)
-        .includes(:trip)
-        .select_for_departure.to_sql
-
-      ActiveRecord::Base.connection.select_all(query).map { |h| CalculatedStopTime.new(h.symbolize_keys) }
+        .preload(:stop, :trip, :route)
     end
   end
 

@@ -1,12 +1,12 @@
 require 'rails_helper'
 
-RSpec.describe StopTime do
+RSpec.describe CalculatedStopTime do
   let(:agency) { create(:agency) }
   let(:trip) { create(:trip, agency: agency, remote_id: 940135, service: create(:service, agency: agency, tuesday: true, wednesday: true)) }
   let(:stop) { create(:stop, agency: agency, remote_id: "HAMBELi") }
   let(:ten_minutes) { Interval.new(10.minutes) }
 
-  let(:stop_times) { StopTime.between(start_time, end_time).to_a }
+  let(:stop_times) { CalculatedStopTime.between(start_time, end_time).to_a }
 
   context "stops on different days" do
     before do

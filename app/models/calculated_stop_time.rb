@@ -1,17 +1,10 @@
 # To properly calculate actual StopTimes requires heavy lifting to be done in
 # the database. This class allows us to wrap those results and make it look
 # like a regular StopTime object
-class CalculatedStopTime < ActiveRecord::Base
-  self.table_name = :stop_times
-
-  belongs_to :stop
-  belongs_to :trip
-  belongs_to :agency
-  has_one :route, through: :trip
-  has_one :service, through: :trip
+class CalculatedStopTime < StopTime
+  self.inheritance_column = nil
 
   default_scope { select_for_departure }
-
 
   # These times are stored as intervals in the database and so they come out as
   # strings since Rails/Ruby doesn't have an interval type

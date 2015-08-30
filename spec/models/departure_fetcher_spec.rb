@@ -21,6 +21,8 @@ RSpec.describe DepartureFetcher do
 
     it "searches stop_times within a time range and on the service" do
       expect(subject.stop_times.size).to eq(1)
+      # this is awkward, but stop times intervals are string, but current stop times convert them to dates
+      expect(subject.stop_times[0].departure_time.strftime("%H:%M:%S")).to eq(applicable_stop_time.departure_time)
     end
   end
 

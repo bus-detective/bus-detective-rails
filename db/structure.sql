@@ -23,7 +23,44 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
+
+
 SET search_path = public, pg_catalog;
+
+--
+-- Name: effective_services(date, date); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION effective_services(start_date date DEFAULT ('now'::text)::date, end_date date DEFAULT (('now'::text)::date + '1 day'::interval)) RETURNS TABLE(agency_id integer, service_id integer, date date, dow character)
+    LANGUAGE sql
+    AS $$
+  SELECT agencies.id as agency_id, service_exceptions.service_id, d as date, rtrim(to_char(days.d, 'day')) as dow
+     FROM agencies
+       CROSS JOIN (SELECT d::date FROM generate_series(start_date, end_date, interval '1 day') d) days
+       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+       INNER JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id
+       WHERE service_exceptions.exception = 1
+     UNION ALL
+     SELECT agencies.id as agency_id, service_days.id, d as date, rtrim(to_char(days.d, 'day')) as dow
+     FROM agencies
+       CROSS JOIN (SELECT d::date FROM generate_series(start_date, end_date, interval '1 day') d) days
+       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+       LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id AND service_days.id = service_exceptions.service_id
+       WHERE service_exceptions IS NULL OR service_exceptions.exception != 2
+$$;
+
 
 --
 -- Name: start_time(date); Type: FUNCTION; Schema: public; Owner: -
@@ -917,4 +954,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150530183019');
 INSERT INTO schema_migrations (version) VALUES ('20150530183232');
 
 INSERT INTO schema_migrations (version) VALUES ('20150530202755');
+
+INSERT INTO schema_migrations (version) VALUES ('20150930151617');
 

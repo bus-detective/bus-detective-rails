@@ -1,11 +1,6 @@
 class RealtimeDepartureFetcher < DepartureFetcher
   include ActiveModel::SerializerSupport
 
-  def initialize(agency:, stop:, time:, time_limit: 10)
-    super
-    @active_duration = Interval.new((-1 * time_limit.to_i.minutes))
-  end
-
   def departures
     @departures ||= stop_times.map { |stop_time|
       stop_time_update = realtime_updates.for_stop_time(stop_time) if realtime_updates
@@ -13,15 +8,18 @@ class RealtimeDepartureFetcher < DepartureFetcher
     }.sort_by(&:time).select { |d| active?(d) }
   end
 
-  private
-
-  def start_time
-    @time - 1.hour
+  # Realtime updates may shift the departures into the time window we are
+  # asking for. Therefor we need to query further back in time in order capture
+  # all the applicable departures.
+  def query_start_time
+    start_time - 1.hour
   end
 
   def active?(departure)
-    departure.duration_from(@time) >= @active_duration
+    departure.time >= start_time && departure.time <= end_time
   end
+
+  private
 
   def realtime_updates
     # Non-standard memoization because we want to allow nulls so we don't

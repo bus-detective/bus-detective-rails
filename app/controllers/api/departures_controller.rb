@@ -1,6 +1,11 @@
 class Api::DeparturesController < ApiController
   def index
-    fetcher = departure_fetcher.new(agency, stop, time)
+    fetcher = departure_fetcher.new(
+      agency: agency,
+      stop: stop,
+      time: time
+    )
+
     if fetcher.valid?
       render json: fetcher, serializer: DepartureFetcherSerializer
     else

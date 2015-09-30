@@ -1,11 +1,9 @@
 class RealtimeDepartureFetcher < DepartureFetcher
   include ActiveModel::SerializerSupport
 
-  def initialize(agency, stop, time, params = {})
-    super(agency, stop, time, params)
-
-    time_limit = params.fetch(:time_limit, 10).to_i
-    @active_duration = Interval.new((-1 * time_limit.minutes))
+  def initialize(agency:, stop:, time:, time_limit: 10)
+    super
+    @active_duration = Interval.new((-1 * time_limit.to_i.minutes))
   end
 
   def departures

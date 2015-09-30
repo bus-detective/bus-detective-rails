@@ -5,7 +5,7 @@ RSpec.describe RealtimeDepartureFetcher do
   let(:agency) { create(:agency, :with_rt_endpoint) }
   let(:stop) { create(:stop, agency: agency) }
   let(:trip) { create(:trip, agency: agency, service: create(:service, agency: agency, thursday: true)) }
-  subject { RealtimeDepartureFetcher.new(agency, stop, now) }
+  subject { RealtimeDepartureFetcher.new(agency: agency, stop: stop, time: now) }
 
   describe "#stop_times" do
     let!(:applicable_stop_time) {

@@ -6,7 +6,7 @@ RSpec.describe DepartureFetcher do
   let(:agency) { stop.agency }
   let(:service) { create(:service, agency: agency, thursday: true) }
   let(:trip) { create(:trip, agency: agency, service: service) }
-  subject { DepartureFetcher.new(agency, stop, now) }
+  subject { DepartureFetcher.new(agency: agency, stop: stop, time: now) }
 
   describe "#stop_times" do
     let!(:applicable_stop_time) {

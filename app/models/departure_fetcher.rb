@@ -2,7 +2,7 @@ class DepartureFetcher
   include ActiveModel::SerializerSupport
 
   attr_reader :agency, :stop, :time
-  def initialize(agency, stop, time, params = {})
+  def initialize(agency:, stop:, time:, **params)
     @agency = agency
     @time = time.in_time_zone
     @stop = stop

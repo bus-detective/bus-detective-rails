@@ -51,6 +51,20 @@ RSpec.describe Metro::RealtimeUpdates do
       end
     end
 
+    context "with stop from a different trip with the same block number" do
+      let(:block_id) { "12345" }
+      let!(:trip1) { create(:trip, remote_id: 940135, block_id: block_id) }
+      let!(:trip) { create(:trip, remote_id: 940136, block_id: block_id) }
+      let!(:stop) { build(:stop, remote_id: "NA") }
+      let!(:stop_time) { build(:stop_time, stop: stop, trip: trip, stop_sequence: 1, departure_time: Interval.for_time(10.minutes.from_now).to_s ) }
+
+      it "interprets the delay as the delay from the previous stop_sequence" do
+        expect(stop_time_update).to be_a(Metro::RealtimeUpdates::StopTimeUpdate)
+        expect(stop_time_update.stop_sequence).to eq(97)
+        expect(stop_time_update.delay).to eq(120)
+      end
+    end
+
     context "with a non-matching stop_time" do
       let(:stop_time) { build(:stop_time) }
       it "returns nil" do

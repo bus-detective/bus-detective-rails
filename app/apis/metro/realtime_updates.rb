@@ -43,48 +43,18 @@ module Metro
       end
     end
 
-    class BlockUpdate
-      attr_reader :trip_id
-      def initialize(trip, trip_update)
-        @trip_id = trip.id
-        @trip_update = trip_update
-      end
-
-      def stop_time_update_for(stop_time)
-        exact_match(stop_time) || nearest_match(stop_time)
-      end
-
-      private
-
-      def stop_time_updates
-        @stop_time_updates ||= @trip_update[:stop_time_update].map { |stu| StopTimeUpdate.new(stu) }
-      end
-
-      def exact_match(stop_time)
-        stop_time_updates.find { |stu| stu.stop_id == stop_time.stop.remote_id }
-      end
-
-      def nearest_match(stop_time)
-        stop_time_updates
-          .sort_by { |st| st.stop_sequence }
-          .last
-      end
-    end
-
     class TripUpdate
+      attr_reader :trip_id
       def initialize(trip_update)
         @trip_update = trip_update
-      end
-
-      def trip_id
-        @trip_update[:trip][:trip_id]
+        @trip_id = @trip_update[:trip][:trip_id]
       end
 
       def stop_time_update_for(stop_time)
         exact_match(stop_time) || nearest_match(stop_time)
       end
 
-      private
+      protected
 
       def stop_time_updates
         @stop_time_updates ||= @trip_update[:stop_time_update].map { |stu| StopTimeUpdate.new(stu) }
@@ -101,6 +71,23 @@ module Metro
           .last
       end
     end
+
+    class BlockUpdate < TripUpdate
+      def initialize(trip, trip_update)
+        @trip_id = trip.id
+        @trip_update = trip_update
+      end
+
+      protected
+
+      def nearest_match(stop_time)
+        stop_time_updates
+          .sort_by { |st| st.stop_sequence }
+          .last
+      end
+    end
+
+
 
     class StopTimeUpdate
       def initialize(stop_time_update)

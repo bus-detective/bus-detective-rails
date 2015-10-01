@@ -1,6 +1,12 @@
 class Api::DeparturesController < ApiController
   def index
-    fetcher = departure_fetcher.new(agency, stop, time)
+    fetcher = departure_fetcher.new(
+      agency: agency,
+      stop: stop,
+      start_time: start_time,
+      end_time: end_time
+    )
+
     if fetcher.valid?
       render json: fetcher, serializer: DepartureFetcherSerializer
     else
@@ -31,5 +37,19 @@ class Api::DeparturesController < ApiController
     # TODO: Confirm how time is being passed. We need it in local time for
     # offset to work correctly I think.
     params[:time] ? Time.zone.parse(params[:time]) : Time.current
+  end
+
+  def start_time
+    time - 10.minutes
+  end
+
+  def end_time
+    time + duration_in_hours
+  end
+
+  DEFAULT_DURATION_IN_HOURS = 1
+
+  def duration_in_hours
+    params.fetch(:duration, DEFAULT_DURATION_IN_HOURS).to_i.hours
   end
 end

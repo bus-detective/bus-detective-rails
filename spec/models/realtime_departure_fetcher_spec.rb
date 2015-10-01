@@ -5,7 +5,7 @@ RSpec.describe RealtimeDepartureFetcher do
   let(:agency) { create(:agency, :with_rt_endpoint) }
   let(:stop) { create(:stop, agency: agency) }
   let(:trip) { create(:trip, agency: agency, service: create(:service, agency: agency, thursday: true)) }
-  subject { RealtimeDepartureFetcher.new(agency, stop, now) }
+  subject { RealtimeDepartureFetcher.new(agency: agency, stop: stop, start_time: now - 10.minutes, end_time: now + 1.hour) }
 
   describe "#stop_times" do
     let!(:applicable_stop_time) {
@@ -110,10 +110,10 @@ RSpec.describe RealtimeDepartureFetcher do
     end
 
     context "when a departure is more than an hour in the past" do
-      let(:departure_time) { now - 65.minutes }
+      let(:departure_time) { now - 75.minutes }
 
       context "and realtime updates are available showing upcoming departure for the stop time" do
-        let(:fake_stop_time_update) { OpenStruct.new(departure_time: Interval.for_time(now + 5.minutes)) }
+        let(:fake_stop_time_update) { OpenStruct.new(departure_time: now + 5.minutes) }
 
         it "it won't show that stop time" do
           expect(subject.departures.size).to be_zero

@@ -24,8 +24,8 @@ RSpec.describe "trips api" do
   end
 
   describe "api/trips?trip_id=11" do
-    let!(:trip) { create(:trip) }
     let!(:non_matching_trip) { create(:trip) }
+    let!(:trip) { create(:trip) }
 
     before do
       get "/api/trips?trip_id=#{trip.id}"

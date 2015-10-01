@@ -35,9 +35,9 @@ RSpec.describe "departures api" do
       end
     end
 
-    context "with an end_time_offset" do
+    context "with a duration" do
       it "returns stops with an end time N hours in the future" do
-        get "/api/departures", stop_id: stop.id, time: now, end_time_offset: 2
+        get "/api/departures", stop_id: stop.id, time: now, duration: 2
         expect(json["data"]["departures"].length).to eq(2)
       end
     end

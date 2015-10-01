@@ -24,8 +24,8 @@ RSpec.describe "trips api" do
   end
 
   describe "api/trips?trip_id=11" do
-    let!(:trip) { create(:trip) }
     let!(:non_matching_trip) { create(:trip) }
+    let!(:trip) { create(:trip) }
 
     before do
       get "/api/trips?trip_id=#{trip.id}"
@@ -41,6 +41,20 @@ RSpec.describe "trips api" do
       it "returns shape_id data for the given trip id" do
         expect(trip_json['shape_id'].to_i).to eq(trip.shape_id)
       end
+    end
+  end
+
+  describe "api/trips?ids[]=1&ids[]=2" do
+    let(:trips) { create_list(:trip, 3) }
+
+    before do
+      query_string = trips.map { |s| "ids[]=#{s.id}" }.join("&")
+      get("/api/trips?#{query_string}")
+    end
+
+    it "returns an array of trips" do
+      response_ids = json["data"]["results"].map { |s| s["id"] }
+      expect(response_ids).to eq(trips.map(&:id))
     end
   end
 end

@@ -43,6 +43,20 @@ RSpec.describe "trips api" do
       end
     end
   end
+
+  describe "api/trips?ids[]=1&ids[]=2" do
+    let(:trips) { create_list(:trip, 3) }
+
+    before do
+      query_string = trips.map { |s| "ids[]=#{s.id}" }.join("&")
+      get("/api/trips?#{query_string}")
+    end
+
+    it "returns an array of trips" do
+      response_ids = json["data"]["results"].map { |s| s["id"] }
+      expect(response_ids).to eq(trips.map(&:id))
+    end
+  end
 end
 
 

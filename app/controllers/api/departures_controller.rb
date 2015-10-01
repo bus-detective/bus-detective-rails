@@ -44,6 +44,12 @@ class Api::DeparturesController < ApiController
   end
 
   def end_time
-    time + 1.hour
+    time + end_time_offset.hour
+  end
+
+  DEFAULT_END_TIME_OFFSET = 1
+
+  def end_time_offset
+    params.fetch(:end_time_offset, DEFAULT_END_TIME_OFFSET).to_i
   end
 end

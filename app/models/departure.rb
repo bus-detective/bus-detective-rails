@@ -18,11 +18,19 @@ class Departure
   end
 
   def time
+    realtime_time || scheduled_time
+  end
+
+  def realtime_time
     if @stop_time_update
       @stop_time_update.departure_time
     else
-      @stop_time.departure_time
+      nil
     end
+  end
+
+  def scheduled_time
+    @stop_time.departure_time
   end
 
   def delay

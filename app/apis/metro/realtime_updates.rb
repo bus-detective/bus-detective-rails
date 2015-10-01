@@ -78,15 +78,18 @@ module Metro
         @trip_update = trip_update
       end
 
-      protected
-
-      def nearest_match(stop_time)
-        stop_time_updates
+      def stop_time_update_for(stop_time)
+        block_stop_time_updates(stop_time)
           .sort_by { |st| st.stop_sequence }
           .last
       end
-    end
 
+      protected
+
+      def block_stop_time_updates(stop_time)
+        @stop_time_updates ||= @trip_update[:stop_time_update].map { |stu| BlockStopTimeUpdate.new(stop_time, stu) }
+      end
+    end
 
 
     class StopTimeUpdate
@@ -104,7 +107,7 @@ module Metro
 
       # For whatever reason, arrivals can come after departures ¯\_(ツ)_/¯
       def delay
-        [departure[:delay], arrival[:delay]].compact.max
+        [departure[:delay], arrival[:delay]].compact.max || 0
       end
 
       def departure_time
@@ -121,6 +124,21 @@ module Metro
 
       def departure
         @stop_time_update[:departure] || {}
+      end
+    end
+
+    class BlockStopTimeUpdate < StopTimeUpdate
+      def initialize(stop_time, stop_time_update)
+        @stop_time = stop_time
+        super(stop_time_update)
+      end
+
+      # We've used the delay from a Trip on the same block That means we can't
+      # use the departure time of that stop_time_update because it's going to
+      # be from the wrong trip. So calculate a departure time based on the
+      # scheduled departure time and the delay
+      def departure_time
+        @stop_time.departure_time + delay.seconds
       end
     end
   end

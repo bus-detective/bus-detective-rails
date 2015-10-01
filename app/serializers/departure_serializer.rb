@@ -1,5 +1,5 @@
 class DepartureSerializer < ApplicationSerializer
-  attributes :realtime?, :time, :delay
+  attributes :realtime?, :time, :delay, :scheduled_time
 
   has_one :route
   has_one :trip

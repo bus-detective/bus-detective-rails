@@ -47,4 +47,13 @@ namespace :metro do
       )
     end
   end
+
+  desc "Recalculate route text colors"
+  task update_route_text_colors: :environment do
+    Route.find_each do |r|
+      r.update(
+        text_color: Metro::ColorHelper.text_color_for_bg_color(r.color),
+      )
+    end
+  end
 end

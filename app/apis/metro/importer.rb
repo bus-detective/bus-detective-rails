@@ -109,7 +109,7 @@ class Metro::Importer
         route_type: r.type,
         url: r.url,
         color: r.color,
-        text_color: "fff"
+        text_color: Metro::ColorHelper.text_color_for_bg_color(r.color),
       )
     end
     GC.start

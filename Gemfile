@@ -18,6 +18,10 @@ gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in p
 gem 'sentry-raven'          # Error reporting service
 gem 'skylight'              # Profiling and performance monitoring
 
+group :development do
+  gem 'web-console', '~> 2.0'
+end
+
 group :development, :test do
   gem 'byebug'
   gem 'dotenv-rails'
@@ -27,7 +31,6 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'spring'
   gem 'spring-commands-rspec'
-  gem 'web-console', '~> 2.0'
 end
 
 group :test do

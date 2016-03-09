@@ -776,7 +776,7 @@ ALTER TABLE ONLY stop_times
 --
 
 ALTER TABLE ONLY trips
-    ADD CONSTRAINT fk_rails_105982e7f8 FOREIGN KEY (service_id) REFERENCES services(id);
+    ADD CONSTRAINT fk_rails_105982e7f8 FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE;
 
 
 --
@@ -956,4 +956,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150530183232');
 INSERT INTO schema_migrations (version) VALUES ('20150530202755');
 
 INSERT INTO schema_migrations (version) VALUES ('20150930151617');
+
+INSERT INTO schema_migrations (version) VALUES ('20160309145407');
 

@@ -2,12 +2,16 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -49,14 +53,14 @@ CREATE FUNCTION effective_services(start_date date DEFAULT ('now'::text)::date, 
   SELECT agencies.id as agency_id, service_exceptions.service_id, d as date, rtrim(to_char(days.d, 'day')) as dow
      FROM agencies
        CROSS JOIN (SELECT d::date FROM generate_series(start_date, end_date, interval '1 day') d) days
-       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id and days.d between service_days.start_date and service_days.end_date
        INNER JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id
        WHERE service_exceptions.exception = 1
      UNION ALL
      SELECT agencies.id as agency_id, service_days.id, d as date, rtrim(to_char(days.d, 'day')) as dow
      FROM agencies
        CROSS JOIN (SELECT d::date FROM generate_series(start_date, end_date, interval '1 day') d) days
-       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id
+       INNER JOIN service_days ON service_days.dow = rtrim(to_char(days.d, 'day')) AND agencies.id = service_days.agency_id and days.d between service_days.start_date and service_days.end_date
        LEFT JOIN service_exceptions ON service_exceptions.date = days.d AND agencies.id = service_exceptions.agency_id AND service_days.id = service_exceptions.service_id
        WHERE service_exceptions IS NULL OR service_exceptions.exception != 2
 $$;
@@ -83,7 +87,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: agencies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: agencies; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE agencies (
@@ -122,7 +126,7 @@ ALTER SEQUENCE agencies_id_seq OWNED BY agencies.id;
 
 
 --
--- Name: route_stops; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: route_stops; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE route_stops (
@@ -152,7 +156,7 @@ ALTER SEQUENCE route_stops_id_seq OWNED BY route_stops.id;
 
 
 --
--- Name: routes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: routes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE routes (
@@ -191,7 +195,7 @@ ALTER SEQUENCE routes_id_seq OWNED BY routes.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE schema_migrations (
@@ -200,7 +204,7 @@ CREATE TABLE schema_migrations (
 
 
 --
--- Name: services; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: services; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE services (
@@ -244,7 +248,7 @@ CREATE VIEW service_days AS
 
 
 --
--- Name: service_exceptions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: service_exceptions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE service_exceptions (
@@ -297,7 +301,7 @@ ALTER SEQUENCE services_id_seq OWNED BY services.id;
 
 
 --
--- Name: shape_points; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: shape_points; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE shape_points (
@@ -332,7 +336,7 @@ ALTER SEQUENCE shape_points_id_seq OWNED BY shape_points.id;
 
 
 --
--- Name: shapes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: shapes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE shapes (
@@ -364,7 +368,7 @@ ALTER SEQUENCE shapes_id_seq OWNED BY shapes.id;
 
 
 --
--- Name: stop_times; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: stop_times; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE stop_times (
@@ -404,7 +408,7 @@ ALTER SEQUENCE stop_times_id_seq OWNED BY stop_times.id;
 
 
 --
--- Name: stops; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: stops; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE stops (
@@ -447,7 +451,7 @@ ALTER SEQUENCE stops_id_seq OWNED BY stops.id;
 
 
 --
--- Name: trips; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: trips; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE trips (
@@ -558,7 +562,7 @@ ALTER TABLE ONLY trips ALTER COLUMN id SET DEFAULT nextval('trips_id_seq'::regcl
 
 
 --
--- Name: agencies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: agencies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY agencies
@@ -566,7 +570,7 @@ ALTER TABLE ONLY agencies
 
 
 --
--- Name: route_stops_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: route_stops_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY route_stops
@@ -574,7 +578,7 @@ ALTER TABLE ONLY route_stops
 
 
 --
--- Name: routes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: routes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY routes
@@ -582,7 +586,7 @@ ALTER TABLE ONLY routes
 
 
 --
--- Name: service_exceptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: service_exceptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY service_exceptions
@@ -590,7 +594,7 @@ ALTER TABLE ONLY service_exceptions
 
 
 --
--- Name: services_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: services_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY services
@@ -598,7 +602,7 @@ ALTER TABLE ONLY services
 
 
 --
--- Name: shape_points_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: shape_points_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY shape_points
@@ -606,7 +610,7 @@ ALTER TABLE ONLY shape_points
 
 
 --
--- Name: shapes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: shapes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY shapes
@@ -614,7 +618,7 @@ ALTER TABLE ONLY shapes
 
 
 --
--- Name: stop_times_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: stop_times_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY stop_times
@@ -622,7 +626,7 @@ ALTER TABLE ONLY stop_times
 
 
 --
--- Name: stops_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: stops_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY stops
@@ -630,7 +634,7 @@ ALTER TABLE ONLY stops
 
 
 --
--- Name: trips_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: trips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY trips
@@ -638,126 +642,126 @@ ALTER TABLE ONLY trips
 
 
 --
--- Name: index_agencies_on_remote_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_agencies_on_remote_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_agencies_on_remote_id ON agencies USING btree (remote_id);
 
 
 --
--- Name: index_route_stops_on_stop_id_and_route_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_route_stops_on_stop_id_and_route_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_route_stops_on_stop_id_and_route_id ON route_stops USING btree (stop_id, route_id);
 
 
 --
--- Name: index_routes_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_routes_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_routes_on_agency_id ON routes USING btree (agency_id);
 
 
 --
--- Name: index_routes_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_routes_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_routes_on_remote_id_and_agency_id ON routes USING btree (remote_id, agency_id);
 
 
 --
--- Name: index_services_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_services_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_services_on_agency_id ON services USING btree (agency_id);
 
 
 --
--- Name: index_shape_points_on_shape_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_shape_points_on_shape_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_shape_points_on_shape_id ON shape_points USING btree (shape_id);
 
 
 --
--- Name: index_shapes_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_shapes_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_shapes_on_agency_id ON shapes USING btree (agency_id);
 
 
 --
--- Name: index_stop_times_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stop_times_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stop_times_on_agency_id ON stop_times USING btree (agency_id);
 
 
 --
--- Name: index_stop_times_on_agency_id_and_stop_id_and_trip_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stop_times_on_agency_id_and_stop_id_and_trip_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stop_times_on_agency_id_and_stop_id_and_trip_id ON stop_times USING btree (agency_id, stop_id, trip_id);
 
 
 --
--- Name: index_stop_times_on_stop_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stop_times_on_stop_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stop_times_on_stop_id ON stop_times USING btree (stop_id);
 
 
 --
--- Name: index_stop_times_on_trip_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stop_times_on_trip_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stop_times_on_trip_id ON stop_times USING btree (trip_id);
 
 
 --
--- Name: index_stops_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stops_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stops_on_agency_id ON stops USING btree (agency_id);
 
 
 --
--- Name: index_stops_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_stops_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_stops_on_remote_id_and_agency_id ON stops USING btree (remote_id, agency_id);
 
 
 --
--- Name: index_trips_on_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_trips_on_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_trips_on_agency_id ON trips USING btree (agency_id);
 
 
 --
--- Name: index_trips_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_trips_on_remote_id_and_agency_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_trips_on_remote_id_and_agency_id ON trips USING btree (remote_id, agency_id);
 
 
 --
--- Name: index_trips_on_route_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_trips_on_route_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_trips_on_route_id ON trips USING btree (route_id);
 
 
 --
--- Name: index_trips_on_shape_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_trips_on_shape_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_trips_on_shape_id ON trips USING btree (shape_id);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
@@ -895,7 +899,7 @@ ALTER TABLE ONLY shape_points
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO schema_migrations (version) VALUES ('20150317180959');
 
@@ -958,4 +962,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150530202755');
 INSERT INTO schema_migrations (version) VALUES ('20150930151617');
 
 INSERT INTO schema_migrations (version) VALUES ('20160309145407');
+
+INSERT INTO schema_migrations (version) VALUES ('20160309201015');
 

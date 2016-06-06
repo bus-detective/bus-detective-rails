@@ -124,7 +124,8 @@ class Metro::Importer
       connection.prepare('insert_point', "INSERT INTO shape_points (shape_id, sequence, latitude, longitude, distance_traveled, created_at, updated_at) values($1, $2, $3, $4, $5, now() at time zone 'utc', now() at time zone 'utc')")
       source.shapes.each do |s|
         shape = Shape.find_or_create_by!(remote_id: s.id, agency: @agency)
-        connection.exec_prepared('insert_point', [shape.id, s.pt_sequence, s.pt_lat, s.pt_lon, s.dist_traveled])
+        dist_traveled = s.dist_traveled.present? ? s.dist_traveled : 0
+        connection.exec_prepared('insert_point', [shape.id, s.pt_sequence, s.pt_lat, s.pt_lon, dist_traveled])
       end
     ensure
       connection.exec('DEALLOCATE insert_point')

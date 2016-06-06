@@ -157,7 +157,8 @@ class Metro::Importer
       source.stop_times.each do |st|
         stop = Stop.find_by!(remote_id: st.stop_id.strip, agency: @agency)
         trip = Trip.find_by!(remote_id: st.trip_id.strip, agency: @agency)
-        connection.exec_prepared('insert_stop_time', [stop.id, trip.id, @agency.id, st.arrival_time, st.departure_time, st.stop_sequence, st.stop_headsign, st.pickup_type, st.drop_off_type, st.shape_dist_traveled])
+        dist_traveled = st.shape_dist_traveled.present? ? st.shape_dist_traveled : 0
+        connection.exec_prepared('insert_stop_time', [stop.id, trip.id, @agency.id, st.arrival_time, st.departure_time, st.stop_sequence, st.stop_headsign, st.pickup_type, st.drop_off_type, dist_traveled])
       end
     ensure
       connection.exec('DEALLOCATE insert_stop_time')

@@ -196,6 +196,6 @@ class Metro::Importer
   end
 
   def source
-    @source ||= GTFS::Source.build(@agency.gtfs_endpoint)
+    @source ||= GTFS::Source.build(@agency.gtfs_endpoint, strict: false)
   end
 end

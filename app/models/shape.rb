@@ -8,6 +8,6 @@ class Shape < ActiveRecord::Base
   end
 
   def coordinates
-    shape_points.order(:sequence).map { |sp| [sp.latitude, sp.longitude] }
+    shape_points.sort_by(&:sequence).map { |sp| [sp.latitude, sp.longitude] }
   end
 end

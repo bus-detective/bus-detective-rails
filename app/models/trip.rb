@@ -4,4 +4,5 @@ class Trip < ActiveRecord::Base
   belongs_to :agency
   belongs_to :service
   belongs_to :shape
+  has_many :shape_points, through: :shape
 end

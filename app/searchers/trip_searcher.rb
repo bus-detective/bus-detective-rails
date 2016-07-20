@@ -8,7 +8,7 @@ class TripSearcher < ApplicationSearcher
   end
 
   def scoped_results
-    scope = Trip.includes(:route, :shape)
+    scope = Trip.includes(:route, shape: [:shape_points])
 
     if @params[:route_id]
       scope = scope.where(route_id: @params[:route_id])
@@ -27,4 +27,3 @@ class TripSearcher < ApplicationSearcher
     scope
   end
 end
-

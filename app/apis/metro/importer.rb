@@ -36,7 +36,6 @@ class Metro::Importer
     # would make them easy to match with the source data.
     ServiceException.where(agency: @agency).delete_all
     StopTime.where(agency: @agency).delete_all
-    ShapePoint.joins(:shape).where('shapes.agency_id = ?', @agency).delete_all
     RouteStop.joins(:route).where('routes.agency_id = ?', @agency).delete_all
 
     # These all have remote_id which makes the easy to identify ones that were
@@ -117,18 +116,22 @@ class Metro::Importer
 
   def import_shapes!
     # shapes.txt is a denormlized data set. We normalize the data
-    # into two tables: shapes, and shape_points
+    # into the shapes table.  Points are serialized via postgis.
     connection = ActiveRecord::Base.connection.raw_connection
 
     begin
-      connection.prepare('insert_point', "INSERT INTO shape_points (shape_id, sequence, latitude, longitude, distance_traveled, created_at, updated_at) values($1, $2, $3, $4, $5, now() at time zone 'utc', now() at time zone 'utc')")
-      source.shapes.each do |s|
-        shape = Shape.find_or_create_by!(remote_id: s.id, agency: @agency)
-        dist_traveled = s.dist_traveled.present? ? s.dist_traveled : 0
-        connection.exec_prepared('insert_point', [shape.id, s.pt_sequence, s.pt_lat, s.pt_lon, dist_traveled])
+      shape_points_by_id = source.shapes.inject({}) do |acc, s|
+        acc[s.id] ||= []
+        acc[s.id] << s
+        acc
+      end
+
+      shape_points_by_id.each do |id, points|
+        shape = Shape.find_or_create_by!(remote_id: id, agency: @agency)
+        shape.coordinates = points.map { |p| [p.pt_lat, p.pt_lon] }
+        shape.save!
       end
     ensure
-      connection.exec('DEALLOCATE insert_point')
       GC.start
     end
   end

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped from database version 9.5.3
+-- Dumped by pg_dump version 9.5.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39,6 +39,20 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
+
+
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
 
 
 SET search_path = public, pg_catalog;
@@ -301,41 +315,6 @@ ALTER SEQUENCE services_id_seq OWNED BY services.id;
 
 
 --
--- Name: shape_points; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE shape_points (
-    id integer NOT NULL,
-    shape_id integer,
-    latitude double precision,
-    longitude double precision,
-    sequence integer,
-    distance_traveled double precision,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: shape_points_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE shape_points_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: shape_points_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE shape_points_id_seq OWNED BY shape_points.id;
-
-
---
 -- Name: shapes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -344,7 +323,8 @@ CREATE TABLE shapes (
     remote_id character varying,
     agency_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    geometry geography(LineString,4326)
 );
 
 
@@ -530,13 +510,6 @@ ALTER TABLE ONLY services ALTER COLUMN id SET DEFAULT nextval('services_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY shape_points ALTER COLUMN id SET DEFAULT nextval('shape_points_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY shapes ALTER COLUMN id SET DEFAULT nextval('shapes_id_seq'::regclass);
 
 
@@ -599,14 +572,6 @@ ALTER TABLE ONLY service_exceptions
 
 ALTER TABLE ONLY services
     ADD CONSTRAINT services_pkey PRIMARY KEY (id);
-
-
---
--- Name: shape_points_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY shape_points
-    ADD CONSTRAINT shape_points_pkey PRIMARY KEY (id);
 
 
 --
@@ -674,13 +639,6 @@ CREATE INDEX index_routes_on_remote_id_and_agency_id ON routes USING btree (remo
 --
 
 CREATE INDEX index_services_on_agency_id ON services USING btree (agency_id);
-
-
---
--- Name: index_shape_points_on_shape_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_shape_points_on_shape_id ON shape_points USING btree (shape_id);
 
 
 --
@@ -888,14 +846,6 @@ ALTER TABLE ONLY stop_times
 
 
 --
--- Name: fk_rails_fd88275625; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY shape_points
-    ADD CONSTRAINT fk_rails_fd88275625 FOREIGN KEY (shape_id) REFERENCES shapes(id);
-
-
---
 -- PostgreSQL database dump complete
 --
 
@@ -964,4 +914,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150930151617');
 INSERT INTO schema_migrations (version) VALUES ('20160309145407');
 
 INSERT INTO schema_migrations (version) VALUES ('20160309201015');
+
+INSERT INTO schema_migrations (version) VALUES ('20160721194052');
 

@@ -76,20 +76,4 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
-
-  module ActiveRecord
-    module ConnectionHandling
-      class MergeAndResolveDefaultUrlConfig
-        private
-        def config
-          @raw_config.dup.tap do |cfg|
-            if url = ENV['DATABASE_URL']
-              cfg[@env] ||= {}
-              cfg[@env]["url"] ||= url.try(:gsub, "postgres", "postgis")
-            end
-          end
-        end
-      end
-    end
-  end
 end

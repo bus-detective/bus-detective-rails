@@ -1,5 +1,13 @@
 class Api::RoutesController < ApiController
   def index
-    render json: Route.all, each_serializer: RouteWithAgencySerializer
+    routes = Route.includes(:agency)
+
+    render json: sort_routes(routes), each_serializer: RouteWithAgencySerializer
+  end
+
+  private
+
+  def sort_routes(routes)
+    routes.sort_by { |r| r.short_name.to_i }
   end
 end

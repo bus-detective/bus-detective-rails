@@ -128,7 +128,7 @@ class Metro::Importer
 
       shape_points_by_id.each do |id, points|
         shape = Shape.find_or_create_by!(remote_id: id, agency: @agency)
-        shape.coordinates = points.map { |p| [p.pt_lat, p.pt_lon] }
+        shape.coordinates = points.map { |p| [p.pt_lat.to_f, p.pt_lon.to_f] }
         shape.save!
       end
     ensure

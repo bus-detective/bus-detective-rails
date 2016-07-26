@@ -5,6 +5,7 @@ ruby '2.3.1'
 gem 'rails', '~> 4.2.3'
 
 gem 'active_model_serializers', '~> 0.8.3' # Because people hate 0.9.x branch for the different API, and 0.10.x is built on 0.8
+gem 'activerecord-postgis-adapter'
 gem 'geokit-rails' # Provides acts_as_mappable
 gem 'gtfs'         # Support for General Transit Feed Specification (format of the stop/route data)
 gem 'http'
@@ -14,6 +15,7 @@ gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
 gem 'redis-rails'           # For using Redis as the application cache
+gem 'rgeo-geojson'
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 gem 'sentry-raven'          # Error reporting service
 gem 'skylight'              # Profiling and performance monitoring

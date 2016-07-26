@@ -4,8 +4,7 @@ RSpec.describe "shapes api" do
   let(:json) { JSON.parse(response.body) }
 
   describe "api/shapes/:id" do
-    let!(:shape) { create(:shape) }
-    let!(:shape_points) { create_list(:shape_point, 10, shape: shape) }
+    let!(:shape) { create(:shape, coordinates: [[1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5], [1.5, 1.5]]) }
     before do
       get "/api/shapes/#{shape.id}"
     end

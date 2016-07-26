@@ -42,7 +42,7 @@ RSpec.describe Metro::Importer do
       importer.import!
       # We delete all the ShapPoints in import, so we're just ensuring they're all deleted and recreated
       expect(Shape.count).to eq(1)
-      expect(ShapePoint.count).to eq(10)
+      expect(Shape.first.coordinates.count).to eq(10)
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe Metro::Importer do
       expect(StopTime.count).to eq(10)
       expect(ServiceException.count).to eq(2)
       expect(Shape.count).to eq(1)
-      expect(ShapePoint.count).to eq(10)
+      expect(Shape.first.coordinates.count).to eq(10)
     end
   end
 end

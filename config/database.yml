@@ -1,15 +1,15 @@
 development:
-  adapter: postgresql
+  adapter: postgis
   encoding: unicode
   database: bus_detective_development
 
 test:
-  adapter: postgresql
+  adapter: postgis
   encoding: unicode
   database: bus_detective_test
 
 production:
-  adapter: postgresql
+  adapter: postgis
   encoding: unicode
   url:  <%= ENV["DATABASE_URL"] %>
   pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>

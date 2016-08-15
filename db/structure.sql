@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.3
--- Dumped by pg_dump version 9.5.3
+-- Dumped from database version 9.5.4
+-- Dumped by pg_dump version 9.5.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -795,7 +795,7 @@ ALTER TABLE ONLY stop_times
 --
 
 ALTER TABLE ONLY trips
-    ADD CONSTRAINT fk_rails_9a39561dfd FOREIGN KEY (route_id) REFERENCES routes(id);
+    ADD CONSTRAINT fk_rails_9a39561dfd FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;
 
 
 --
@@ -919,4 +919,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160309201015');
 INSERT INTO schema_migrations (version) VALUES ('20160721194052');
 
 INSERT INTO schema_migrations (version) VALUES ('20160726181902');
+
+INSERT INTO schema_migrations (version) VALUES ('20160815200525');
 

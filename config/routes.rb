@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resources :trips, only: [:index]
   end
 
+  get '/.well-known/acme-challenge/:id' => 'index#letsencrypt'
   root to: "index#show"
   get "*path", to: "index#show"
 end

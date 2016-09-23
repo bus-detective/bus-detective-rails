@@ -1,6 +1,8 @@
 class IndexController < ApplicationController
   REDIS_KEY_PREFIX = "bus-detective:index"
 
+  force_ssl if: :ssl_configured?, except: [:letsencrypt]
+
   def show
     render text: redis.get("#{REDIS_KEY_PREFIX}:#{params[:revision] || current_index_key}")
   end
@@ -21,5 +23,9 @@ class IndexController < ApplicationController
 
   def redis
     @redis ||= Redis.new(url: ENV.fetch('REDISTOGO_URL', nil))
+  end
+
+  def ssl_configured?
+    Rails.env.production?
   end
 end

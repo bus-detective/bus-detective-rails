@@ -1,10 +1,12 @@
 class IndexController < ApplicationController
-  REDIS_KEY_PREFIX = "bus-detective:index"
-
   force_ssl if: :ssl_configured?, except: [:letsencrypt]
 
   def show
-    render text: redis.get("#{REDIS_KEY_PREFIX}:#{params[:revision] || current_index_key}")
+    if s3_bucket_url.present?
+      render text: index_html
+    else
+      render layout: false
+    end
   end
 
   def letsencrypt
@@ -15,14 +17,20 @@ class IndexController < ApplicationController
     end
   end
 
-  private
-
-  def current_index_key
-    redis.get("#{REDIS_KEY_PREFIX}:current")
+  def robots
+    @enable_robots = Rails.configuration.ENABLE_ROBOTS
+    render layout: false, content_type: 'text/plain'
   end
 
-  def redis
-    @redis ||= Redis.new(url: ENV.fetch('REDISTOGO_URL', nil))
+  private
+
+  def index_html
+    uri = URI("#{s3_bucket_url}/index.html")
+    Net::HTTP.get(uri)
+  end
+
+  def s3_bucket_url
+    Rails.configuration.S3_BUCKET_URL
   end
 
   def ssl_configured?

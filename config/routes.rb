@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   end
 
   get '/.well-known/acme-challenge/:id' => 'index#letsencrypt'
+  get '/robots.txt', to: 'index#robots'
   root to: "index#show"
   get "*path", to: "index#show"
 end

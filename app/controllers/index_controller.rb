@@ -17,6 +17,11 @@ class IndexController < ApplicationController
     end
   end
 
+  def robots
+    @enable_robots = Rails.configuration.ENABLE_ROBOTS
+    render layout: false, content_type: 'text/plain'
+  end
+
   private
 
   def index_html

@@ -10,7 +10,9 @@ class IndexController < ApplicationController
   end
 
   def letsencrypt
-    if params[:id] == 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0'
+    if params[:id] == 'LKgzYKUJjp71CZ5s9PUA6_cj6xebp_u7VmTLX4NDun8'
+      render text: 'LKgzYKUJjp71CZ5s9PUA6_cj6xebp_u7VmTLX4NDun8.x2TXuRtPY5PkPL4YMeiKaMl4xBtFrjfOe94AR0Iyg1M'
+    elsif params[:id] == 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0'
       render text: 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0.3agPbEGMW8yyXAdNJmtYhleq07pUgmnN1oCrhN9iRwA'
     else
       render text: '8BuARSATWEUgzbNUlNsz-RHS6WENQ2G9A6DbaPUwPNY.3agPbEGMW8yyXAdNJmtYhleq07pUgmnN1oCrhN9iRwA'

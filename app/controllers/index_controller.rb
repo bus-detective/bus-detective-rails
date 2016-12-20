@@ -13,10 +13,8 @@ class IndexController < ApplicationController
     case params[:id]
     when 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0'
       render text: 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0.3agPbEGMW8yyXAdNJmtYhleq07pUgmnN1oCrhN9iRwA'
-    when '-7kAFXss5RON8VVgEaPev9KvF_XfI8isELqM5eNYo8A'
-      render text: '-7kAFXss5RON8VVgEaPev9KvF_XfI8isELqM5eNYo8A.x2TXuRtPY5PkPL4YMeiKaMl4xBtFrjfOe94AR0Iyg1M'
     else
-      head :not_found
+      render text: "#{params[:id]}.x2TXuRtPY5PkPL4YMeiKaMl4xBtFrjfOe94AR0Iyg1M"
     end
   end
 

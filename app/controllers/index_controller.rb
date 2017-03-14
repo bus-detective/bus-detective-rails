@@ -13,6 +13,8 @@ class IndexController < ApplicationController
     case params[:id]
     when 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0'
       render text: 'gTrmpuvlhFtL3v0N2Rkhk9GBxkzXsnkfwyf_-XWRsj0.3agPbEGMW8yyXAdNJmtYhleq07pUgmnN1oCrhN9iRwA'
+    when "GmEiT2D0UoKH2AHimAjBr45hrmMyMhYhw7hNipFxa-0"
+      render text: "GmEiT2D0UoKH2AHimAjBr45hrmMyMhYhw7hNipFxa-0.jOl0WYrEi5GTa1BlXCSMh31NLeYmWZbZA_QaK-ZpnIE"
     else
       render text: "#{params[:id]}.x2TXuRtPY5PkPL4YMeiKaMl4xBtFrjfOe94AR0Iyg1M"
     end

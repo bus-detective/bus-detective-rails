@@ -17,10 +17,12 @@ class IndexController < ApplicationController
       render text: "GmEiT2D0UoKH2AHimAjBr45hrmMyMhYhw7hNipFxa-0.jOl0WYrEi5GTa1BlXCSMh31NLeYmWZbZA_QaK-ZpnIE"
     when "t0FKxYEVT4eFdtrbOjyqouQ-KcAwY_2wCjukfQjCc5M"
       render text: "t0FKxYEVT4eFdtrbOjyqouQ-KcAwY_2wCjukfQjCc5M.jOl0WYrEi5GTa1BlXCSMh31NLeYmWZbZA_QaK-ZpnIE"
+    when "_hsrKbfr1z0Qrpsg7ZeWmk1if1K64BXsugQNeSsuczM"
+      render text: "_hsrKbfr1z0Qrpsg7ZeWmk1if1K64BXsugQNeSsuczM.jOl0WYrEi5GTa1BlXCSMh31NLeYmWZbZA_QaK-ZpnIE"
     else
       render text: "#{params[:id]}.jOl0WYrEi5GTa1BlXCSMh31NLeYmWZbZA_QaK-ZpnIE"
     end
-    end
+  end
 
   def robots
     @enable_robots = Rails.configuration.ENABLE_ROBOTS

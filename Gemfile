@@ -14,7 +14,8 @@ gem 'pg'
 gem 'puma'
 gem 'rack-cors', require: 'rack/cors'
 gem 'redis'
-gem 'redis-rails'           # For using Redis as the application cache
+gem 'redis-store', '~> 1.4.0' # http://www.cvedetails.com/cve/CVE-2017-1000248/
+gem 'redis-rails', '~> 5.0'   # For using Redis as the application cache
 gem 'rgeo-geojson'
 gem 'ruby-protocol-buffers' # Required for parsing GTFS data which is built in protocol buffers
 gem 'sentry-raven'          # Error reporting service
